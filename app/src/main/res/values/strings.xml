@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Pawdicted</string>
+    <string name="title_to_confirm">To confirm</string>
+    <string name="title_to_pick_up">To Pick Up</string>
+    <string name="title_to_ship">To Ship</string>
+    <string name="title_evaluate_order">Evaluate</string>
+    <string name="title_my_purchases">My Purchases</string>
+    <string name="title_view_purchase_history">View purchase history</string>
+    <string name="title_utilities">Utilities</string>
+    <string name="title_wishlist">Wishlist</string>
+    <string name="title_voucher">Voucher</string>
+    <string name="title_blogs">Blogs</string>
+    <string name="title_history">History</string>
+    <string name="title_help">Help</string>
+    <string name="title_faqs">FAQs</string>
+    <string name="title_policies">Policies</string>
+</resources>
