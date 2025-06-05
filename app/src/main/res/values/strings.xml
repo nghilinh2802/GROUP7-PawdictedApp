@@ -14,4 +14,19 @@
     <string name="title_help">Help</string>
     <string name="title_faqs">FAQs</string>
     <string name="title_policies">Policies</string>
+    <string name="title_login_login">LOG IN</string>
+    <string name="title_remember_me">Remember me?</string>
+    <string name="title_forgot_password">Forgot password?</string>
+    <string name="title_or_login_with">Or log in with</string>
+    <string name="title_dont_have_account">Don\'t have an account?</string>
+    <string name="title_signup_login">Sign up</string>
+    <string name="title_forgot_password_main">FORGOT PASSWORD</string>
+    <string name="title_send_recover_code">SEND RECOVER CODE</string>
+    <string name="title_changr_password">CHANGE PASSWORD</string>
+    <string name="title_enter_new_password">Enter new password</string>
+    <string name="title_reenter_new_password">Re-enter new password</string>
+    <string name="title_signup">SIGN UP</string>
+    <string name="title_or_signup_with">Or Signup with</string>
+    <string name="title_already_have_account">Already have an account?</string>
+    <string name="title_login_signup">Log in</string>
 </resources>
