@@ -344,7 +344,6 @@
                         android:src="@mipmap/ic_voucher_line" />
 
                     <TextView
-                        android:id="@+id/txtFAQs"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
