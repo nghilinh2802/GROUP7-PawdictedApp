@@ -42,4 +42,11 @@
     <string name="title_or_signup_with">Or Signup with</string>
     <string name="title_already_have_account">Already have an account?</string>
     <string name="title_login_signup">Log in</string>
+    <string name="title_hot">Hot</string>
+    <string name="title_flashdeals">Flash Deals</string>
+    <string name="title_end_in">Ends in</string>
+    <string name="title_on_going">On going</string>
+    <string name="title_upcoming">Upcoming</string>
+    <string name="title_buy_now">Buy now</string>
+    <string name="title_products_sold">products sold</string>
 </resources>
