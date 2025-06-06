@@ -56,6 +56,11 @@ public class FooterManager {
                     Intent intent = new Intent(activity, CategoryActivity.class);
                     activity.startActivity(intent);
                 }
+
+                else if (item.text.getId() == R.id.txtAccount || item.icon.getId() == R.id.imgAccount) {
+                    Intent intent = new Intent(activity, AccountManagementActivity.class);
+                    activity.startActivity(intent);
+                }
             };
             item.icon.setOnClickListener(listener);
             item.text.setOnClickListener(listener);
