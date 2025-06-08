@@ -12,14 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Pawdicted"
         tools:targetApi="31">
+        <activity android:name=".FlashSaleActivity"
+            android:exported="true"/>
         <activity
             android:name=".BlogDetailsActivity"
             android:exported="false" />
         <activity
             android:name=".BlogActivity"
-            android:exported="false" />
-        <activity
-            android:name=".FlashSaleActivity"
             android:exported="false" /> <!-- LoginActivity will be the launcher activity -->
         <activity
             android:name=".LoginActivity"
