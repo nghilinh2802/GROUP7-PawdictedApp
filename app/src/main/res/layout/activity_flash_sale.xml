@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@id/main"
     android:orientation="vertical"
-    android:id="@+id/main"
     android:background="#F9AFA6">
 
     <!-- Thanh tìm kiếm và icon -->
@@ -19,7 +20,8 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@mipmap/ic_back" />
+            android:src="@mipmap/ic_back"
+            app:tint="#fff" />
 
         <EditText
             android:layout_width="0dp"
@@ -39,13 +41,13 @@
             android:layout_height="24dp"
             android:layout_marginEnd="8dp"
             android:src="@mipmap/ic_cart"
- />
+            app:tint="#fff" />
 
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@mipmap/ic_account_footer_white"
-/>
+            app:tint="#fff" />
     </LinearLayout>
 
     <!-- Banner Flash Deals + Countdown -->
@@ -84,12 +86,12 @@
                 android:id="@+id/txtHour"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
+                android:layout_marginEnd="4dp"
                 android:gravity="center"
                 android:text="03"
                 android:textColor="#fff"
-                android:textStyle="bold"
                 android:textSize="18sp"
-                android:layout_marginEnd="4dp"/>
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/txtMinute"

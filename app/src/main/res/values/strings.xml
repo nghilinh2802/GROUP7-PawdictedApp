@@ -53,4 +53,9 @@
     <string name="title_toys">Toys</string>
     <string name="title_food">Food</string>
     <string name="title_accessories">Accessories</string>
+    <string-array name="gender_array">
+        <item>Female</item>
+        <item>Male</item>
+        <item>Other</item>
+    </string-array>
 </resources>

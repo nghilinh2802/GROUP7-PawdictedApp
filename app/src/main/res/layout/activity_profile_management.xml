@@ -1,148 +1,249 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:background="#FFF5F5F5">
+    android:id="@+id/main"
+    android:background="@color/white"
+    tools:context=".ProfileManagementActivity"
+>
 
+    <!-- Thanh tiêu đề -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#8B0000"
-        android:padding="16dp"
+        android:background="#9c162c"
+        android:padding="10dp"
         android:gravity="center_vertical">
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="60dp"
+            android:layout_height="20dp"
             android:background="?android:attr/selectableItemBackground"
-            android:contentDescription="Back" />
+            android:contentDescription="Back"
+            android:src="@mipmap/ic_back" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:text="PROFILE"
-            android:textSize="20sp"
             android:textColor="#FFFFFF"
-            android:layout_marginStart="16dp" />
+            android:textSize="20sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
+    <!-- Hình ảnh đại diện -->
     <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
         android:layout_gravity="center"
-        android:layout_marginTop="32dp"
- />
+        android:layout_marginTop="10dp"
+        android:src="@mipmap/ic_account_footer_red"
+        android:scaleType="centerCrop" />
 
+    <!-- Khung thông tin -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_height="2000dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rounded_background"
         android:orientation="vertical"
-        android:background="@drawable/rounded_rectangle">
+        android:padding="25dp">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Name"
-            android:textSize="16sp"
-            android:textColor="#8B0000" />
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hân Nguyễn"
-            android:textSize="16sp"
-            android:textColor="#000000"
-            android:layout_marginTop="4dp" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.7"
+                android:text="Name"
+                android:textColor="#9c162c"
+                android:textSize="16sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Gender"
-            android:textSize="16sp"
-            android:textColor="#8B0000"
-            android:layout_marginTop="16dp" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="Hân Nguyễn"
+                android:textColor="#000000"
+                android:textSize="16sp" />
+        </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Female"
-            android:textSize="16sp"
-            android:textColor="#000000"
-            android:layout_marginTop="4dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="D.O.B"
-            android:textSize="16sp"
-            android:textColor="#8B0000"
-            android:layout_marginTop="16dp" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="#858484" />
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="20/05/2002"
-            android:textSize="16sp"
-            android:textColor="#000000"
-            android:layout_marginTop="4dp" />
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Phone number"
-            android:textSize="16sp"
-            android:textColor="#8B0000"
-            android:layout_marginTop="16dp" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.7"
+                android:text="Gender"
+                android:textColor="#9c162c"
+                android:textSize="16sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="0123456789"
-            android:textSize="16sp"
-            android:textColor="#000000"
-            android:layout_marginTop="4dp" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="Female"
+                android:textColor="#000000"
+                android:textSize="16sp" />
+        </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Email"
-            android:textSize="16sp"
-            android:textColor="#8B0000"
-            android:layout_marginTop="16dp" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="#858484" />
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="hannguyen89@gmail.com"
-            android:textSize="16sp"
-            android:textColor="#000000"
-            android:layout_marginTop="4dp" />
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Address"
-            android:textSize="16sp"
-            android:textColor="#8B0000"
-            android:layout_marginTop="16dp" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.7"
+                android:text="D.O.B"
+                android:textColor="#9c162c"
+                android:textSize="16sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="20/05/2002"
+                android:textColor="#000000"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="#858484" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="1 Le Loi Street, Ward 10, Vung Tau city"
-            android:textSize="16sp"
-            android:textColor="#000000"
-            android:layout_marginTop="4dp" />
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.7"
+                android:text="Phone number"
+                android:textColor="#9c162c"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="0123456789"
+                android:textColor="#000000"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="#858484" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.7"
+                android:text="Email"
+                android:textColor="#9c162c"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="hannguyen89@gmail.com"
+                android:textColor="#000000"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="#858484" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.7"
+                android:text="Address"
+                android:textColor="#9c162c"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="1 Le Loi Street, Ward 10, Vung Tau city"
+                android:textColor="#000000"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <!-- Nút EDIT -->
+        <Button
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="36dp"
+            android:layout_marginBottom="10dp"
+            app:backgroundTint="#9c162c"
+            android:background="@drawable/rounded_login_button"
+            android:text="EDIT"
+            android:textSize="18sp"
+            android:onClick="open_edit_profile"
+            android:textColor="#FFFFFF" />
+
+
     </LinearLayout>
 
-    <Button
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="EDIT"
-        android:textColor="#FFFFFF"
-        android:background="#8B0000"
-        android:layout_gravity="center"
-        android:layout_marginTop="16dp" />
+
 </LinearLayout>
