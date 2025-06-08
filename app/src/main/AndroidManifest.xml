@@ -16,10 +16,10 @@
             android:exported="true"/>
         <activity
             android:name=".BlogDetailsActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".BlogActivity"
-            android:exported="false" /> <!-- LoginActivity will be the launcher activity -->
+            android:exported="true" /> <!-- LoginActivity will be the launcher activity -->
         <activity
             android:name=".LoginActivity"
             android:exported="true">
