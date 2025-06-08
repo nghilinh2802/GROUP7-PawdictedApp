@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:id="@+id/main"
     android:background="#F9AFA6">
 
     <!-- Thanh tìm kiếm và icon -->
@@ -18,8 +19,7 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@mipmap/ic_back"
-            android:tint="#fff" />
+            android:src="@mipmap/ic_back" />
 
         <EditText
             android:layout_width="0dp"
@@ -39,13 +39,13 @@
             android:layout_height="24dp"
             android:layout_marginEnd="8dp"
             android:src="@mipmap/ic_cart"
-            android:tint="#fff" />
+ />
 
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@mipmap/ic_account_footer_white"
-            android:tint="#fff" />
+/>
     </LinearLayout>
 
     <!-- Banner Flash Deals + Countdown -->
@@ -84,7 +84,6 @@
                 android:id="@+id/txtHour"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:background="@drawable/bg_timer"
                 android:gravity="center"
                 android:text="03"
                 android:textColor="#fff"
@@ -96,7 +95,6 @@
                 android:id="@+id/txtMinute"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:background="@drawable/bg_timer"
                 android:gravity="center"
                 android:text="06"
                 android:textColor="#fff"
@@ -108,7 +106,6 @@
                 android:id="@+id/txtSecond"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:background="@drawable/bg_timer"
                 android:gravity="center"
                 android:text="24"
                 android:textColor="#fff"

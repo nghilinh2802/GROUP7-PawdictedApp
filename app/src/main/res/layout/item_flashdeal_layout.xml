@@ -8,6 +8,7 @@
     android:padding="12dp"
     android:layout_marginBottom="8dp"
     android:elevation="2dp"
+    android:id="@+id/main"
     android:gravity="center_vertical">
 
     <!-- Ảnh sản phẩm -->
@@ -16,9 +17,8 @@
         android:layout_width="145dp"
         android:layout_height="136dp"
         android:layout_marginEnd="12dp"
-        android:background="@drawable/bg_image"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_product_placeholder" />
+ />
 
     <!-- Thông tin sản phẩm -->
     <LinearLayout
@@ -56,7 +56,7 @@
                     android:layout_height="20dp"
                     android:layout_marginEnd="2dp"
                     android:src="@mipmap/ic_star"
-                    android:tint="#FFA000" />
+ />
 
                 <TextView
                     android:id="@+id/txtRating"
@@ -91,7 +91,6 @@
                     android:id="@+id/txtOldPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paintFlags="strikeThruText"
                     android:text="60.000đ"
                     android:textColor="#B0B0B0"
                     android:textSize="13sp" />
