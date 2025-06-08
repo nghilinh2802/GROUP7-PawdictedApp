@@ -195,8 +195,8 @@
         android:scrollbars="none">
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <Button
@@ -204,7 +204,7 @@
                 android:layout_height="36dp"
                 android:layout_marginEnd="8dp"
                 android:backgroundTint="#FFFFFF"
-                android:text="All"
+                android:text="@string/title_all"
                 android:textColor="#A01B1B" />
 
             <Button
@@ -212,7 +212,7 @@
                 android:layout_height="36dp"
                 android:layout_marginEnd="8dp"
                 android:backgroundTint="#FFFFFF"
-                android:text="Toys"
+                android:text="@string/title_toys"
                 android:textColor="#A01B1B" />
 
             <Button
@@ -220,16 +220,18 @@
                 android:layout_height="36dp"
                 android:layout_marginEnd="8dp"
                 android:backgroundTint="#FFFFFF"
-                android:text="Food"
+                android:text="@string/title_food"
                 android:textColor="#A01B1B" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
                 android:layout_marginEnd="8dp"
-                android:background="#FFFFFF"
-                android:text="Accessories"
+                android:layout_weight="1"
+                android:backgroundTint="#FFFFFF"
+                android:text="@string/title_accessories"
                 android:textColor="#A01B1B" />
+
             <!-- Thêm các tab khác nếu cần -->
         </LinearLayout>
     </HorizontalScrollView>

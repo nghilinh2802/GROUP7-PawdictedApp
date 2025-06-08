@@ -49,4 +49,8 @@
     <string name="title_upcoming">Upcoming</string>
     <string name="title_buy_now">Buy now</string>
     <string name="title_products_sold">products sold</string>
+    <string name="title_all">All</string>
+    <string name="title_toys">Toys</string>
+    <string name="title_food">Food</string>
+    <string name="title_accessories">Accessories</string>
 </resources>
