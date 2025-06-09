@@ -12,11 +12,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Pawdicted"
         tools:targetApi="31">
-        <activity android:name=".FlashSaleActivity"
-            android:exported="true"/>
+        <activity
+            android:name=".SettingManagementActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FlashSaleActivity"
+            android:exported="true" />
         <activity
             android:name=".EditProfileActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".ProfileManagementActivity"
             android:exported="false" />

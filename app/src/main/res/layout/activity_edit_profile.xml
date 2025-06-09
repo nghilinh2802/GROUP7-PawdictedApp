@@ -17,19 +17,21 @@
         android:gravity="center_vertical">
 
         <ImageButton
-            android:layout_width="44dp"
+            android:layout_width="40dp"
             android:layout_height="33dp"
+            android:onClick="go_back"
+            android:src="@mipmap/ic_back_icon_white"
             android:background="?android:attr/selectableItemBackground"
-            android:contentDescription="Back"
-            android:src="@mipmap/ic_back" />
+            android:contentDescription="Back" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:text="EDIT"
-            android:textSize="20sp"
             android:textColor="#FFFFFF"
-            android:layout_marginStart="16dp" />
+            android:textSize="20dp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <ScrollView
@@ -62,7 +64,7 @@
                     android:layout_gravity="bottom|right"
                     android:layout_marginBottom="15dp"
                 android:layout_marginRight="5dp"
-                    android:src="@mipmap/ic_homepage_black" />
+                    android:src="@mipmap/ic_edit" />
             </FrameLayout>
 
             <!-- Khung thông tin -->
@@ -150,8 +152,7 @@
                     android:layout_marginTop="3dp"
                     android:text="0123456789"
                     android:textSize="16sp"
-                    android:textColor="#000000"
-                    android:enabled="false" />
+                    android:textColor="#000000"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -178,8 +179,7 @@
                     android:layout_marginTop="3dp"
                     android:text="hannguyen89@gmail.com"
                     android:textSize="16sp"
-                    android:textColor="#000000"
-                    android:enabled="false" />
+                    android:textColor="#000000" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -222,6 +222,7 @@
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:text="CANCEL"
+                    android:onClick="go_back"
                     android:textSize="16dp"
                     android:textColor="#9c162c"
                     android:background="@drawable/rounded_cancel_button"

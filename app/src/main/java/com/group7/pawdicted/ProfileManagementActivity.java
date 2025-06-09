@@ -28,4 +28,8 @@ public class ProfileManagementActivity extends AppCompatActivity {
         Intent intent=new Intent(ProfileManagementActivity.this,EditProfileActivity.class);
         startActivity(intent);
     }
+
+    public void go_back(View view) {
+        finish();
+    }
 }

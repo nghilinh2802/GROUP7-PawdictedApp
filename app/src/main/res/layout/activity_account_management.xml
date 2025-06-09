@@ -53,6 +53,7 @@
             android:layout_gravity="center_vertical"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
+            android:onClick="open_setting_activity"
             android:contentDescription="Settings"
             android:scaleType="centerInside"
             android:src="@mipmap/ic_setting" />
