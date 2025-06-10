@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "482980274516",
+    "firebase_url": "https://pawdicteddatabase-default-rtdb.firebaseio.com",
+    "project_id": "pawdicteddatabase",
+    "storage_bucket": "pawdicteddatabase.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:482980274516:android:df7e945c3dd0dfab7ea8c1",
+        "android_client_info": {
+          "package_name": "com.group7.pawdicted"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDUdKU_SVhlQHsXyJHfnT6pcpoThPyRiY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
