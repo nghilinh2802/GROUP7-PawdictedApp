@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -12,8 +13,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Pawdicted"
         tools:targetApi="31">
-        <activity android:name=".FlashSaleActivity"
-            android:exported="true"/>
+        <activity
+            android:name=".SettingManagementActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FlashSaleActivity"
+            android:exported="true" />
+        <activity
+            android:name=".EditProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfileManagementActivity"
+            android:exported="false" />
         <activity
             android:name=".BlogDetailsActivity"
             android:exported="true" />
@@ -28,7 +39,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- Other activities -->
+        </activity>
         <activity
             android:name=".CategoryActivity"
             android:exported="false" />

@@ -28,4 +28,8 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         Intent intent=new Intent(ForgotPasswordActivity.this,ChangeForgetPasswordActivity.class);
         startActivity(intent);
     }
+
+    public void goBack(View view) {
+        finish();
+    }
 }

@@ -65,10 +65,22 @@ public class FooterManager {
             item.icon.setOnClickListener(listener);
             item.text.setOnClickListener(listener);
         }
+        resetAll();
 
-
-        menuItems.get(0).icon.setImageResource(menuItems.get(0).selectedIconRes);
-        menuItems.get(0).text.setTextColor(ContextCompat.getColor(activity, R.color.red));
+        if (activity instanceof CategoryActivity) {
+            imgCategoryFooter.setImageResource(R.mipmap.ic_all_product_red);
+            txtCategoryFooter.setTextColor(ContextCompat.getColor(activity, R.color.red));
+        } else if (activity instanceof AccountManagementActivity) {
+            imgAccount.setImageResource(R.mipmap.ic_account_footer_red);
+            txtAccount.setTextColor(ContextCompat.getColor(activity, R.color.red));
+        } else if  (activity instanceof HomepageActivity){
+            imgHome.setImageResource(R.mipmap.ic_homepage_red);
+            txtHome.setTextColor(ContextCompat.getColor(activity, R.color.red));
+        }
+        else {
+            imgNotification.setImageResource(R.mipmap.ic_notification_footer_red);
+            txtNotification.setTextColor(ContextCompat.getColor(activity, R.color.red));
+        }
     }
 
     private void resetAll() {

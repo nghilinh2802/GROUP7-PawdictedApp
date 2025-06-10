@@ -5,7 +5,8 @@
     android:id="@+id/imgCartHp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
+    android:background="#f8f1f1"
+
     tools:context=".AccountManagementActivity">
 
     <!-- Header -->
@@ -29,6 +30,7 @@
                 android:layout_height="match_parent"
                 android:src="@mipmap/ic_account_footer_white"
                 android:scaleType="centerCrop"
+                android:onClick="open_profile"
                 android:contentDescription="Profile" />
 
         </androidx.cardview.widget.CardView>
@@ -41,7 +43,7 @@
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="10dp"
             android:gravity="center_vertical" />
 
         <ImageView
@@ -51,6 +53,7 @@
             android:layout_gravity="center_vertical"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
+            android:onClick="open_setting_activity"
             android:contentDescription="Settings"
             android:scaleType="centerInside"
             android:src="@mipmap/ic_setting" />

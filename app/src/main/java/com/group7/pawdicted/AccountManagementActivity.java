@@ -1,6 +1,8 @@
 package com.group7.pawdicted;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,5 +22,15 @@ public class AccountManagementActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+    }
+
+    public void open_profile(View view) {
+        Intent intent=new Intent(AccountManagementActivity.this,ProfileManagementActivity.class);
+        startActivity(intent);
+    }
+
+    public void open_setting_activity(View view) {
+        Intent intent=new Intent(AccountManagementActivity.this,SettingManagementActivity.class);
+        startActivity(intent);
     }
 }

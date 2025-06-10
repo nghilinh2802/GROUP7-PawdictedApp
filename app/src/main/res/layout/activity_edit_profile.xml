@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/main"
+    tools:context=".EditProfileActivity">
+
+    <!-- Thanh tiêu đề cố định -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#9c162c"
+        android:padding="16dp"
+        android:gravity="center_vertical">
+
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="33dp"
+            android:onClick="go_back"
+            android:src="@mipmap/ic_back_icon_white"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="Back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="EDIT"
+            android:textColor="#FFFFFF"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#f8f1f1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="130dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="0dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@mipmap/ic_account_footer_red" />
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="bottom|right"
+                    android:layout_marginBottom="15dp"
+                android:layout_marginRight="5dp"
+                    android:src="@mipmap/ic_edit" />
+            </FrameLayout>
+
+            <!-- Khung thông tin -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:orientation="vertical"
+                android:padding="15dp">
+
+                <!-- Name Field -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Name"
+                    android:textSize="16sp"
+                    android:textColor="#9c162c" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_login_edittext"
+                    android:padding="12dp"
+                    android:layout_marginTop="3dp"
+                    android:text="Hân Nguyễn"
+                    android:textSize="16sp"
+                    android:textColor="#000000" />
+
+                <!-- Gender Field -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Gender"
+                    android:textSize="16sp"
+                    android:textColor="#9c162c"
+                    android:layout_marginTop="10dp" />
+
+                <Spinner
+                    android:id="@+id/spinner_gender"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_login_edittext"
+                    android:padding="12dp"
+                    android:entries="@array/gender_array"
+                    android:layout_marginTop="8dp"
+                    android:textSize="16sp"
+                    android:textColor="#000000"
+                    android:popupBackground="@drawable/spinner_dropdown_background"
+                    android:spinnerMode="dropdown" />
+
+                <!-- D.O.B Field -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="D.O.B"
+                    android:textSize="16sp"
+                    android:textColor="#9c162c"
+                    android:layout_marginTop="10dp" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_login_edittext"
+                    android:padding="12dp"
+                    android:layout_marginTop="3dp"
+                    android:text="20/05/2002"
+                    android:textSize="16sp"
+                    android:textColor="#000000"
+                    android:inputType="date" />
+
+                <!-- Phone number Field -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Phone number"
+                    android:textSize="16sp"
+                    android:textColor="#9c162c"
+                    android:layout_marginTop="10dp" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_login_edittext"
+                    android:padding="12dp"
+                    android:layout_marginTop="3dp"
+                    android:text="0123456789"
+                    android:textSize="16sp"
+                    android:textColor="#000000"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ⓘ To change information, please contact customer service department."
+                    android:textSize="11sp"
+                    android:textColor="#9c162c"
+                    android:layout_marginTop="4dp" />
+
+                <!-- Email Field -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Email"
+                    android:textSize="16sp"
+                    android:textColor="#9c162c"
+                    android:layout_marginTop="10dp" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_login_edittext"
+                    android:padding="12dp"
+                    android:layout_marginTop="3dp"
+                    android:text="hannguyen89@gmail.com"
+                    android:textSize="16sp"
+                    android:textColor="#000000" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ⓘ To change information, please contact customer service department."
+                    android:textSize="11dp"
+                    android:textColor="#9c162c"
+                    android:layout_marginTop="4dp" />
+
+                <!-- Address Field -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Address"
+                    android:textSize="16sp"
+                    android:textColor="#9c162c"
+                    android:layout_marginTop="10dp" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_login_edittext"
+                    android:padding="12dp"
+                    android:layout_marginTop="3dp"
+                    android:text="1 Le Loi Street, Ward 10, Vung Tau city"
+                    android:textSize="16sp"
+                    android:textColor="#000000" />
+            </LinearLayout>
+
+            <!-- Nút CANCEL và SAVE -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="16dp">
+
+                <Button
+                    android:id="@+id/btnCancel"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="CANCEL"
+                    android:onClick="go_back"
+                    android:textSize="16dp"
+                    android:textColor="#9c162c"
+                    android:background="@drawable/rounded_cancel_button"
+                    app:backgroundTint="#9c162c"
+                    android:padding="10dp"
+                    android:layout_marginEnd="50dp" />
+
+                <Button
+                    android:id="@+id/btnSave"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="SAVE"
+                    android:textSize="16dp"
+                    app:backgroundTint="#9c162c"
+                    android:textColor="#FFFFFF"
+                    android:background="@drawable/rounded_login_button"
+                    android:padding="10dp" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
