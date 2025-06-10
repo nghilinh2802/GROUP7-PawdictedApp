@@ -35,7 +35,7 @@
     <string name="title_signup_login">Sign up</string>
     <string name="title_forgot_password_main">FORGOT PASSWORD</string>
     <string name="title_send_recover_code">SEND RECOVER CODE</string>
-    <string name="title_changr_password">CHANGE PASSWORD</string>
+    <string name="title_change_password">CHANGE PASSWORD</string>
     <string name="title_enter_new_password">Enter new password</string>
     <string name="title_reenter_new_password">Re-enter new password</string>
     <string name="title_signup">SIGN UP</string>
@@ -77,5 +77,6 @@
     <string name="title_child_cate_newest">NEWEST</string>
     <string name="title_child_care_rating">RATING</string>
     <string name="title_child_cate_price">PRICE</string>
+    <string name="title_enter_current_password">Enter current password</string>
 
 </resources>

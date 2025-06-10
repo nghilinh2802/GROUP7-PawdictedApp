@@ -10,13 +10,13 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class SettingManagementActivity extends AppCompatActivity {
+public class ChangePasswordSettingActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_setting_management);
+        setContentView(R.layout.activity_change_password_setting);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -28,13 +28,8 @@ public class SettingManagementActivity extends AppCompatActivity {
         finish();
     }
 
-    public void open_language_setting(View view) {
-        Intent intent=new Intent(SettingManagementActivity.this,LanguageSettingActivity.class);
-        startActivity(intent);
-    }
-
-    public void open_change_password(View view) {
-        Intent intent=new Intent(SettingManagementActivity.this,ChangePasswordSettingActivity.class);
+    public void open_forgot_password(View view) {
+        Intent intent=new Intent(ChangePasswordSettingActivity.this,ForgotPasswordActivity.class);
         startActivity(intent);
     }
 }
