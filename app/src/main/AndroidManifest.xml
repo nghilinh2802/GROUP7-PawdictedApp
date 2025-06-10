@@ -21,6 +21,15 @@
             android:name=".LanguageSettingActivity"
             android:exported="false" />
         <activity
+            android:name=".ChatActivity"
+            android:exported="true" />
+        <activity
+            android:name=".PolicynSecurityActivity"
+            android:exported="true" />
+        <activity
+            android:name=".FAQActivity"
+            android:exported="true" />
+        <activity
             android:name=".SettingManagementActivity"
             android:exported="false" />
         <activity
