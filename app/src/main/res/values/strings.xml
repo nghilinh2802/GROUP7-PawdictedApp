@@ -53,4 +53,5 @@
     <string name="title_toys">Toys</string>
     <string name="title_food">Food</string>
     <string name="title_accessories">Accessories</string>
+    <string name="hint_flashdeals">Flash Deals</string>
 </resources>
