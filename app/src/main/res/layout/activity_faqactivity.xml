@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="#F5F5F5"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- AppBar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="#A62332"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/title_back"
+            android:src="@mipmap/ic_back"
+            app:tint="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/title_FAQ"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/btn_search"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/title_search"
+            android:src="@mipmap/ic_searchsmall"
+            app:tint="#FFFFFF" />
+    </LinearLayout>
+
+    <!-- Tabs -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#F5F5F5"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/tab_order"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_tab_selected"
+                android:text="@string/title_order"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:backgroundTint="@null"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/tab_refund"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:background="@drawable/bg_tab_unselected"
+                android:text="@string/title_refund"
+                android:textColor="#A62332"
+                android:textStyle="normal"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="@null"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/tab_member"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:background="@drawable/bg_tab_unselected"
+                android:text="@string/title_member"
+                android:textColor="#A62332"
+                android:textStyle="normal"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="@null"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/tab_other"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:background="@drawable/bg_tab_unselected"
+                android:text="@string/title_other"
+                android:textColor="#A62332"
+                android:textStyle="normal"
+                android:backgroundTint="@null"/>
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- Expandable FAQ List -->
+    <ExpandableListView
+        android:id="@+id/faq_expandable_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="#A62332"
+        android:dividerHeight="8dp"
+        android:background="#F5F5F5"
+        android:indicatorLeft="16dp"
+        android:padding="16dp"/>
+</LinearLayout>

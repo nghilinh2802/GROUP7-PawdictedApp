@@ -53,4 +53,41 @@
     <string name="title_toys">Toys</string>
     <string name="title_food">Food</string>
     <string name="title_accessories">Accessories</string>
+    <string-array name="gender_array">
+        <item>Female</item>
+        <item>Male</item>
+        <item>Other</item>
+    </string-array>
+    <string name="title_category_for_dogs">For Dogs</string>
+    <string name="title_category_for_cats">For Cats</string>
+    <string name="title_category_all_products">All Products</string>
+    <string name="title_category_food_treats">
+<![CDATA[ Food & Treats ]]>
+</string>
+    <string name="title_category_pet_care">Pet Care</string>
+    <string name="title_category_furniture">Furniture</string>
+    <string name="title_category_toys">Toys</string>
+    <string name="title_category_accesories">Accessories</string>
+    <string name="title_category_carriers">
+<![CDATA[ Carriers & Kennels ]]>
+</string>
+
+    <string name="see_all">See All</string>
+    <string name="title_child_cate_best_seller">BEST SELLER</string>
+    <string name="title_child_cate_newest">NEWEST</string>
+    <string name="title_child_care_rating">RATING</string>
+    <string name="title_child_cate_price">PRICE</string>
+    <string name="hint_flashdeals">Flash Deals</string>
+    <string name="title_order">Order</string>
+    <string name="title_search">Search</string>
+    <string name="title_back">Back</string>
+    <string name="title_FAQ">FAQs</string>
+    <string name="title_refund">Refund</string>
+    <string name="title_member">Member</string>
+    <string name="title_other">Other</string>
+    <string name="title_policy_security"><![CDATA[POLICY & SECURITY]]></string>
+    <string name="title_chatting">CHATTING</string>
+    <string name="hint_type_a_message">Type a message ...</string>
+    <string name="title_send_image">Send image</string>
+
 </resources>
