@@ -1,0 +1,81 @@
+<resources>
+    <string name="app_name">Pawdicted</string>
+    <string name="title_to_confirm">To confirm</string>
+    <string name="title_to_pick_up">To Pick Up</string>
+    <string name="title_to_ship">To Ship</string>
+    <string name="title_evaluate_order">Evaluate</string>
+    <string name="title_my_purchases">My Purchases</string>
+    <string name="title_view_purchase_history">View purchase history</string>
+    <string name="title_utilities">Utilities</string>
+    <string name="title_wishlist">Wishlist</string>
+    <string name="title_voucher">Voucher</string>
+    <string name="title_blogs">Blogs</string>
+    <string name="title_history">History</string>
+    <string name="title_help">Help</string>
+    <string name="title_faqs">FAQs</string>
+    <string name="title_policies">Policies</string>
+    <string name="hp_searchText_hint">Search...</string>
+    <string name="title_homepage_category">Category</string>
+    <string name="title_homepage_flash_deals">Flash Deals</string>
+    <string name="title_homepage_new_arrival">New Arrival</string>
+    <string name="title_homepage_voucher">Voucher</string>
+    <string name="title_homepage_order">Order</string>
+    <string name="title_homepage_blog">Blog</string>
+    <string name="title_homepage_FAQs">FAQs</string>
+    <string name="title_homepage_policy">Policy</string>
+    <string name="title_footer_home">Home</string>
+    <string name="title_footer_notification">Notification</string>
+    <string name="title_footer_account">Account</string>
+    <string name="title_footer_category">Category</string>
+    <string name="title_login_login">LOG IN</string>
+    <string name="title_remember_me">Remember me?</string>
+    <string name="title_forgot_password">Forgot password?</string>
+    <string name="title_or_login_with">Or log in with</string>
+    <string name="title_dont_have_account">Don\'t have an account?</string>
+    <string name="title_signup_login">Sign up</string>
+    <string name="title_forgot_password_main">FORGOT PASSWORD</string>
+    <string name="title_send_recover_code">SEND RECOVER CODE</string>
+    <string name="title_changr_password">CHANGE PASSWORD</string>
+    <string name="title_enter_new_password">Enter new password</string>
+    <string name="title_reenter_new_password">Re-enter new password</string>
+    <string name="title_signup">SIGN UP</string>
+    <string name="title_or_signup_with">Or Signup with</string>
+    <string name="title_already_have_account">Already have an account?</string>
+    <string name="title_login_signup">Log in</string>
+    <string name="title_hot">Hot</string>
+    <string name="title_flashdeals">Flash Deals</string>
+    <string name="title_end_in">Ends in</string>
+    <string name="title_on_going">On going</string>
+    <string name="title_upcoming">Upcoming</string>
+    <string name="title_buy_now">Buy now</string>
+    <string name="title_products_sold">products sold</string>
+    <string name="title_all">All</string>
+    <string name="title_toys">Toys</string>
+    <string name="title_food">Food</string>
+    <string name="title_accessories">Accessories</string>
+    <string-array name="gender_array">
+        <item>Female</item>
+        <item>Male</item>
+        <item>Other</item>
+    </string-array>
+    <string name="title_category_for_dogs">For Dogs</string>
+    <string name="title_category_for_cats">For Cats</string>
+    <string name="title_category_all_products">All Products</string>
+    <string name="title_category_food_treats">
+<![CDATA[ Food & Treats ]]>
+</string>
+    <string name="title_category_pet_care">Pet Care</string>
+    <string name="title_category_furniture">Furniture</string>
+    <string name="title_category_toys">Toys</string>
+    <string name="title_category_accesories">Accessories</string>
+    <string name="title_category_carriers">
+<![CDATA[ Carriers & Kennels ]]>
+</string>
+
+    <string name="see_all">See All</string>
+    <string name="title_child_cate_best_seller">BEST SELLER</string>
+    <string name="title_child_cate_newest">NEWEST</string>
+    <string name="title_child_care_rating">RATING</string>
+    <string name="title_child_cate_price">PRICE</string>
+
+</resources>
