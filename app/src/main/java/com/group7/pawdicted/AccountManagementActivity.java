@@ -94,4 +94,9 @@ public class AccountManagementActivity extends AppCompatActivity {
         Intent intent=new Intent(AccountManagementActivity.this,SettingManagementActivity.class);
         startActivity(intent);
     }
+
+    public void open_cart_activity(View view) {
+        Intent intent=new Intent(AccountManagementActivity.this,CartActivity.class);
+        startActivity(intent);
+    }
 }
