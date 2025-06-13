@@ -48,13 +48,13 @@
         android:background="@drawable/rounded_login_edittext"
         android:drawableStart="@mipmap/ic_username"
         android:drawablePadding="8dp"
-        android:hint="Email"
+        android:hint="Username"
         android:inputType="text"
         android:padding="16dp"
         android:textColorHint="#777777"
         android:textSize="16sp" />
 
-<!--    email-->
+    <!--    email-->
     <EditText
         android:id="@+id/edtEmail"
         android:layout_width="match_parent"
@@ -73,25 +73,24 @@
 
     <!-- Password Field -->
     <EditText
-        android:id="@+id/edtPassword"
+        android:id="@+id/edtPhone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="32dp"
         android:background="@drawable/rounded_login_edittext"
-        android:drawableStart="@mipmap/ic_password"
-        android:drawableEnd="@android:drawable/ic_menu_view"
+        android:drawableStart="@mipmap/ic_phone"
         android:drawablePadding="8dp"
-        android:hint="Password"
-        android:inputType="textPassword"
-        android:padding="11dp"
+        android:hint="Phone"
+        android:inputType="text"
+        android:padding="16dp"
         android:textColorHint="#777777"
         android:textSize="16sp" />
 
     <!-- Re-enter Password Field -->
     <EditText
-        android:id="@+id/edtReenterPassword"
+        android:id="@+id/edtEnterPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -101,7 +100,7 @@
         android:drawableStart="@mipmap/ic_password"
         android:drawableEnd="@android:drawable/ic_menu_view"
         android:drawablePadding="8dp"
-        android:hint="Re-enter Password"
+        android:hint="Enter Password"
         android:inputType="textPassword"
         android:padding="11dp"
         android:textColorHint="#777777"
@@ -117,7 +116,7 @@
         android:orientation="horizontal">
 
         <CheckBox
-            android:id="@+id/ckbRememberInfo"
+            android:id="@+id/ckbAgree"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:buttonTint="#9c162c"
