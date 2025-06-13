@@ -9,11 +9,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -24,7 +20,7 @@ import com.group7.pawdicted.mobile.models.Customer;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class SignupActivity extends AppCompatActivity {
+public class SignupActivity extends AppCompatActivity implements SuccessSignupDialogFragment.OnSignupListener {
 
     EditText edtUsername, edtEmail, edtPhone, edtPassword;
     CheckBox chkAgree;
@@ -34,14 +30,7 @@ public class SignupActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_signup);
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
 
         edtUsername = findViewById(R.id.edtUsername);
         edtEmail = findViewById(R.id.edtEmail);
@@ -89,7 +78,7 @@ public class SignupActivity extends AppCompatActivity {
             return;
         }
 
-        // 🔍 Kiểm tra email hoặc số điện thoại đã tồn tại
+        // Kiểm tra email hoặc số điện thoại đã tồn tại
         mDatabase.orderByChild("customer_email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -135,33 +124,58 @@ public class SignupActivity extends AppCompatActivity {
 
                         String uid = firebaseUser.getUid();
 
-                        Customer customer = new Customer(
-                                0,
-                                username,
-                                email,
-                                username,
-                                null,
-                                phone,
-                                "",
-                                new Date(),
-                                new ArrayList<>(),
-                                new ArrayList<>(),
-                                new ArrayList<>(),
-                                new ArrayList<>(),
-                                new ArrayList<>(),
-                                new ArrayList<>()
-                        );
+                        // Tạo customer_id tự động
+                        mDatabase.child("customer_count").runTransaction(new Transaction.Handler() {
+                            @Override
+                            public Transaction.Result doTransaction(MutableData currentData) {
+                                Integer currentCount = currentData.getValue(Integer.class);
+                                if (currentCount == null) {
+                                    currentData.setValue(1); // Đặt ID bắt đầu từ 1 nếu chưa có
+                                    return Transaction.success(currentData);
+                                } else {
+                                    currentData.setValue(currentCount + 1); // Tăng ID lên 1
+                                    return Transaction.success(currentData);
+                                }
+                            }
 
-                        mDatabase.child(uid).setValue(customer)
-                                .addOnSuccessListener(unused -> {
-                                    Toast.makeText(SignupActivity.this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
-                                    startActivity(new Intent(SignupActivity.this, LoginActivity.class));
-                                    finish();
-                                })
-                                .addOnFailureListener(e -> {
-                                    Log.e("FIREBASE_SIGNUP", "Lỗi ghi DB:", e);
-                                    Toast.makeText(SignupActivity.this, "Lỗi lưu dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                });
+                            @Override
+                            public void onComplete(DatabaseError error, boolean committed, DataSnapshot currentData) {
+                                Integer newCustomerId = currentData.getValue(Integer.class);
+                                if (newCustomerId == null) {
+                                    newCustomerId = 1; // Nếu không có ID, đặt lại về 1
+                                }
+
+                                Customer customer = new Customer(
+                                        newCustomerId,
+                                        username,
+                                        email,
+                                        username,
+                                        null,
+                                        phone,
+                                        "",
+                                        "Male", // Gender mặc định
+                                        new Date(), // DOB mặc định
+                                        new Date(),
+                                        "", // Avatar mặc định
+                                        new ArrayList<>(),
+                                        new ArrayList<>(),
+                                        new ArrayList<>(),
+                                        new ArrayList<>(),
+                                        new ArrayList<>(),
+                                        new ArrayList<>()
+                                );
+
+                                mDatabase.child("customers").child(uid).setValue(customer)
+                                        .addOnSuccessListener(unused -> {
+                                            // Hiển thị dialog thành công
+                                            showSuccessDialog();
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Log.e("FIREBASE_SIGNUP", "Lỗi ghi DB:", e);
+                                            Toast.makeText(SignupActivity.this, "Lỗi lưu dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        });
+                            }
+                        });
 
                     } else {
                         Exception e = task.getException();
@@ -169,5 +183,17 @@ public class SignupActivity extends AppCompatActivity {
                         Toast.makeText(SignupActivity.this, "Đăng ký thất bại: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
+    }
+
+    private void showSuccessDialog() {
+        SuccessSignupDialogFragment dialog = new SuccessSignupDialogFragment();
+        dialog.show(getSupportFragmentManager(), "SuccessDialog");
+    }
+
+    @Override
+    public void onSignupComplete() {
+        // Sau khi dialog được đóng, chuyển hướng đến màn hình đăng nhập
+        startActivity(new Intent(SignupActivity.this, LoginActivity.class));
+        finish(); // Kết thúc màn hình đăng ký
     }
 }
