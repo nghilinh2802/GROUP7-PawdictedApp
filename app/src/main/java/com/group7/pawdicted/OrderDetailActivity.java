@@ -1,5 +1,6 @@
 package com.group7.pawdicted;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -43,11 +44,78 @@ public class OrderDetailActivity extends AppCompatActivity {
 
         // Nhận order_id từ Intent
         String orderId = getIntent().getStringExtra("order_id");
+        String statusFilter = getIntent().getStringExtra("status_filter");
+        if (statusFilter != null) {
+            updateStatusBarForTab(statusFilter);
+        }
 
         // Load dữ liệu theo order
         loadOrderStatus(orderId);
         loadOrderDetail(orderId);
     }
+
+    private void updateStatusBarForTab(String tab) {
+        int activeColor = Color.parseColor("#9C162C");
+        int inactiveColor = Color.parseColor("#BB8866");
+
+        ImageView[] icons = {
+                findViewById(R.id.icon_pending),
+                findViewById(R.id.icon_shipped),
+                findViewById(R.id.icon_out),
+                findViewById(R.id.icon_completed)
+        };
+
+        int[] activeIcons = {
+                R.mipmap.ic_to_confirm_red,
+                R.mipmap.ic_to_pickup_red,
+                R.mipmap.ic_to_ship_red,
+                R.mipmap.ic_completed_red
+        };
+
+        int[] inactiveIcons = {
+                R.mipmap.ic_to_confirm_gray,
+                R.mipmap.ic_to_pickup_gray,
+                R.mipmap.ic_to_ship_gray,
+                R.mipmap.ic_completed_gray
+        };
+
+        TextView[] labels = {
+                ((TextView)((LinearLayout) findViewById(R.id.step_pending)).getChildAt(1)),
+                ((TextView)((LinearLayout) findViewById(R.id.step_shipped)).getChildAt(1)),
+                ((TextView)((LinearLayout) findViewById(R.id.step_out)).getChildAt(1)),
+                ((TextView)((LinearLayout) findViewById(R.id.step_completed)).getChildAt(1))
+        };
+
+        boolean[] isStepActive = new boolean[4];
+
+        switch (tab) {
+            case "To Confirm":
+                isStepActive[0] = true;
+                break;
+            case "To Pickup":
+                isStepActive[0] = true;
+                isStepActive[1] = true;
+                break;
+            case "To Ship":
+                isStepActive[0] = true;
+                isStepActive[1] = true;
+                isStepActive[2] = true;
+                break;
+            case "Completed":
+                isStepActive[0] = true;
+                isStepActive[1] = true;
+                isStepActive[2] = true;
+                isStepActive[3] = true;
+                break;
+        }
+
+        for (int i = 0; i < 4; i++) {
+            icons[i].setImageResource(isStepActive[i] ? activeIcons[i] : inactiveIcons[i]);
+            labels[i].setTextColor(isStepActive[i] ? activeColor : inactiveColor);
+            labels[i].setTypeface(null, isStepActive[i] ? Typeface.BOLD : Typeface.NORMAL);
+        }
+    }
+
 
     private void addViews() {
         btn_back = findViewById(R.id.btn_back);
@@ -61,52 +129,47 @@ public class OrderDetailActivity extends AppCompatActivity {
         SQLiteConnector dbHelper = new SQLiteConnector(this);
         SQLiteDatabase db = dbHelper.getDatabase();
 
-        int currentStep = 0;
-
         Cursor cursor = db.rawQuery(
                 "SELECT status FROM order_status WHERE order_id = ? ORDER BY id DESC LIMIT 1",
                 new String[]{orderId}
         );
 
         if (cursor.moveToFirst()) {
-            String status = cursor.getString(0);
-            switch (status) {
-                case "Pending Payment": currentStep = 0; break;
-                case "Shipped": currentStep = 1; break;
-                case "Out for Delivery": currentStep = 2; break;
-                case "Completed": currentStep = 3; break;
-            }
+            String actualStatus = cursor.getString(0);
 
-            Button btnCancel = findViewById(R.id.btn_cancel);
-            LinearLayout layoutBottomActions = findViewById(R.id.layout_bottom_actions);
+            // Lấy tên tab từ PurchaseOrderActivity (ví dụ: "To Confirm", "To Ship",...)
+            String tabStatus = getIntent().getStringExtra("status_filter");
+            if (tabStatus == null) tabStatus = actualStatus;  // fallback nếu không có
 
-            // Khi trạng thái là "Completed"
-            if ("Completed".equalsIgnoreCase(status)) {
-                findViewById(R.id.layout_bottom_actions).setVisibility(View.VISIBLE);
+            // Gọi status bar theo tab ban đầu
+            updateStatusBar(tabStatus);
 
-                // Đổi text nút Cancel thành Buy Again
+            // Nếu trạng thái thật là Completed → hiển thị các nút
+            if ("Completed".equalsIgnoreCase(actualStatus)) {
+                Button btnCancel = findViewById(R.id.btn_cancel);
+                LinearLayout layoutBottomActions = findViewById(R.id.layout_bottom_actions);
+
+                layoutBottomActions.setVisibility(View.VISIBLE);
                 btnCancel.setText("Buy Again");
 
-                // Hiện hai nút Return/Refund & Evaluate bên dưới
-                layoutBottomActions.setVisibility(View.VISIBLE);
-
-                // Gán hành động nếu cần
                 findViewById(R.id.btn_return).setOnClickListener(v -> {
-                    // TODO: mở giao diện Return/Refund
+                    Intent intent = new Intent(OrderDetailActivity.this, RefundReturnRequestActivity.class);
+                    startActivity(intent);
                 });
 
                 findViewById(R.id.btn_evaluate).setOnClickListener(v -> {
-                    // TODO: mở giao diện đánh giá
+                    Intent intent = new Intent(OrderDetailActivity.this, EvaluateActivity.class);
+                    startActivity(intent);
                 });
             }
         }
+
         cursor.close();
         db.close();
-
-        updateStatusBar(currentStep);
     }
 
-    private void updateStatusBar(int currentStep) {
+
+    private void updateStatusBar(String tabStatus) {
         int activeColor = Color.parseColor("#9C162C");
         int inactiveColor = Color.parseColor("#BB8866");
 
@@ -118,17 +181,17 @@ public class OrderDetailActivity extends AppCompatActivity {
         };
 
         int[] activeIcons = {
-                R.drawable.ic_to_confirm_red,
-                R.drawable.ic_to_pickup_red,
-                R.drawable.ic_to_ship_red,
-                R.drawable.ic_completed_red
+                R.mipmap.ic_to_confirm_red,
+                R.mipmap.ic_to_pickup_red,
+                R.mipmap.ic_to_ship_red,
+                R.mipmap.ic_completed_red
         };
 
         int[] inactiveIcons = {
-                R.drawable.ic_to_confirm_gray,
-                R.drawable.ic_to_pickup_gray,
-                R.drawable.ic_to_ship_gray,
-                R.drawable.ic_completed_gray
+                R.mipmap.ic_to_confirm_gray,
+                R.mipmap.ic_to_pickup_gray,
+                R.mipmap.ic_to_ship_gray,
+                R.mipmap.ic_completed_gray
         };
 
         TextView[] labels = {
@@ -138,12 +201,38 @@ public class OrderDetailActivity extends AppCompatActivity {
                 ((TextView)((LinearLayout) findViewById(R.id.step_completed)).getChildAt(1))
         };
 
+        boolean[] isStepActive = new boolean[4];
+
+        // Active từng bước tùy theo tên tab
+        switch (tabStatus) {
+            case "To Confirm":
+                isStepActive[0] = true; // chỉ Pending Payment
+                break;
+            case "To Pickup":
+                isStepActive[0] = true;
+                isStepActive[1] = true;
+                break;
+            case "To Ship":
+                isStepActive[0] = true;
+                isStepActive[1] = true;
+                isStepActive[2] = true;
+                break;
+            case "Completed":
+                isStepActive[0] = true;
+                isStepActive[1] = true;
+                isStepActive[2] = true;
+                isStepActive[3] = true;
+                break;
+        }
+
         for (int i = 0; i < 4; i++) {
-            icons[i].setImageResource(i == currentStep ? activeIcons[i] : inactiveIcons[i]);
-            labels[i].setTextColor(i == currentStep ? activeColor : inactiveColor);
-            labels[i].setTypeface(null, i == currentStep ? Typeface.BOLD : Typeface.NORMAL);
+            icons[i].setImageResource(isStepActive[i] ? activeIcons[i] : inactiveIcons[i]);
+            labels[i].setTextColor(isStepActive[i] ? activeColor : inactiveColor);
+            labels[i].setTypeface(null, isStepActive[i] ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL);
         }
     }
+
+
 
     private void loadOrderDetail(String orderId) {
         SQLiteConnector dbHelper = new SQLiteConnector(this);
@@ -195,7 +284,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         }
         productCursor.close();
 
-        // Tổng tiền + order code + thời gian + phương thức thanh toán + thời gian liên quan
+        // Chi phi + Order info
         Cursor orderCursor = db.rawQuery(
                 "SELECT order_code, order_value, shipping_fee, order_time, payment_method, ship_time, payment_time, completed_time " +
                         "FROM orders WHERE order_id = ?",
