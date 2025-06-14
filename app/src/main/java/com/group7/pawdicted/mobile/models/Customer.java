@@ -15,7 +15,7 @@ public class Customer {
     private Date dob;               // Thêm trường dob (Ngày sinh)
     private Date date_joined;       // Thêm trường ngày gia nhập
     private String avatar_img;      // Thêm trường avatar_img (Ảnh đại diện)
-
+    private String role;
     private ArrayList<Integer> wishlist;
     private ArrayList<Integer> cart;
     private ArrayList<Integer> recently_viewed;
@@ -28,7 +28,7 @@ public class Customer {
 
     public Customer(int customer_id, String customer_name, String customer_email, String customer_username, String password,
                     String phone_number, String address, String gender, Date dob, Date date_joined, String avatar_img,
-                    ArrayList<Integer> wishlist, ArrayList<Integer> cart, ArrayList<Integer> recently_viewed,
+                    String role, ArrayList<Integer> wishlist, ArrayList<Integer> cart, ArrayList<Integer> recently_viewed,
                     ArrayList<Integer> purchased, ArrayList<Review> reviews, ArrayList<String> preferences) {
         this.customer_id = customer_id;
         this.customer_name = customer_name;
@@ -41,6 +41,7 @@ public class Customer {
         this.dob = dob;                // Khởi tạo dob
         this.date_joined = date_joined; // Khởi tạo date_joined
         this.avatar_img = avatar_img;  // Khởi tạo avatar_img
+        this.role = role;
         this.wishlist = wishlist;
         this.cart = cart;
         this.recently_viewed = recently_viewed;
@@ -80,6 +81,15 @@ public class Customer {
 
     public void setAvatar_img(String avatar_img) {
         this.avatar_img = avatar_img;
+    }
+
+    // Getters and setters cho trường role
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public int getCustomer_id() {

@@ -73,6 +73,11 @@ public class SignupActivity extends AppCompatActivity implements SuccessSignupDi
             return;
         }
 
+        if (!phone.matches("[0-9]+")) {
+            Toast.makeText(this, "Số điện thoại phải là chữ số!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (password.length() < 6) {
             Toast.makeText(this, "Mật khẩu phải từ 6 ký tự trở lên!", Toast.LENGTH_SHORT).show();
             return;
@@ -157,6 +162,7 @@ public class SignupActivity extends AppCompatActivity implements SuccessSignupDi
                                         new Date(), // DOB mặc định
                                         new Date(),
                                         "", // Avatar mặc định
+                                        "Customer", // Role mặc định là customer
                                         new ArrayList<>(),
                                         new ArrayList<>(),
                                         new ArrayList<>(),

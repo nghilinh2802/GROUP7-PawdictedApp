@@ -2,6 +2,7 @@ package com.group7.pawdicted;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -53,6 +54,10 @@ public class SuccessSignupDialogFragment extends DialogFragment {
             window.setAttributes(params);
         }
 
+        // Make the dialog cancelable when clicking on the background (dimmed area)
+        dialog.setCancelable(true); // Allow closing by tapping outside the dialog
+        dialog.setCanceledOnTouchOutside(true); // Close dialog when tapping outside of it
+
         // Handle the Login button
         Button btnLoginWithNewAccount = view.findViewById(R.id.btnLoginWithNewAccount);
         btnLoginWithNewAccount.setOnClickListener(v -> {
@@ -63,5 +68,13 @@ public class SuccessSignupDialogFragment extends DialogFragment {
         });
 
         return dialog;
+    }
+
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+        if (listener != null) {
+            listener.onSignupComplete();  // Call the event when dialog is dismissed (clicked outside)
+        }
     }
 }

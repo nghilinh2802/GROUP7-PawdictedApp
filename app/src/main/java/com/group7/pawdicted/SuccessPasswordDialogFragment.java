@@ -2,7 +2,7 @@ package com.group7.pawdicted;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
@@ -55,6 +54,10 @@ public class SuccessPasswordDialogFragment extends DialogFragment {
             window.setAttributes(params);
         }
 
+        // Make the dialog cancelable when clicking on the background (dimmed area)
+        dialog.setCancelable(true); // Allow closing by tapping outside the dialog
+        dialog.setCanceledOnTouchOutside(true); // Close dialog when tapping outside of it
+
         // Xử lý nút Login With New Password
         Button btnLoginWithNewPassword = view.findViewById(R.id.btnLoginWithNewPassword);
         btnLoginWithNewPassword.setOnClickListener(v -> {
@@ -65,5 +68,13 @@ public class SuccessPasswordDialogFragment extends DialogFragment {
         });
 
         return dialog;
+    }
+
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+        if (listener != null) {
+            listener.onLoginWithNewPassword();  // Call the event when dialog is dismissed (clicked outside)
+        }
     }
 }
