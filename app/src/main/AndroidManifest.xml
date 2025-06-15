@@ -15,6 +15,15 @@
         android:theme="@style/Theme.Pawdicted"
         tools:targetApi="31">
         <activity
+            android:name=".RefundReturnRequestActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RefundReturnDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EvaluateActivity"
+            android:exported="false" />
+        <activity
             android:name=".CheckoutActivity"
             android:exported="false" />
         <activity

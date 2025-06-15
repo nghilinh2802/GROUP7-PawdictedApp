@@ -91,53 +91,54 @@
     <string name="title_send_image">Send image</string>
     <string name="title_enter_current_password">Enter current password</string>
     <string name="policy_content"><![CDATA[
-<b>1. Purpose</b><br/>
-We are committed to protecting the personal information and transactions of users when using the pet supplies buying and selling application. This policy aims to be transparent about how we collect, use, share, and protect your information.<br/><br/>
+<b>1. Mục Đích</b><br/>
+Chúng tôi cam kết bảo vệ thông tin cá nhân và giao dịch của người dùng khi sử dụng ứng dụng mua bán đồ dùng thú cưng. Chính sách này nhằm minh bạch về cách chúng tôi thu thập, sử dụng, chia sẻ và bảo vệ thông tin của bạn.<br/><br/>
 
-<b>2. Scope</b><br/>
-This policy applies to all users, including customers, suppliers, and partners, when accessing or using our application.<br/><br/>
+<b>2. Phạm Vi Áp Dụng</b><br/>
+Chính sách này áp dụng cho tất cả người dùng, bao gồm khách hàng, nhà cung cấp và các đối tác khi truy cập hoặc sử dụng ứng dụng của chúng tôi.<br/><br/>
 
-<b>3. Information Collected</b><br/>
-We may collect the following information:<br/><br/>
+<b>3. Thông Tin Thu Thập</b><br/>
+Chúng tôi có thể thu thập các thông tin sau đây:<br/><br/>
 
-- Account registration information: Full name, email, phone number, address, username, password.<br/>
-- Transaction information: Purchase history, payment method, credit/debit card information, shipping address.<br/>
-- Contact information: Content of communications via email, chat, feedback, and customer support.<br/>
-- Image information: Photos uploaded to the application for product reviews or customer support purposes.<br/>
-- Pet information (if applicable): Name, age, breed, health status, vaccination information (if the application supports pet management).<br/><br/>
+- Thông tin đăng ký tài khoản: Họ tên, email, số điện thoại, địa chỉ, tên người dùng, mật khẩu.<br/>
+- Thông tin giao dịch: Lịch sử mua hàng, phương thức thanh toán, thông tin thẻ tín dụng/thẻ ghi nợ, địa chỉ giao hàng.<br/>
+- Thông tin liên lạc: Nội dung trao đổi qua email, chat, phản hồi và hỗ trợ khách hàng.<br/>
+- Thông tin hình ảnh: Ảnh tải lên ứng dụng cho mục đích đánh giá sản phẩm hoặc hỗ trợ khách hàng.<br/>
+- Thông tin về thú cưng (nếu có): Tên, tuổi, giống, tình trạng sức khỏe, thông tin tiêm chủng (nếu ứng dụng hỗ trợ quản lý thú cưng).<br/><br/>
 
-<b>4. Purpose of Information Use</b><br/>
-The information collected is used for:<br/><br/>
+<b>4. Mục Đích Sử Dụng Thông Tin</b><br/>
+Thông tin thu thập được sử dụng để:<br/><br/>
 
-- Providing and managing services: Registration, authentication, customer support, transaction processing.<br/>
-- Improving user experience: Analyzing behavior, personalizing experiences, developing new features.<br/>
-- Security and fraud prevention: Detecting and preventing fraudulent activities or policy violations.<br/>
-- Legal compliance: Meeting legal requirements, audits, and reporting.<br/><br/>
+- Cung cấp và quản lý dịch vụ: Đăng ký, xác thực, hỗ trợ khách hàng, xử lý giao dịch.<br/>
+- Cải thiện trải nghiệm người dùng: Phân tích hành vi, cá nhân hóa trải nghiệm, phát triển tính năng mới.<br/>
+- Bảo mật và phòng chống gian lận: Phát hiện, ngăn chặn hành vi gian lận hoặc vi phạm chính sách.<br/>
+- Tuân thủ pháp luật: Đáp ứng các yêu cầu pháp lý, kiểm toán, báo cáo.<br/><br/>
 
-<b>5. Information Security</b><br/>
-- Data encryption: Transaction information is encrypted using 256-bit SSL technology to ensure security.<br/>
-- Secure payments: We use reputable payment gateways (e.g., Stripe, Authorize.Net) to process transactions and do not store credit/debit card information on our system.<br/>
-- Restricted access: Only authorized personnel can access your personal information.<br/>
-- Physical and technical protection: The system is protected by firewalls, antivirus software, and other technical measures to prevent unauthorized access.<br/><br/>
+<b>5. Bảo Mật Thông Tin</b><br/>
+- Mã hóa dữ liệu: Thông tin giao dịch được mã hóa bằng công nghệ SSL 256-bit để đảm bảo an toàn.<br/>
+- Thanh toán an toàn: Chúng tôi sử dụng các cổng thanh toán uy tín (ví dụ: Stripe, Authorize.Net) để xử lý giao dịch, không lưu trữ thông tin thẻ tín dụng/thẻ ghi nợ trên hệ thống.<br/>
+- Quyền truy cập hạn chế: Chỉ nhân viên được ủy quyền mới có thể truy cập thông tin cá nhân của bạn.<br/>
+- Bảo vệ vật lý và kỹ thuật: Hệ thống được bảo vệ bởi tường lửa, phần mềm chống virus và các biện pháp kỹ thuật khác để ngăn chặn truy cập trái phép.<br/><br/>
 
-<b>6. Information Sharing</b><br/>
-We do not sell or disclose your personal information to third parties without your consent, unless required by law.<br/><br/>
+<b>6. Chia Sẻ Thông Tin</b><br/>
+Chúng tôi không bán hoặc công khai thông tin cá nhân của bạn cho bên thứ ba mà không có sự đồng ý của bạn, trừ khi pháp luật yêu cầu.<br/><br/>
 
-<b>7. Cookies and Tracking Technologies</b><br/>
-We use cookies and similar technologies to improve user experience, analyze access, and provide relevant advertising.<br/><br/>
+<b>7. Cookie và Công Nghệ Theo Dõi</b><br/>
+Chúng tôi sử dụng cookie và công nghệ tương tự để cải thiện trải nghiệm người dùng, phân tích truy cập và quảng cáo phù hợp.<br/><br/>
 
-<b>8. User Rights</b><br/>
-You have the right to:<br/><br/>
+<b>8. Quyền Lợi Người Dùng</b><br/>
+Bạn có quyền:<br/><br/>
 
-- Access, edit, or delete your personal information.<br/>
-- Opt out of receiving advertisements or notifications.<br/>
-- Request the suspension or deletion of your account.<br/><br/>
+- Truy cập, chỉnh sửa hoặc xóa thông tin cá nhân.<br/>
+- Từ chối nhận quảng cáo hoặc thông báo.<br/>
+- Yêu cầu ngừng sử dụng hoặc xóa tài khoản.<br/><br/>
 
-<b>9. Policy Updates</b><br/>
-This policy may be updated periodically. When changes occur, we will notify you via the application or email.<br/><br/>
+<b>9. Cập Nhật Chính Sách</b><br/>
+Chính sách này có thể được cập nhật định kỳ. Khi có thay đổi, chúng tôi sẽ thông báo trên ứng dụng hoặc qua email.<br/><br/>
 
-<b>10. Contact</b><br/>
-If you have any questions or requests regarding our privacy and security policy, please contact us via email or the support section in the application.
+<b>10. Liên Hệ</b><br/>
+Nếu bạn có bất kỳ câu hỏi hoặc yêu cầu nào liên quan đến chính sách bảo mật và an toàn, vui lòng liên hệ với chúng tôi qua email hoặc mục hỗ trợ trên ứng dụng.
 ]]></string>
+
 
 </resources>
