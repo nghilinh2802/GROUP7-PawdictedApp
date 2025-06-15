@@ -109,7 +109,6 @@
             android:text="@string/title_login_login"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
-            android:onClick="open_test"
             app:backgroundTint="#9c162c" />
 
         <!-- Or Login With -->
