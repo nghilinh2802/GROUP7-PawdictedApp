@@ -13,7 +13,20 @@
           "package_name": "com.group7.pawdicted"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "482980274516-fvnrke3sovvrb8pbfrijh9c35kgpom6k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.group7.pawdicted",
+            "certificate_hash": "db04a65b759586e7cba723f376c30208766abad2"
+          }
+        },
+        {
+          "client_id": "482980274516-iio3f0ajfgnk4le2u298irqjb49mmh8g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBDUdKU_SVhlQHsXyJHfnT6pcpoThPyRiY"
@@ -21,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "482980274516-iio3f0ajfgnk4le2u298irqjb49mmh8g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

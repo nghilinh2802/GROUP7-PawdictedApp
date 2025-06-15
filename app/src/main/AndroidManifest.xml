@@ -14,9 +14,56 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Pawdicted"
         tools:targetApi="31">
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+        <activity android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name"/>
+        <activity
+            android:name=".RefundReturnRequestActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RefundReturnDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EvaluateActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CheckoutActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CartActivity"
+            android:exported="false" />
+        <activity
+            android:name=".VoucherManagementActivity"
+            android:exported="false" />
         <activity
             android:name=".mobile.HeaderActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".CancellationDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".OrderDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PurchaseOrderActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ChangePasswordSettingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LanguageSettingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ChatActivity"
+            android:exported="true" />
+        <activity
+            android:name=".PolicynSecurityActivity"
+            android:exported="true" />
+        <activity
+            android:name=".FAQActivity"
+            android:exported="true" />
         <activity
             android:name=".SettingManagementActivity"
             android:exported="false" />
@@ -50,7 +97,8 @@
         </activity>
         <activity android:name=".CategoryDetailsActivity"
             android:exported="false" />
-        <activity android:name=".ProductDetailsActivity"
+        <activity
+            android:name=".ProductDetailsActivity"
             android:exported="false" />
 
         <activity

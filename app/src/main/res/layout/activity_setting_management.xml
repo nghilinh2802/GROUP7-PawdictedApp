@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#f8f1f1"
-    android:id="@+id/LinearLayout"
+    android:id="@+id/main"
     tools:context=".SettingManagementActivity">
 
     <!-- Thanh tiêu đề -->
@@ -49,8 +49,11 @@
             android:layout_height="wrap_content"
             android:padding="16dp"
             android:gravity="center_vertical"
-            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:background="?attr/selectableItemBackground"
+            android:foreground="?attr/selectableItemBackground"
             android:backgroundTint="#FFFFFF"
+            android:onClick="open_language_setting"
             android:layout_marginBottom="4dp"
             android:elevation="2dp">
 
@@ -92,7 +95,10 @@
             android:layout_height="wrap_content"
             android:padding="16dp"
             android:gravity="center_vertical"
-            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:onClick="open_change_password"
+            android:background="?attr/selectableItemBackground"
+            android:foreground="?attr/selectableItemBackground"
             android:backgroundTint="#FFFFFF"
             android:layout_marginBottom="4dp"
             android:elevation="2dp">
@@ -134,7 +140,9 @@
             android:layout_height="wrap_content"
             android:padding="16dp"
             android:gravity="center_vertical"
-            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:background="?attr/selectableItemBackground"
+            android:foreground="?attr/selectableItemBackground"
             android:backgroundTint="#FFFFFF"
             android:layout_marginBottom="4dp"
             android:elevation="2dp">
@@ -144,7 +152,6 @@
                 android:layout_height="24dp"
                 android:src="@mipmap/ic_trash"
                 android:contentDescription="Delete Icon"
-                android:tint="#9c162c"
                 android:layout_marginEnd="16dp" />
 
             <TextView
@@ -176,7 +183,8 @@
             android:layout_height="wrap_content"
             android:padding="16dp"
             android:gravity="center_vertical"
-            android:background="?android:attr/selectableItemBackground"
+            android:background="?attr/selectableItemBackground"
+            android:foreground="?attr/selectableItemBackground"
             android:backgroundTint="#FFFFFF"
             android:layout_marginBottom="4dp"
             android:elevation="2dp">
@@ -185,7 +193,6 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@mipmap/ic_notification_line"
-                android:tint="#9c162c"
                 android:contentDescription="Notification Icon"
                 android:layout_marginEnd="16dp" />
 
@@ -218,8 +225,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
+            android:clickable="true"
+            android:onClick="logout"
             android:gravity="center_vertical"
-            android:background="?android:attr/selectableItemBackground"
+            android:background="?attr/selectableItemBackground"
+            android:foreground="?attr/selectableItemBackground"
             android:backgroundTint="#FFFFFF"
             android:layout_marginBottom="4dp"
             android:elevation="2dp">
@@ -228,7 +238,6 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@mipmap/ic_logout"
-                android:tint="#9c162c"
                 android:contentDescription="Logout Icon"
                 android:layout_marginEnd="16dp" />
 
