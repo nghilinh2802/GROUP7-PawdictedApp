@@ -1,95 +1,97 @@
 <resources>
     <string name="app_name">Pawdicted</string>
-    <string name="title_to_confirm">To confirm</string>
-    <string name="title_to_pick_up">To Pick Up</string>
-    <string name="title_to_ship">To Ship</string>
-    <string name="title_evaluate_order">Evaluate</string>
-    <string name="title_my_purchases">My Purchases</string>
-    <string name="title_view_purchase_history">View purchase history</string>
-    <string name="title_utilities">Utilities</string>
-    <string name="title_wishlist">Wishlist</string>
-    <string name="title_voucher">Voucher</string>
-    <string name="title_blogs">Blogs</string>
-    <string name="title_history">History</string>
-    <string name="title_help">Help</string>
-    <string name="title_faqs">FAQs</string>
-    <string name="title_policies">Policies</string>
-    <string name="hp_searchText_hint">Search...</string>
-    <string name="title_homepage_category">Category</string>
-    <string name="title_homepage_flash_deals">Flash Deals</string>
-    <string name="title_homepage_new_arrival">New Arrival</string>
-    <string name="title_homepage_voucher">Voucher</string>
-    <string name="title_homepage_order">Order</string>
+    <string name="title_to_confirm">Xác nhận</string>
+    <string name="title_to_pick_up">Đợi lấy hàng</string>
+    <string name="title_to_ship">Đợi giao hàng</string>
+    <string name="title_evaluate_order">Đánh giá</string>
+    <string name="title_my_purchases">Đơn hàng của tôi</string>
+    <string name="title_view_purchase_history">Xem lịch sử mua hàng</string>
+    <string name="title_utilities">Tiện ích</string>
+    <string name="title_wishlist">Danh sách yêu thích</string>
+    <string name="title_voucher">Phiếu giảm giá</string>
+    <string name="title_blogs">Blog</string>
+    <string name="title_history">Lịch sử</string>
+    <string name="title_help">Trợ giúp</string>
+    <string name="title_faqs">Câu hỏi thường gặp</string>
+    <string name="title_policies">Chính sách</string>
+    <string name="hp_searchText_hint">Tìm kiếm...</string>
+    <string name="title_homepage_category">Danh mục</string>
+    <string name="title_homepage_flash_deals">Ưu đãi nhanh</string>
+    <string name="title_homepage_new_arrival">Sản phẩm mới</string>
+    <string name="title_homepage_voucher">Phiếu giảm giá</string>
+    <string name="title_homepage_order">Đơn hàng</string>
     <string name="title_homepage_blog">Blog</string>
-    <string name="title_homepage_FAQs">FAQs</string>
-    <string name="title_homepage_policy">Policy</string>
-    <string name="title_footer_home">Home</string>
-    <string name="title_footer_notification">Notification</string>
-    <string name="title_footer_account">Account</string>
-    <string name="title_footer_category">Category</string>
-    <string name="title_login_login">LOG IN</string>
-    <string name="title_remember_me">Remember me?</string>
-    <string name="title_forgot_password">Forgot password?</string>
-    <string name="title_or_login_with">Or log in with</string>
-    <string name="title_dont_have_account">Don\'t have an account?</string>
-    <string name="title_signup_login">Sign up</string>
-    <string name="title_forgot_password_main">FORGOT PASSWORD</string>
-    <string name="title_send_recover_code">SEND RECOVER CODE</string>
-    <string name="title_change_password">CHANGE PASSWORD</string>
-    <string name="title_enter_new_password">Enter new password</string>
-    <string name="title_reenter_new_password">Re-enter new password</string>
-    <string name="title_signup">SIGN UP</string>
-    <string name="title_or_signup_with">Or Signup with</string>
-    <string name="title_already_have_account">Already have an account?</string>
-    <string name="title_login_signup">Log in</string>
-    <string name="title_hot">Hot</string>
-    <string name="title_flashdeals">Flash Deals</string>
-    <string name="title_end_in">Ends in</string>
-    <string name="title_on_going">On going</string>
-    <string name="title_upcoming">Upcoming</string>
-    <string name="title_buy_now">Buy now</string>
-    <string name="title_products_sold">products sold</string>
-    <string name="title_all">All</string>
-    <string name="title_toys">Toys</string>
-    <string name="title_food">Food</string>
-    <string name="title_accessories">Accessories</string>
+    <string name="title_homepage_FAQs">Câu hỏi thường gặp</string>
+    <string name="title_homepage_policy">Chính sách</string>
+    <string name="title_footer_home">Trang chủ</string>
+    <string name="title_footer_notification">Thông báo</string>
+    <string name="title_footer_account">Tài khoản</string>
+    <string name="title_footer_category">Danh mục</string>
+    <string name="title_login_login">ĐĂNG NHẬP</string>
+    <string name="title_remember_me">Ghi nhớ đăng nhập?</string>
+    <string name="title_forgot_password">Quên mật khẩu?</string>
+    <string name="title_or_login_with">Hoặc đăng nhập với</string>
+    <string name="title_dont_have_account">Chưa có tài khoản?</string>
+    <string name="title_signup_login">Đăng ký</string>
+    <string name="title_forgot_password_main">QUÊN MẬT KHẨU</string>
+    <string name="title_send_recover_code">GỬI MÃ KHỞI PHỤC</string>
+    <string name="title_change_password">THAY ĐỔI MẬT KHẨU</string>
+    <string name="title_enter_new_password">Nhập mật khẩu mới</string>
+    <string name="title_reenter_new_password">Nhập lại mật khẩu mới</string>
+    <string name="title_signup">ĐĂNG KÝ</string>
+    <string name="title_or_signup_with">Hoặc đăng ký với</string>
+    <string name="title_already_have_account">Đã có tài khoản?</string>
+    <string name="title_login_signup">Đăng nhập</string>
+    <string name="title_hot">Nổi bật</string>
+    <string name="title_flashdeals">Ưu đãi nhanh</string>
+    <string name="title_end_in">Kết thúc trong</string>
+    <string name="title_on_going">Đang diễn ra</string>
+    <string name="title_upcoming">Sắp diễn ra</string>
+    <string name="title_buy_now">Mua ngay</string>
+    <string name="title_products_sold">sản phẩm đã bán</string>
+    <string name="title_all">Tất cả</string>
+    <string name="title_toys">Đồ chơi</string>
+    <string name="title_food">Thức ăn</string>
+    <string name="title_accessories">Phụ kiện</string>
     <string-array name="gender_array">
-        <item>Female</item>
-        <item>Male</item>
-        <item>Other</item>
+        <item>Nữ</item>
+        <item>Nam</item>
+        <item>Khác</item>
     </string-array>
-    <string name="title_category_for_dogs">For Dogs</string>
-    <string name="title_category_for_cats">For Cats</string>
-    <string name="title_category_all_products">All Products</string>
+    <string name="title_category_for_dogs">Cho Chó</string>
+    <string name="title_category_for_cats">Cho Mèo</string>
+    <string name="title_category_all_products">Tất cả sản phẩm</string>
     <string name="title_category_food_treats">
-<![CDATA[ Food & Treats ]]>
+    <![CDATA[ Thức ăn & Đồ ăn vặt ]]>
 </string>
-    <string name="title_category_pet_care">Pet Care</string>
-    <string name="title_category_furniture">Furniture</string>
-    <string name="title_category_toys">Toys</string>
-    <string name="title_category_accesories">Accessories</string>
+    <string name="title_category_pet_care">Chăm sóc thú cưng</string>
+    <string name="title_category_furniture">Đồ nội thất</string>
+    <string name="title_category_toys">Đồ chơi</string>
+    <string name="title_category_accesories">Phụ kiện</string>
     <string name="title_category_carriers">
-<![CDATA[ Carriers & Kennels ]]>
+    <![CDATA[ Chuồng & Thùng chở ]]>
 </string>
 
-    <string name="see_all">See All</string>
-    <string name="title_child_cate_best_seller">BEST SELLER</string>
-    <string name="title_child_cate_newest">NEWEST</string>
-    <string name="title_child_care_rating">RATING</string>
-    <string name="title_child_cate_price">PRICE</string>
-    <string name="hint_flashdeals">Flash Deals</string>
-    <string name="title_order">Order</string>
-    <string name="title_search">Search</string>
-    <string name="title_back">Back</string>
-    <string name="title_FAQ">FAQs</string>
-    <string name="title_refund">Refund</string>
-    <string name="title_member">Member</string>
-    <string name="title_other">Other</string>
-    <string name="title_policy_security"><![CDATA[POLICY & SECURITY]]></string>
-    <string name="title_chatting">CHATTING</string>
-    <string name="hint_type_a_message">Type a message ...</string>
-    <string name="title_send_image">Send image</string>
-    <string name="title_enter_current_password">Enter current password</string>
+    <string name="see_all">Xem tất cả</string>
+    <string name="title_child_cate_best_seller">BÁN CHẠY NHẤT</string>
+    <string name="title_child_cate_newest">MỚI NHẤT</string>
+    <string name="title_child_care_rating">ĐÁNH GIÁ</string>
+    <string name="title_child_cate_price">GIÁ</string>
+    <string name="hint_flashdeals">Ưu đãi nhanh</string>
+    <string name="title_order">Đơn hàng</string>
+    <string name="title_search">Tìm kiếm</string>
+    <string name="title_back">Quay lại</string>
+    <string name="title_FAQ">Câu hỏi thường gặp</string>
+    <string name="title_refund">Hoàn tiền</string>
+    <string name="title_member">Thành viên</string>
+    <string name="title_other">Khác</string>
+    <string name="title_policy_security">
+    <![CDATA[CHÍNH SÁCH & BẢO MẬT]]>
+</string>
+    <string name="title_chatting">NHẮN TIN</string>
+    <string name="hint_type_a_message">Nhập tin nhắn...</string>
+    <string name="title_send_image">Gửi hình ảnh</string>
+    <string name="title_enter_current_password">Nhập mật khẩu hiện tại</string>
     <string name="policy_content"><![CDATA[
 <b>1. Mục Đích</b><br/>
 Chúng tôi cam kết bảo vệ thông tin cá nhân và giao dịch của người dùng khi sử dụng ứng dụng mua bán đồ dùng thú cưng. Chính sách này nhằm minh bạch về cách chúng tôi thu thập, sử dụng, chia sẻ và bảo vệ thông tin của bạn.<br/><br/>
