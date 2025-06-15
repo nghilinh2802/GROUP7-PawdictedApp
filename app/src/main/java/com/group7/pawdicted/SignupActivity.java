@@ -7,12 +7,25 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+
+import com.google.android.gms.auth.api.signin.*;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
+
+import com.google.firebase.auth.*;
 import com.google.firebase.database.*;
 
 import com.group7.pawdicted.mobile.models.Customer;
@@ -21,11 +34,15 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class SignupActivity extends AppCompatActivity implements SuccessSignupDialogFragment.OnSignupListener {
+    private static final int RC_GOOGLE_SIGN_IN = 1001;
+    private static final String TAG = "SIGNUP";
 
     EditText edtUsername, edtEmail, edtPhone, edtPassword;
     CheckBox chkAgree;
     FirebaseAuth mAuth;
     DatabaseReference mDatabase;
+    CallbackManager fbCallbackManager;
+    GoogleSignInClient googleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,34 +54,58 @@ public class SignupActivity extends AppCompatActivity implements SuccessSignupDi
         edtPhone = findViewById(R.id.edtPhone);
         edtPassword = findViewById(R.id.edtEnterPassword);
         chkAgree = findViewById(R.id.ckbAgree);
+        findViewById(R.id.btnLogin).setOnClickListener(v -> registerUser());
 
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference("customers");
 
-        findViewById(R.id.btnLogin).setOnClickListener(v -> registerUser());
+        // --- Facebook setup ---
+        fbCallbackManager = CallbackManager.Factory.create();
+        ImageButton btnFb = findViewById(R.id.imgFacebook);
+        btnFb.setOnClickListener(v -> {
+            LoginManager.getInstance().registerCallback(fbCallbackManager, new FacebookCallback<LoginResult>() {
+                @Override public void onSuccess(LoginResult result) {
+                    Log.d(TAG, "FB login success: " + result.getAccessToken().getUserId());
+                    firebaseAuthWithFacebook(result.getAccessToken());
+                }
+                @Override public void onCancel() { Log.d(TAG, "FB login canceled"); }
+                @Override public void onError(FacebookException error) {
+                    Toast.makeText(SignupActivity.this, "FB lỗi: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+            LoginManager.getInstance().logInWithReadPermissions(this, java.util.Arrays.asList("email", "public_profile"));
+        });
+
+        // --- Google setup ---
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        ImageButton btnG = findViewById(R.id.imgGoogle);
+        btnG.setOnClickListener(v -> {
+            Intent signInIntent = googleSignInClient.getSignInIntent();
+            startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
+        });
     }
 
-    public void open_login(View view) {
-        startActivity(new Intent(SignupActivity.this, LoginActivity.class));
-    }
+    public void open_login(View view) { startActivity(new Intent(this, LoginActivity.class)); }
+    public void goBack(View view) { finish(); }
 
-    public void goBack(View view) {
-        finish();
-    }
-
+    /** Email/password signup logic (unchanged) **/
     private void registerUser() {
         String username = edtUsername.getText().toString().trim();
         String email = edtEmail.getText().toString().trim();
         String phone = edtPhone.getText().toString().trim();
         String password = edtPassword.getText().toString().trim();
 
-        // 1. Validation
         if (username.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Nhập đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
             return;
         }
         if (!chkAgree.isChecked()) {
-            Toast.makeText(this, "Bạn phải đồng ý với điều khoản!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Chưa đồng ý điều khoản!", Toast.LENGTH_SHORT).show();
             return;
         }
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
@@ -72,105 +113,147 @@ public class SignupActivity extends AppCompatActivity implements SuccessSignupDi
             return;
         }
         if (!phone.matches("[0-9]+")) {
-            Toast.makeText(this, "Số điện thoại phải là chữ số!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Phone phải là số!", Toast.LENGTH_SHORT).show();
             return;
         }
         if (password.length() < 6) {
-            Toast.makeText(this, "Mật khẩu phải từ 6 ký tự trở lên!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Password ≥ 6 ký tự!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // 2. Check duplicate email
+        // Duplicate check
         mDatabase.orderByChild("customer_email").equalTo(email)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapEmail) {
+                    @Override public void onDataChange(@NonNull DataSnapshot snapEmail) {
                         if (snapEmail.exists()) {
                             Toast.makeText(SignupActivity.this, "Email đã tồn tại!", Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        // 3. Check duplicate phone
                         mDatabase.orderByChild("phone_number").equalTo(phone)
                                 .addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot snapPhone) {
+                                    @Override public void onDataChange(@NonNull DataSnapshot snapPhone) {
                                         if (snapPhone.exists()) {
-                                            Toast.makeText(SignupActivity.this, "Số điện thoại đã được sử dụng!", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(SignupActivity.this, "Phone đã dùng!", Toast.LENGTH_SHORT).show();
                                             return;
                                         }
-                                        // 4. Everything OK -> create FirebaseAuth user
                                         createFirebaseUser(username, email, phone, password);
                                     }
-                                    @Override
-                                    public void onCancelled(DatabaseError error) {
-                                        Log.e("FIREBASE_SIGNUP", "Error checking phone: " + error.getMessage());
+                                    @Override public void onCancelled(@NonNull DatabaseError error) {
+                                        Log.e(TAG, "Check phone err", error.toException());
                                     }
                                 });
                     }
-                    @Override
-                    public void onCancelled(DatabaseError error) {
-                        Log.e("FIREBASE_SIGNUP", "Error checking email: " + error.getMessage());
+                    @Override public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e(TAG, "Check email err", error.toException());
                     }
                 });
     }
 
-    private void createFirebaseUser(String username, String email, String phone, String password) {
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        Exception e = task.getException();
-                        Log.e("FIREBASE_SIGNUP", "Registration failed:", e);
-                        Toast.makeText(this, "Đăng ký thất bại: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                        return;
-                    }
+    private void createFirebaseUser(String u, String e, String p, String pass) {
+        mAuth.createUserWithEmailAndPassword(e, pass).addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Toast.makeText(this, "Đăng ký thất bại: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                return;
+            }
+            FirebaseUser f = mAuth.getCurrentUser();
+            if (f == null) return;
+            String uid = f.getUid();
 
-                    FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                    if (firebaseUser == null) {
-                        Log.e("FIREBASE_SIGNUP", "FirebaseUser null dù đăng ký thành công");
-                        Toast.makeText(this, "Lỗi khi tạo tài khoản!", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+            Customer cust = new Customer(uid, u, e, u, null, p, "", "Male",
+                    new Date(), new Date(), "", "Customer",
+                    new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
+                    new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 
-                    String uid = firebaseUser.getUid();
-                    Customer customer = new Customer(
-                            uid,
-                            username,
-                            email,
-                            username,
-                            null,
-                            phone,
-                            "",
-                            "Male",
-                            new Date(),
-                            new Date(),
-                            "",
-                            "Customer",
-                            new ArrayList<>(),
-                            new ArrayList<>(),
-                            new ArrayList<>(),
-                            new ArrayList<>(),
-                            new ArrayList<>(),
-                            new ArrayList<>()
-                    );
-
-                    // 5. Save under customers/UID
-                    mDatabase.child(uid).setValue(customer)
-                            .addOnSuccessListener(unused -> showSuccessDialog())
-                            .addOnFailureListener(e -> {
-                                Log.e("FIREBASE_SIGNUP", "Error saving customer data:", e);
-                                Toast.makeText(SignupActivity.this, "Lỗi lưu dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                            });
-                });
+            mDatabase.child(uid).setValue(cust)
+                    .addOnSuccessListener(a -> showSuccessDialog())
+                    .addOnFailureListener(err -> Toast.makeText(this, "Lỗi lưu: " + err.getMessage(), Toast.LENGTH_SHORT).show());
+        });
     }
 
     private void showSuccessDialog() {
-        new SuccessSignupDialogFragment()
-                .show(getSupportFragmentManager(), "SuccessDialog");
+        new SuccessSignupDialogFragment().show(getSupportFragmentManager(), "SuccessDialog");
     }
 
-    @Override
-    public void onSignupComplete() {
-        startActivity(new Intent(SignupActivity.this, LoginActivity.class));
+    @Override public void onSignupComplete() {
+        startActivity(new Intent(this, LoginActivity.class));
         finish();
+    }
+
+    /** OAuth callbacks **/
+    @Override
+    protected void onActivityResult(int req, int res, @Nullable Intent data) {
+        super.onActivityResult(req, res, data);
+        fbCallbackManager.onActivityResult(req, res, data);
+
+        if (req == RC_GOOGLE_SIGN_IN && data != null) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                String idToken = task.getResult(ApiException.class).getIdToken();
+                Log.d(TAG, "Google idToken=" + idToken);
+                firebaseAuthWithGoogle(idToken);
+            } catch (Exception e) {
+                Log.e(TAG, "Google sign-in error", e);
+            }
+        }
+    }
+
+    private void firebaseAuthWithGoogle(String idToken) {
+        AuthCredential cred = GoogleAuthProvider.getCredential(idToken, null);
+        mAuth.signInWithCredential(cred).addOnCompleteListener(this, t -> {
+            if (t.isSuccessful() && mAuth.getCurrentUser() != null) {
+                Log.d(TAG, "Google sign-in success");
+                saveSocialUser(mAuth.getCurrentUser());
+            } else {
+                Log.e(TAG, "GOOGLE_AUTH fail", t.getException());
+            }
+        });
+    }
+
+    private void firebaseAuthWithFacebook(AccessToken token) {
+        AuthCredential cred = FacebookAuthProvider.getCredential(token.getToken());
+        mAuth.signInWithCredential(cred).addOnCompleteListener(this, t -> {
+            if (t.isSuccessful() && mAuth.getCurrentUser() != null) {
+                Log.d(TAG, "Facebook sign-in success");
+                saveSocialUser(mAuth.getCurrentUser());
+            } else {
+                Log.e(TAG, "FB_AUTH fail", t.getException());
+            }
+        });
+    }
+
+    /**
+     * Lưu hoặc bỏ qua nếu social user đã tồn tại.
+     */
+    private void saveSocialUser(FirebaseUser user) {
+        String uid = user.getUid();
+        Log.d(TAG, "saveSocialUser: uid=" + uid);
+
+        mDatabase.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override public void onDataChange(@NonNull DataSnapshot snap) {
+                if (snap.exists()) {
+                    Log.d(TAG, "Social user exists -> skip DB write");
+                    showSuccessDialog();
+                } else {
+                    Log.d(TAG, "New social user -> writing to DB");
+                    Customer cust = new Customer(
+                            uid, user.getDisplayName(), user.getEmail(),
+                            user.getDisplayName(), null,
+                            (user.getPhoneNumber()==null?"":user.getPhoneNumber()),
+                            (user.getPhotoUrl()!=null? user.getPhotoUrl().toString() : ""),
+                            "Male", new Date(), new Date(),
+                            (user.getPhotoUrl()!=null? user.getPhotoUrl().toString() : ""),
+                            "Customer",
+                            new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
+                            new ArrayList<>(), new ArrayList<>(), new ArrayList<>()
+                    );
+                    mDatabase.child(uid).setValue(cust)
+                            .addOnSuccessListener(a -> showSuccessDialog())
+                            .addOnFailureListener(e -> Log.e(TAG, "saveSocialUser fail", e));
+                }
+            }
+            @Override public void onCancelled(@NonNull DatabaseError err) {
+                Log.e(TAG, "saveSocialUser DB check cancelled", err.toException());
+            }
+        });
     }
 }

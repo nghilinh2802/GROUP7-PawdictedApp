@@ -55,5 +55,8 @@ dependencies {
     // ➕ Facebook Login SDK
     implementation("com.facebook.android:facebook-login:18.0.3") // dùng version mới nhất ổn định :contentReference[oaicite:1]{index=1}
 
+    // ➕ Google Sign-In support (cần để dùng GoogleSignInClient, GoogleSignIn...)
+    implementation("com.google.android.gms:play-services-auth:21.3.0")  // phiên bản mới nhất :contentReference[oaicite:1]{index=1}
+
 
 }
