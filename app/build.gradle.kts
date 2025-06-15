@@ -47,4 +47,13 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    implementation("androidx.credentials:credentials:1.3.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+
+    // ➕ Facebook Login SDK
+    implementation("com.facebook.android:facebook-login:18.0.3") // dùng version mới nhất ổn định :contentReference[oaicite:1]{index=1}
+
+
 }

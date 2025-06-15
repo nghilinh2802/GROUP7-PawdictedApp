@@ -90,6 +90,10 @@
     <string name="hint_type_a_message">Type a message ...</string>
     <string name="title_send_image">Send image</string>
     <string name="title_enter_current_password">Enter current password</string>
+
+    <string name="default_web_client_id">YOUR_WEB_CLIENT_ID.apps.googleusercontent.com</string>
+    <string name="facebook_app_id">YOUR_FB_APP_ID</string>
+
     <string name="policy_content"><![CDATA[
 <b>1. Purpose</b><br/>
 We are committed to protecting the personal information and transactions of users when using the pet supplies buying and selling application. This policy aims to be transparent about how we collect, use, share, and protect your information.<br/><br/>
