@@ -226,34 +226,58 @@ public class SignupActivity extends AppCompatActivity implements SuccessSignupDi
      */
     private void saveSocialUser(FirebaseUser user) {
         String uid = user.getUid();
-        Log.d(TAG, "saveSocialUser: uid=" + uid);
+        String email = user.getEmail();
+        Log.d(TAG, "saveSocialUser: uid=" + uid + " email=" + email);
 
-        mDatabase.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override public void onDataChange(@NonNull DataSnapshot snap) {
-                if (snap.exists()) {
-                    Log.d(TAG, "Social user exists -> skip DB write");
-                    showSuccessDialog();
-                } else {
-                    Log.d(TAG, "New social user -> writing to DB");
-                    Customer cust = new Customer(
-                            uid, user.getDisplayName(), user.getEmail(),
-                            user.getDisplayName(), null,
-                            (user.getPhoneNumber()==null?"":user.getPhoneNumber()),
-                            (user.getPhotoUrl()!=null? user.getPhotoUrl().toString() : ""),
-                            "Male", new Date(), new Date(),
-                            (user.getPhotoUrl()!=null? user.getPhotoUrl().toString() : ""),
-                            "Customer",
-                            new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
-                            new ArrayList<>(), new ArrayList<>(), new ArrayList<>()
-                    );
-                    mDatabase.child(uid).setValue(cust)
-                            .addOnSuccessListener(a -> showSuccessDialog())
-                            .addOnFailureListener(e -> Log.e(TAG, "saveSocialUser fail", e));
-                }
-            }
-            @Override public void onCancelled(@NonNull DatabaseError err) {
-                Log.e(TAG, "saveSocialUser DB check cancelled", err.toException());
-            }
-        });
+        // Kiểm tra email đã tồn tại chưa
+        mDatabase.orderByChild("customer_email").equalTo(email)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            // Nếu đã có tài khoản (có thể email/Google cũ), báo lỗi
+                            Toast.makeText(SignupActivity.this,
+                                    "Email này đã được đăng ký trước đó!",
+                                    Toast.LENGTH_SHORT).show();
+                            // Logout Google/Facebook để tránh tự động login lại
+                            mAuth.signOut();
+                            googleSignInClient.signOut();
+                        } else {
+                            // Email mới => tạo user
+                            Log.d(TAG, "New social user -> writing to DB");
+                            Customer cust = new Customer(
+                                    uid,
+                                    user.getDisplayName(),
+                                    email,
+                                    user.getDisplayName(),
+                                    null,
+                                    user.getPhoneNumber() != null ? user.getPhoneNumber() : "",
+                                    user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : "",
+                                    "Male",
+                                    new Date(),
+                                    new Date(),
+                                    user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : "",
+                                    "Customer",
+                                    new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
+                                    new ArrayList<>(), new ArrayList<>(), new ArrayList<>()
+                            );
+                            mDatabase.child(uid)
+                                    .setValue(cust)
+                                    .addOnSuccessListener(a -> showSuccessDialog())
+                                    .addOnFailureListener(e -> {
+                                        Log.e(TAG, "saveSocialUser fail", e);
+                                        Toast.makeText(SignupActivity.this,
+                                                "Lỗi lưu user: " + e.getMessage(),
+                                                Toast.LENGTH_SHORT).show();
+                                    });
+                        }
+                    }
+                    @Override public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e(TAG, "saveSocialUser DB check cancelled", error.toException());
+                        Toast.makeText(SignupActivity.this,
+                                "Lỗi kiểm tra dữ liệu: " + error.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
+
 }
