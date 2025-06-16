@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:padding="8dp">
+
+    <!-- Checkbox -->
+    <CheckBox
+        android:id="@+id/checkbox_select"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:buttonTint="#9C1B2C"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Product Image -->
+    <ImageView
+        android:id="@+id/image_product"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/whiskas"
+        app:layout_constraintStart_toEndOf="@id/checkbox_select"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Clear Button -->
+    <TextView
+        android:id="@+id/text_clear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Clear"
+        android:textStyle="bold"
+        android:textColor="#9C1B2C"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Product Name -->
+    <TextView
+        android:id="@+id/text_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Product Name"
+        android:textSize="16sp"
+        android:textColor="@android:color/black"
+        app:layout_constraintStart_toEndOf="@id/image_product"
+        app:layout_constraintTop_toTopOf="@id/image_product"
+        app:layout_constraintEnd_toStartOf="@id/text_clear"
+        android:layout_marginStart="8dp" />
+
+    <!-- Spinner (Options like size/color) -->
+    <Spinner
+        android:id="@+id/spinner_option"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/text_name"
+        app:layout_constraintStart_toStartOf="@id/text_name" />
+
+    <!-- Giá tiền -->
+    <TextView
+        android:id="@+id/text_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="60.000đ"
+        android:textStyle="bold"
+        android:textColor="#B71C1C"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/spinner_option"
+        app:layout_constraintStart_toStartOf="@id/text_name"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <!-- Khối quantity: canh sát lề phải như "Clear" -->
+    <LinearLayout
+        android:id="@+id/layout_quantity"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:orientation="horizontal"
+        android:background="@drawable/bg_quantity_outline"
+        android:paddingHorizontal="4dp"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toTopOf="@id/text_price"
+        app:layout_constraintBottom_toBottomOf="@id/text_price"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/button_decrease"
+            android:layout_width="32dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="-"
+            android:textColor="#AAAAAA"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/text_quantity"
+            android:layout_width="32dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="1"
+            android:textSize="16sp"
+            android:textColor="#000000" />
+
+        <TextView
+            android:id="@+id/button_increase"
+            android:layout_width="32dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="+"
+            android:textColor="#000000"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
