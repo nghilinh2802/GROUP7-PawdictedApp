@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class Customer {
-    private int customer_id;
+    private String customer_id;
     private String customer_name;
     private String customer_email;
     private String customer_username;
@@ -26,7 +26,7 @@ public class Customer {
     public Customer() {
     }
 
-    public Customer(int customer_id, String customer_name, String customer_email, String customer_username, String password,
+    public Customer(String customer_id, String customer_name, String customer_email, String customer_username, String password,
                     String phone_number, String address, String gender, Date dob, Date date_joined, String avatar_img,
                     String role, ArrayList<Integer> wishlist, ArrayList<Integer> cart, ArrayList<Integer> recently_viewed,
                     ArrayList<Integer> purchased, ArrayList<Review> reviews, ArrayList<String> preferences) {
@@ -92,11 +92,11 @@ public class Customer {
         this.role = role;
     }
 
-    public int getCustomer_id() {
+    public String getCustomer_id() {
         return customer_id;
     }
 
-    public void setCustomer_id(int customer_id) {
+    public void setCustomer_id(String customer_id) {
         this.customer_id = customer_id;
     }
 

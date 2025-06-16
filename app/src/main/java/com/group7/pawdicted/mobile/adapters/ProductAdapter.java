@@ -1,59 +1,162 @@
 package com.group7.pawdicted.mobile.adapters;
 
-import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.group7.pawdicted.ProductDetailsActivity;
 import com.group7.pawdicted.R;
+import com.group7.pawdicted.mobile.models.ChildCategory;
 import com.group7.pawdicted.mobile.models.Product;
 
-public class ProductAdapter extends ArrayAdapter<Product> {
-    Activity context;
-    int resource;
-    public ProductAdapter(@NonNull Activity context, int resource) {
-        super(context, resource);
-        this.context=context;
-        this.resource=resource;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final int TYPE_PRODUCT = 0;
+    private static final int TYPE_HEADER = 1;
+    private static final int TYPE_SEE_ALL = 2;
+
+    private List<Object> items;
+    private Context context;
+
+    public ProductAdapter(Context context) {
+        this.context = context;
+        this.items = new ArrayList<>();
+    }
+
+    public void updateItems(List<Object> newItems) {
+        Log.d("ProductAdapter", "Updating items, new size: " + newItems.size());
+        this.items.clear();
+        this.items.addAll(newItems);
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        Object item = items.get(position);
+        if (item instanceof Product) {
+            return TYPE_PRODUCT;
+        } else if (item instanceof ChildCategory) {
+            return TYPE_HEADER;
+        } else if (item instanceof SeeAllItem) {
+            return TYPE_SEE_ALL;
+        }
+        Log.e("ProductAdapter", "Invalid item type at position: " + position);
+        return TYPE_PRODUCT;
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        if (recyclerView.getLayoutManager() instanceof GridLayoutManager) {
+            GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
+            layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+                @Override
+                public int getSpanSize(int position) {
+                    int viewType = getItemViewType(position);
+                    return viewType == TYPE_HEADER ? 2 : viewType == TYPE_SEE_ALL ? 2 : 1;
+                }
+            });
+        }
     }
 
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        LayoutInflater inflater = this.context.getLayoutInflater();
-        View item = inflater.inflate(this.resource, null);
-        ImageView imgCategoryProduct=item.findViewById(R.id.img_cate_product);
-        TextView txtCategoryProduct=item.findViewById(R.id.txt_cate_product);
-        TextView txtOriginalPrice=item.findViewById(R.id.txt_child_cate_original_price);
-        RatingBar ratingBar = item.findViewById(R.id.rating_bar);
-        TextView txtRating = item.findViewById(R.id.txt_rating);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        if (viewType == TYPE_PRODUCT) {
+            View view = inflater.inflate(R.layout.item_category, parent, false);
+            return new ProductViewHolder(view);
+        } else if (viewType == TYPE_HEADER) {
+            View view = inflater.inflate(R.layout.item_child_category_header, parent, false);
+            return new HeaderViewHolder(view);
+        } else {
+            View view = inflater.inflate(R.layout.see_all_item, parent, false);
+            return new SeeAllViewHolder(view);
+        }
+    }
 
-        Product p = getItem(position);
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        Log.d("ProductAdapter", "Binding position: " + position + ", Item: " + items.get(position).getClass().getSimpleName());
+        if (holder instanceof ProductViewHolder) {
+            Product product = (Product) items.get(position);
+            ProductViewHolder productHolder = (ProductViewHolder) holder;
+            productHolder.txtCateProduct.setText(product.getProduct_name());
+            Log.d("ProductAdapter", "Binding Product: " + product.getProduct_name());
+            Glide.with(context)
+                    .load(product.getProduct_image())
+                    .placeholder(R.mipmap.ic_ascend_arrows)
+                    .error(R.mipmap.ic_ascend_arrows)
+                    .into(productHolder.imgCateProduct);
 
-        imgCategoryProduct.setImageResource(Integer.parseInt(p.getProduct_image()));
+            // Sự kiện nhấn sản phẩm
+            productHolder.itemView.setOnClickListener(v -> {
+                Log.d("ProductAdapter", "Clicked product: " + product.getProduct_id());
+                Intent intent = new Intent(context, ProductDetailsActivity.class);
+                intent.putExtra("product_id", product.getProduct_id());
+                context.startActivity(intent);
+            });
+        } else if (holder instanceof HeaderViewHolder) {
+            ChildCategory childCategory = (ChildCategory) items.get(position);
+            HeaderViewHolder headerHolder = (HeaderViewHolder) holder;
+            headerHolder.txtChildCategoryName.setText(childCategory.getChildCategory_name());
+            Log.d("ProductAdapter", "Binding ChildCategory: " + childCategory.getChildCategory_name());
+        } else if (holder instanceof SeeAllViewHolder) {
+            SeeAllViewHolder seeAllHolder = (SeeAllViewHolder) holder;
+            seeAllHolder.txtEtc.setText("...");
+            seeAllHolder.txtSeeAll.setText(context.getString(R.string.see_all));
+            Log.d("ProductAdapter", "Binding SeeAll");
+        }
+    }
 
-        txtCategoryProduct.setText(p.getProduct_name());
+    @Override
+    public int getItemCount() {
+        return items.size();
+    }
 
-        String formattedOriginalPrice = String.format("%,.0fđ", p.getPrice());
-        txtOriginalPrice.setText(formattedOriginalPrice);
-        txtOriginalPrice.setPaintFlags(
-                txtOriginalPrice.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
-        );
+    static class ProductViewHolder extends RecyclerView.ViewHolder {
+        ImageView imgCateProduct;
+        TextView txtCateProduct;
 
-        double rating = p.getAverage_rating(); // giả sử rating là kiểu double, ví dụ: 4.5
-        ratingBar.setRating((float) rating);
-        txtRating.setText(String.valueOf(rating));
+        public ProductViewHolder(@NonNull View itemView) {
+            super(itemView);
+            imgCateProduct = itemView.findViewById(R.id.img_cate_product);
+            txtCateProduct = itemView.findViewById(R.id.txt_cate_product);
+        }
+    }
 
+    static class HeaderViewHolder extends RecyclerView.ViewHolder {
+        TextView txtChildCategoryName;
 
-        return item;
+        public HeaderViewHolder(@NonNull View itemView) {
+            super(itemView);
+            txtChildCategoryName = itemView.findViewById(R.id.txt_child_category_name);
+        }
+    }
+
+    static class SeeAllViewHolder extends RecyclerView.ViewHolder {
+        TextView txtEtc;
+        TextView txtSeeAll;
+
+        public SeeAllViewHolder(@NonNull View itemView) {
+            super(itemView);
+            txtEtc = itemView.findViewById(R.id.txtEtc);
+            txtSeeAll = itemView.findViewById(R.id.txtSeeAll);
+        }
+    }
+
+    public static class SeeAllItem {
     }
 }
-
-

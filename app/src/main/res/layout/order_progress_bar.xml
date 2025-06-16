@@ -24,7 +24,7 @@
             android:id="@+id/icon_pending"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:src="@drawable/ic_to_confirm_gray" />
+            android:src="@mipmap/ic_to_confirm_gray" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -55,7 +55,7 @@
             android:id="@+id/icon_shipped"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:src="@drawable/ic_to_pickup_gray" />
+            android:src="@mipmap/ic_to_pickup_gray" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -85,7 +85,7 @@
             android:id="@+id/icon_out"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:src="@drawable/ic_to_ship_gray" />
+            android:src="@mipmap/ic_to_ship_gray" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -115,7 +115,7 @@
             android:id="@+id/icon_completed"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:src="@drawable/ic_completed_gray" />
+            android:src="@mipmap/ic_completed_gray" />
 
         <TextView
             android:layout_width="wrap_content"

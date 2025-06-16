@@ -69,7 +69,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         btn_back = findViewById(R.id.btn_back);
         btn_search = findViewById(R.id.btn_search);
 
-        emptyView = findViewById(R.id.empty_view); // layout chứa icon + text "You have no orders yet"
+        emptyView = findViewById(R.id.empty_view); // layout không có dữ liệu cho status đó  -text "You have no orders yet"
 
         dbHelper = new SQLiteConnector(this);
         db = dbHelper.getDatabase();
@@ -99,6 +99,14 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                     "SELECT order_id, order_code, order_time FROM orders " +
                             "WHERE cancel_requested_by IS NOT NULL " +
                             "ORDER BY order_time DESC", null
+            );
+        } else if ("Return/Refund".equalsIgnoreCase(status)) {
+            cursor = db.rawQuery(
+                    "SELECT DISTINCT o.order_id, o.order_code, o.order_time " +
+                            "FROM orders o JOIN order_status s ON o.order_id = s.order_id " +
+                            "WHERE s.status IN ('Refund Requested', 'Refund Credited', 'Return Approved') " +
+                            "ORDER BY o.order_time DESC",
+                    null
             );
         } else {
             cursor = db.rawQuery(
@@ -196,7 +204,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         LinearLayout layoutContact = view.findViewById(R.id.layout_contact_shop);
         LinearLayout layoutCompleted = view.findViewById(R.id.layout_completed_actions);
         MaterialButton btnReturnRefund = view.findViewById(R.id.btn_return_refund);
-        MaterialButton btnRate = view.findViewById(R.id.btn_rate);
+        MaterialButton btnEvaluate = view.findViewById(R.id.btn_evaluate);
 
         tvTime.setText(orderTime);
         tvTotal.setText("Total: " + formatCurrency(totalPrice) + " ₫");
@@ -241,11 +249,21 @@ public class PurchaseOrderActivity extends AppCompatActivity {
 
         view.setOnClickListener(v -> {
             Intent intent;
+
             if ("Cancelled".equalsIgnoreCase(status)) {
                 intent = new Intent(PurchaseOrderActivity.this, CancellationDetailActivity.class);
+            } else if (
+                    status.equalsIgnoreCase("Refund Requested") ||
+                            status.equalsIgnoreCase("Refund Credited") ||
+                            status.equalsIgnoreCase("Return Approved") ||
+                            status.equalsIgnoreCase("Return/Refund")
+            ) {
+                intent = new Intent(PurchaseOrderActivity.this, RefundReturnDetailActivity.class);
             } else {
                 intent = new Intent(PurchaseOrderActivity.this, OrderDetailActivity.class);
+                intent.putExtra("status_filter", getTabNameFromStatus(status));
             }
+
             intent.putExtra("order_id", orderId);
             startActivity(intent);
         });
@@ -254,16 +272,24 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         if (status.equalsIgnoreCase("Completed")) {
             layoutContact.setVisibility(View.GONE);
             layoutCompleted.setVisibility(View.VISIBLE);
-
             btnReturnRefund.setOnClickListener(v -> {
                 // TODO: Mở giao diện Return/Refund
             });
-
-            btnRate.setOnClickListener(v -> {
-                // TODO: Mở giao diện đánh giá sản phẩm
+            btnEvaluate.setOnClickListener(v -> {
+                // TODO: Mở giao diện Evaluate
             });
 
+        } else if ( // Trạng thái Refund/Return → ẩn cả 2 nhóm nút
+                status.equalsIgnoreCase("Refund Requested") ||
+                        status.equalsIgnoreCase("Refund Credited") ||
+                        status.equalsIgnoreCase("Return Approved") ||
+                        status.equalsIgnoreCase("Return/Refund")
+        ) {
+            layoutContact.setVisibility(View.GONE);
+            layoutCompleted.setVisibility(View.GONE);
+
         } else {
+            // Các trạng thái còn lại
             layoutContact.setVisibility(View.VISIBLE);
             layoutCompleted.setVisibility(View.GONE);
         }
@@ -271,10 +297,30 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         return view;
     }
 
+    private String getTabNameFromStatus(String status) {
+        switch (status) {
+            case "Pending Payment":
+                return "To Confirm";
+            case "Shipped":
+                return "To Pickup";
+            case "Out for Delivery":
+                return "To Ship";
+            case "Completed":
+                return "Completed";
+            default:
+                return ""; // Trường hợp khác như "Cancelled", "Return/Refund"
+        }
+    }
+
     private String getStatusLabel(String status) {
         if (status.equalsIgnoreCase("Pending Payment")) return "To Pay";
         if (status.equalsIgnoreCase("Shipped")) return "To Ship";
         if (status.equalsIgnoreCase("Out for Delivery")) return "To Receive";
+
+        if (status.equalsIgnoreCase("Refund Credited") ||
+                status.equalsIgnoreCase("Refund Requested") ||
+                status.equalsIgnoreCase("Return Approved")) return "Return/Refund";
+
         return status;
     }
 

@@ -2,6 +2,7 @@ package com.group7.pawdicted.mobile.models;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 public class Product {
@@ -9,7 +10,7 @@ public class Product {
     private String product_id;
     private String product_name;
 
-    private int variant_id;
+    private String variant_id;
     private String variant_name;
 
     private double price;
@@ -20,35 +21,31 @@ public class Product {
     private int rating_number;
 
     private int quantity;
-    private Set<AnimalType> animal_class;
-    private String child_category;
-
     private String product_image;
-    private int category_id;
 
-    private ArrayList<Integer> also_buy;
-    private ArrayList<Integer> also_view;
-    private ArrayList<Integer> similar_item;
+    private int animal_class_id; //0 là cat, 1 là dog
+    private String category_id;
+
+    private String child_category_id;
+
+
+    private List<String> also_buy;
+    private List<String> also_view;
+    private List<String> similar_item;
 
     private int rank;
     private Date date_listed;
 
     private int discount;
-    private double promotion_price;
     private int sold_quantity;
 
 
-    public enum AnimalType {
-        DOG,
-        CAT
-    }
-//    private String categoryTop;
-//    private String categorySide;
+
 
     public Product() {
     }
 
-    public Product(String product_id, String product_name, int variant_id, String variant_name, double price, String description, String details, double average_rating, int rating_number, int quantity, Set<AnimalType> animal_class, String child_category, String product_image, int category_id, ArrayList<Integer> also_buy, ArrayList<Integer> also_view, ArrayList<Integer> similar_item, int rank, Date date_listed, int discount, double promotion_price, int sold_quantity) {
+    public Product(String product_id, String product_name, String variant_id, String variant_name, double price, String description, String details, double average_rating, int rating_number, int quantity, String product_image, int animal_class_id, String category_id, String child_category_id, List<String> also_buy, List<String> also_view, List<String> similar_item, int rank, Date date_listed, int discount, int sold_quantity) {
         this.product_id = product_id;
         this.product_name = product_name;
         this.variant_id = variant_id;
@@ -59,20 +56,17 @@ public class Product {
         this.average_rating = average_rating;
         this.rating_number = rating_number;
         this.quantity = quantity;
-        this.animal_class = animal_class;
-        this.child_category = child_category;
         this.product_image = product_image;
+        this.animal_class_id = animal_class_id;
         this.category_id = category_id;
+        this.child_category_id = child_category_id;
         this.also_buy = also_buy;
         this.also_view = also_view;
         this.similar_item = similar_item;
         this.rank = rank;
         this.date_listed = date_listed;
         this.discount = discount;
-        this.promotion_price = promotion_price;
         this.sold_quantity = sold_quantity;
-//        this.categoryTop = categoryTop;
-//        this.categorySide = categorySide;
     }
 
     public String getProduct_id() {
@@ -91,11 +85,11 @@ public class Product {
         this.product_name = product_name;
     }
 
-    public int getVariant_id() {
+    public String getVariant_id() {
         return variant_id;
     }
 
-    public void setVariant_id(int variant_id) {
+    public void setVariant_id(String variant_id) {
         this.variant_id = variant_id;
     }
 
@@ -155,22 +149,6 @@ public class Product {
         this.quantity = quantity;
     }
 
-    public Set<AnimalType> getAnimal_class() {
-        return animal_class;
-    }
-
-    public void setAnimal_class(Set<AnimalType> animal_class) {
-        this.animal_class = animal_class;
-    }
-
-    public String getChild_category() {
-        return child_category;
-    }
-
-    public void setChild_category(String child_category) {
-        this.child_category = child_category;
-    }
-
     public String getProduct_image() {
         return product_image;
     }
@@ -179,35 +157,51 @@ public class Product {
         this.product_image = product_image;
     }
 
-    public int getCategory_id() {
+    public int getAnimal_class_id() {
+        return animal_class_id;
+    }
+
+    public void setAnimal_class_id(int animal_class_id) {
+        this.animal_class_id = animal_class_id;
+    }
+
+    public String getCategory_id() {
         return category_id;
     }
 
-    public void setCategory_id(int category_id) {
+    public void setCategory_id(String category_id) {
         this.category_id = category_id;
     }
 
-    public ArrayList<Integer> getAlso_buy() {
+    public String getChild_category_id() {
+        return child_category_id;
+    }
+
+    public void setChild_category_id(String child_category_id) {
+        this.child_category_id = child_category_id;
+    }
+
+    public List<String> getAlso_buy() {
         return also_buy;
     }
 
-    public void setAlso_buy(ArrayList<Integer> also_buy) {
+    public void setAlso_buy(List<String> also_buy) {
         this.also_buy = also_buy;
     }
 
-    public ArrayList<Integer> getAlso_view() {
+    public List<String> getAlso_view() {
         return also_view;
     }
 
-    public void setAlso_view(ArrayList<Integer> also_view) {
+    public void setAlso_view(List<String> also_view) {
         this.also_view = also_view;
     }
 
-    public ArrayList<Integer> getSimilar_item() {
+    public List<String> getSimilar_item() {
         return similar_item;
     }
 
-    public void setSimilar_item(ArrayList<Integer> similar_item) {
+    public void setSimilar_item(List<String> similar_item) {
         this.similar_item = similar_item;
     }
 
@@ -235,14 +229,6 @@ public class Product {
         this.discount = discount;
     }
 
-    public double getPromotion_price() {
-        return promotion_price;
-    }
-
-    public void setPromotion_price(double promotion_price) {
-        this.promotion_price = promotion_price;
-    }
-
     public int getSold_quantity() {
         return sold_quantity;
     }
@@ -250,17 +236,6 @@ public class Product {
     public void setSold_quantity(int sold_quantity) {
         this.sold_quantity = sold_quantity;
     }
-
-//    public void setCategoryTop(String categoryTop) {
-//        this.categoryTop = categoryTop;
-//    }
-//
-//    public void setCategorySide(String categorySide) {
-//        this.categorySide = categorySide;
-//    }
-
-//    public String getCategoryTop() { return categoryTop; }
-//    public String getCategorySide() { return categorySide; }
 
     @Override
     public String toString() {

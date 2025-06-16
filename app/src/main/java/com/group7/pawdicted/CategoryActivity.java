@@ -1,24 +1,12 @@
 package com.group7.pawdicted;
 
-import static com.group7.pawdicted.CategoryActivity.SideCategory.ACCESSORIES;
-import static com.group7.pawdicted.CategoryActivity.SideCategory.ALL;
-import static com.group7.pawdicted.CategoryActivity.SideCategory.CARRIERS;
-import static com.group7.pawdicted.CategoryActivity.SideCategory.FOOD;
-import static com.group7.pawdicted.CategoryActivity.SideCategory.PET_CARE;
-import static com.group7.pawdicted.CategoryActivity.SideCategory.TOYS;
-
-import android.graphics.Color;
-import android.graphics.Typeface;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,9 +14,15 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.group7.pawdicted.mobile.models.Category;
+import com.group7.pawdicted.mobile.adapters.DividerItemDecoration;
+import com.group7.pawdicted.mobile.adapters.ProductAdapter;
+import com.group7.pawdicted.mobile.models.ChildCategory;
 import com.group7.pawdicted.mobile.models.ListCategory;
+import com.group7.pawdicted.mobile.models.ListChildCategory;
+import com.group7.pawdicted.mobile.models.ListProduct;
 import com.group7.pawdicted.mobile.models.Product;
 
 import java.util.ArrayList;
@@ -39,16 +33,15 @@ import java.util.Map;
 public class CategoryActivity extends AppCompatActivity {
 
     FooterManager footerManager;
-    public enum TopCategory {
-        DOGS, CATS, NONE
-    }
+    private RecyclerView productList; // Ensure this is RecyclerView, not LinearLayout
+    private ProductAdapter adapter;
+    private int selectedAnimalClass = -2; // -2: none, -1: all, 0: cat, 1: dog
+    private String selectedSideCategory = "ALL"; // ALL, FT, FU, PC, TO, AC, CK
+    private List<Object> displayItems;
 
-    public enum SideCategory {
-        ALL, FOOD, PET_CARE, FURNITURE, TOYS, ACCESSORIES, CARRIERS, NONE
-    }
-
-    private TopCategory selectedTop = TopCategory.NONE;
-    private SideCategory selectedSide = ALL;
+    private ListChildCategory listChildCategory;
+    private ListProduct listProduct;
+    private ListCategory listCategory;
 
     private TextView txtForDogs, txtForCats;
     private View redBarDogs, redBarCats;
@@ -80,16 +73,10 @@ public class CategoryActivity extends AppCompatActivity {
     private ImageView imgCarriers;
     private TextView txtCarriers;
     private View redBarCarriers;
-    private LinearLayout layoutAllProducts;
-    private LinearLayout layoutFood;
-    private LinearLayout layoutPetCare;
-    private LinearLayout layoutFurniture;
-    private LinearLayout layoutToys;
-    private LinearLayout layoutAccessories;
-    private LinearLayout layoutCarriers;
-    private LinearLayout productListLayout;
-    private ListCategory listCategory;
 
+    private LinearLayout layoutAllProducts, layoutFood, layoutPetCare, layoutFurniture, layoutToys, layoutAccessories, layoutCarriers;
+
+    private Map<Integer, String> layoutToCategoryMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +84,7 @@ public class CategoryActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_category);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.LinearLayout), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
@@ -108,12 +95,29 @@ public class CategoryActivity extends AppCompatActivity {
 
         footerManager = new FooterManager(this);
 
+        // Initialize data sources first
+        listCategory = new ListCategory();
+        listProduct = new ListProduct();
+        listChildCategory = new ListChildCategory();
 
         addViews();
+        initializeCategoryMap();
         addEvents();
     }
 
+    private void initializeCategoryMap() {
+        layoutToCategoryMap = new HashMap<>();
+        layoutToCategoryMap.put(R.id.layout_all_products, "ALL");
+        layoutToCategoryMap.put(R.id.layout_cate_food, "FT");
+        layoutToCategoryMap.put(R.id.layout_cate_pet_care, "PC");
+        layoutToCategoryMap.put(R.id.layout_cate_furniture, "FU");
+        layoutToCategoryMap.put(R.id.layout_cate_toys, "TO");
+        layoutToCategoryMap.put(R.id.layout_cate_accessories, "AC");
+        layoutToCategoryMap.put(R.id.layout_cate_carriers, "CK");
+    }
+
     private void addViews() {
+        // Initialize views
         txtForDogs = findViewById(R.id.txtForDogs);
         txtForCats = findViewById(R.id.txtForCats);
         redBarDogs = findViewById(R.id.redBarDogs);
@@ -147,326 +151,272 @@ public class CategoryActivity extends AppCompatActivity {
         txtCarriers = findViewById(R.id.txt_carriers);
         redBarCarriers = findViewById(R.id.red_bar_carriers);
 
-        layoutAllProducts=findViewById(R.id.layout_all_products);
-        layoutFood=findViewById(R.id.layout_cate_food);
-        layoutPetCare=findViewById(R.id.layout_cate_pet_care);
-        layoutFurniture=findViewById(R.id.layout_cate_furniture);
-        layoutToys=findViewById(R.id.layout_cate_toys);
-        layoutAccessories=findViewById(R.id.layout_cate_accessories);
-        layoutCarriers=findViewById(R.id.layout_cate_carriers);
+        layoutAllProducts = findViewById(R.id.layout_all_products);
+        layoutFood = findViewById(R.id.layout_cate_food);
+        layoutPetCare = findViewById(R.id.layout_cate_pet_care);
+        layoutFurniture = findViewById(R.id.layout_cate_furniture);
+        layoutToys = findViewById(R.id.layout_cate_toys);
+        layoutAccessories = findViewById(R.id.layout_cate_accessories);
+        layoutCarriers = findViewById(R.id.layout_cate_carriers);
 
-        productListLayout = findViewById(R.id.ProductList);
+        // Correctly initialize productList as RecyclerView
+        productList = findViewById(R.id.product_list);
 
-        listCategory = new ListCategory();
-        listCategory.generate_sample_dataset();
+        // Generate sample datasets
+        try {
+            listCategory.generate_sample_dataset();
+            listProduct.generate_sample_dataset();
+            listChildCategory.generate_sample_dataset();
+        } catch (Exception e) {
+            Log.e("CategoryActivity", "Error generating sample dataset", e);
+        }
     }
 
     private void addEvents() {
-        txtForDogs.setOnClickListener(v -> toggleTopCategory(TopCategory.DOGS));
-        txtForCats.setOnClickListener(v -> toggleTopCategory(TopCategory.CATS));
+        displayItems = new ArrayList<>();
+        adapter = new ProductAdapter(this);
+        productList.setLayoutManager(new GridLayoutManager(this, 2));
+        productList.setAdapter(adapter);
+        productList.addItemDecoration(new DividerItemDecoration(this));
 
-        layoutAllProducts.setOnClickListener(v -> toggleSideCategory(ALL));
-        layoutFood.setOnClickListener(v -> toggleSideCategory(FOOD));
-        layoutPetCare.setOnClickListener(v -> toggleSideCategory(PET_CARE));
-        layoutFurniture.setOnClickListener(v -> toggleSideCategory(SideCategory.FURNITURE));
-        layoutToys.setOnClickListener(v -> toggleSideCategory(TOYS));
-        layoutAccessories.setOnClickListener(v -> toggleSideCategory(ACCESSORIES));
-        layoutCarriers.setOnClickListener(v -> toggleSideCategory(CARRIERS));
-    }
-
-    private void toggleTopCategory(TopCategory topCategory) {
-        selectedTop = (selectedTop == topCategory) ? TopCategory.NONE : topCategory;
-        updateTopUI();
-        updateProductList();
-    }
-
-    private void toggleSideCategory(SideCategory sideCategory) {
-        selectedSide = (selectedSide == sideCategory) ? SideCategory.NONE : sideCategory;
-        updateSideUI();
-        updateProductList();
-    }
-
-    private final Map<SideCategory, Integer> sideCategoryMap = new HashMap<SideCategory, Integer>() {{
-        put(ALL, -1); // -1 để thể hiện "tất cả"
-        put(FOOD, 1);
-        put(PET_CARE, 2);
-        put(SideCategory.FURNITURE, 3);
-        put(TOYS, 4);
-        put(ACCESSORIES, 5);
-        put(CARRIERS, 6);
-    }};
-
-    private void updateTopUI() {
-        if (selectedTop == TopCategory.DOGS) {
-            txtForDogs.setTextColor(getColor(R.color.main_color));
-            redBarDogs.setVisibility(View.VISIBLE);
-        } else {
-            txtForDogs.setTextColor(Color.BLACK);
-            redBarDogs.setVisibility(View.INVISIBLE);
+        // Ensure datasets are initialized
+        if (listProduct.getProducts() == null || listChildCategory.getChildCategories() == null) {
+            try {
+                listProduct.generate_sample_dataset();
+                listChildCategory.generate_sample_dataset();
+            } catch (Exception e) {
+                Log.e("CategoryActivity", "Error generating sample dataset in addEvents", e);
+            }
         }
 
-        if (selectedTop == TopCategory.CATS) {
-            txtForCats.setTextColor(getColor(R.color.main_color));
-            redBarCats.setVisibility(View.VISIBLE);
-        } else {
-            txtForCats.setTextColor(Color.BLACK);
-            redBarCats.setVisibility(View.INVISIBLE);
+        layoutAllProducts.setSelected(true);
+        selectedSideCategory = "ALL";
+        setSideActive(txtAllProducts, redBarAllProducts, imgAllProducts, true, R.mipmap.ic_all_product_red, R.mipmap.ic_all_product_black);
+        filterProducts();
+
+        txtForDogs.setOnClickListener(v -> {
+            if (txtForDogs.isSelected()) {
+                txtForDogs.setSelected(false);
+                txtForDogs.setTextColor(getColor(R.color.black));
+                redBarDogs.setVisibility(View.GONE);
+                selectedAnimalClass = -2;
+            } else {
+                txtForDogs.setSelected(true);
+                txtForCats.setSelected(false);
+                txtForDogs.setTextColor(getColor(R.color.main_color));
+                txtForCats.setTextColor(getColor(R.color.black));
+                redBarDogs.setVisibility(View.VISIBLE);
+                redBarCats.setVisibility(View.GONE);
+                selectedAnimalClass = 1;
+            }
+            filterProducts();
+        });
+
+        txtForCats.setOnClickListener(v -> {
+            if (txtForCats.isSelected()) {
+                txtForCats.setSelected(false);
+                txtForCats.setTextColor(getColor(R.color.black));
+                redBarCats.setVisibility(View.GONE);
+                selectedAnimalClass = -2;
+            } else {
+                txtForCats.setSelected(true);
+                txtForDogs.setSelected(false);
+                txtForCats.setTextColor(getColor(R.color.main_color));
+                txtForDogs.setTextColor(getColor(R.color.black));
+                redBarCats.setVisibility(View.VISIBLE);
+                redBarDogs.setVisibility(View.GONE);
+                selectedAnimalClass = 0;
+            }
+            filterProducts();
+        });
+
+        layoutAllProducts.setOnClickListener(v -> {
+            if (!layoutAllProducts.isSelected()) {
+                resetSideCategories();
+                layoutAllProducts.setSelected(true);
+                setSideActive(txtAllProducts, redBarAllProducts, imgAllProducts, true, R.mipmap.ic_all_product_red, R.mipmap.ic_all_product_black);
+                selectedSideCategory = "ALL";
+                filterProducts();
+            }
+        });
+
+        layoutFood.setOnClickListener(v -> {
+            if (!layoutFood.isSelected()) {
+                resetSideCategories();
+                layoutFood.setSelected(true);
+                setSideActive(txtFood, redBarFood, imgFood, true, R.mipmap.ic_food_cate_red, R.mipmap.ic_food_cate_black);
+                selectedSideCategory = "FT";
+                filterProducts();
+            }
+        });
+
+        layoutPetCare.setOnClickListener(v -> {
+            if (!layoutPetCare.isSelected()) {
+                resetSideCategories();
+                layoutPetCare.setSelected(true);
+                setSideActive(txtPetCare, redBarPetCare, imgPetCare, true, R.mipmap.ic_petcare_cate_red, R.mipmap.ic_petcare_cate_black);
+                selectedSideCategory = "PC";
+                filterProducts();
+            }
+        });
+
+        layoutFurniture.setOnClickListener(v -> {
+            if (!layoutFurniture.isSelected()) {
+                resetSideCategories();
+                layoutFurniture.setSelected(true);
+                setSideActive(txtFurniture, redBarFurniture, imgFurniture, true, R.mipmap.ic_furniture_cate_red, R.mipmap.ic_furniture_cate_black);
+                selectedSideCategory = "FU";
+                filterProducts();
+            }
+        });
+
+        layoutToys.setOnClickListener(v -> {
+            if (!layoutToys.isSelected()) {
+                resetSideCategories();
+                layoutToys.setSelected(true);
+                setSideActive(txtToys, redBarToys, imgToys, true, R.mipmap.ic_toy_cate_red, R.mipmap.ic_toy_cate_black);
+                selectedSideCategory = "TO";
+                filterProducts();
+            }
+        });
+
+        layoutAccessories.setOnClickListener(v -> {
+            if (!layoutAccessories.isSelected()) {
+                resetSideCategories();
+                layoutAccessories.setSelected(true);
+                setSideActive(txtAccesories, redBarAccessories, imgAccesories, true, R.mipmap.ic_accessories_cate_red, R.mipmap.ic_accessories_cate_black);
+                selectedSideCategory = "AC";
+                filterProducts();
+            }
+        });
+
+        layoutCarriers.setOnClickListener(v -> {
+            if (!layoutCarriers.isSelected()) {
+                resetSideCategories();
+                layoutCarriers.setSelected(true);
+                setSideActive(txtCarriers, redBarCarriers, imgCarriers, true, R.mipmap.ic_kennels_cate_red, R.mipmap.ic_kennels_cate_black);
+                selectedSideCategory = "CK";
+                filterProducts();
+            }
+        });
+
+        View.OnLongClickListener longClickListener = v -> {
+            String categoryId = layoutToCategoryMap.get(v.getId());
+            if (categoryId != null) {
+                Intent intent = new Intent(CategoryActivity.this, CategoryDetailsActivity.class);
+                intent.putExtra("category_id", categoryId);
+                startActivity(intent);
+            }
+            return true;
+        };
+
+        layoutAllProducts.setOnLongClickListener(longClickListener);
+        layoutFood.setOnLongClickListener(longClickListener);
+        layoutPetCare.setOnLongClickListener(longClickListener);
+        layoutFurniture.setOnLongClickListener(longClickListener);
+        layoutToys.setOnLongClickListener(longClickListener);
+        layoutAccessories.setOnLongClickListener(longClickListener);
+        layoutCarriers.setOnLongClickListener(longClickListener);
+    }
+
+    private void resetSideCategories() {
+        layoutAllProducts.setSelected(false);
+        layoutFood.setSelected(false);
+        layoutPetCare.setSelected(false);
+        layoutFurniture.setSelected(false);
+        layoutToys.setSelected(false);
+        layoutAccessories.setSelected(false);
+        layoutCarriers.setSelected(false);
+
+        setSideActive(txtAllProducts, redBarAllProducts, imgAllProducts, false, R.mipmap.ic_all_product_red, R.mipmap.ic_all_product_black);
+        setSideActive(txtFood, redBarFood, imgFood, false, R.mipmap.ic_food_cate_red, R.mipmap.ic_food_cate_black);
+        setSideActive(txtPetCare, redBarPetCare, imgPetCare, false, R.mipmap.ic_petcare_cate_red, R.mipmap.ic_petcare_cate_black);
+        setSideActive(txtFurniture, redBarFurniture, imgFurniture, false, R.mipmap.ic_furniture_cate_red, R.mipmap.ic_furniture_cate_black);
+        setSideActive(txtToys, redBarToys, imgToys, false, R.mipmap.ic_toy_cate_red, R.mipmap.ic_toy_cate_black);
+        setSideActive(txtAccesories, redBarAccessories, imgAccesories, false, R.mipmap.ic_accessories_cate_red, R.mipmap.ic_accessories_cate_black);
+        setSideActive(txtCarriers, redBarCarriers, imgCarriers, false, R.mipmap.ic_kennels_cate_red, R.mipmap.ic_kennels_cate_black);
+    }
+
+    private void filterProducts() {
+        displayItems.clear();
+
+        List<Product> products = listProduct.getProducts();
+        List<ChildCategory> childCategories = listChildCategory.getChildCategories();
+
+        if (products == null || childCategories == null) {
+            Log.e("CategoryActivity", "Products or ChildCategories is null");
+            return;
         }
+
+        Log.d("CategoryActivity", "Products size: " + products.size());
+        Log.d("CategoryActivity", "ChildCategories size: " + childCategories.size());
+        Log.d("CategoryActivity", "SelectedSideCategory: " + selectedSideCategory);
+
+        String[] categoriesWithChild = {"FT", "PC", "FU", "TO", "AC", "CK"};
+        boolean isCategoryWithChild = false;
+        for (String category : categoriesWithChild) {
+            if (category.equals(selectedSideCategory)) {
+                isCategoryWithChild = true;
+                break;
+            }
+        }
+
+        if (isCategoryWithChild) {
+            for (ChildCategory childCategory : childCategories) {
+                if (selectedSideCategory.equals(childCategory.getCategory_id())) {
+                    displayItems.add(childCategory);
+                    Log.d("CategoryActivity", "Added ChildCategory: " + childCategory.getChildCategory_name());
+                    int productCount = 0;
+                    List<Product> matchingProducts = new ArrayList<>();
+                    for (Product product : products) {
+                        boolean matchesChildCategory = product.getChild_category_id() != null &&
+                                product.getChild_category_id().equals(childCategory.getChildCategory_id());
+                        boolean matchesAnimal = matchesAnimalClass(product);
+                        if (matchesChildCategory && matchesAnimal) {
+                            matchingProducts.add(product);
+                            productCount++;
+                        }
+                    }
+                    for (int i = 0; i < Math.min(6, matchingProducts.size()); i++) {
+                        displayItems.add(matchingProducts.get(i));
+                        Log.d("CategoryActivity", "Added Product: " + matchingProducts.get(i).getProduct_name());
+                    }
+                    if (productCount > 6) {
+                        displayItems.add(new ProductAdapter.SeeAllItem());
+                        Log.d("CategoryActivity", "Added SeeAll for ChildCategory: " + childCategory.getChildCategory_name());
+                    }
+                }
+            }
+        } else {
+            for (Product product : products) {
+                boolean matchesSideCategory = true;
+                if (selectedSideCategory != null && !"ALL".equals(selectedSideCategory)) {
+                    matchesSideCategory = selectedSideCategory.equals(product.getCategory_id());
+                }
+                boolean matchesAnimal = matchesAnimalClass(product);
+                if (matchesSideCategory && matchesAnimal) {
+                    displayItems.add(product);
+                    Log.d("CategoryActivity", "Added Product: " + product.getProduct_name());
+                }
+            }
+        }
+
+        Log.d("CategoryActivity", "DisplayItems size: " + displayItems.size());
+        adapter.updateItems(displayItems);
     }
 
-    private void updateSideUI() {
-        setSideActive(
-                txtAllProducts, redBarAllProducts, imgAllProducts,
-                selectedSide == ALL,
-                R.mipmap.ic_all_product_red,
-                R.mipmap.ic_all_product_black
-        );
-        setSideActive(
-                txtFood, redBarFood, imgFood,
-                selectedSide == FOOD,
-                R.mipmap.ic_food_cate_red,
-                R.mipmap.ic_food_cate_black
-        );
-        setSideActive(
-                txtPetCare, redBarPetCare, imgPetCare,
-                selectedSide == PET_CARE,
-                R.mipmap.ic_petcare_cate_red,
-                R.mipmap.ic_petcare_cate_black
-        );
-        setSideActive(
-                txtFurniture, redBarFurniture, imgFurniture,
-                selectedSide == SideCategory.FURNITURE,
-                R.mipmap.ic_furniture_cate_red,
-                R.mipmap.ic_furniture_cate_black
-        );
-        setSideActive(
-                txtToys, redBarToys, imgToys,
-                selectedSide == TOYS,
-                R.mipmap.ic_toy_cate_red,
-                R.mipmap.ic_toy_cate_black
-        );
-        setSideActive(
-                txtAccesories, redBarAccessories, imgAccesories,
-                selectedSide == ACCESSORIES,
-                R.mipmap.ic_accessories_cate_red,
-                R.mipmap.ic_accessories_cate_black
-        );
-        setSideActive(
-                txtCarriers, redBarCarriers, imgCarriers,
-                selectedSide == CARRIERS,
-                R.mipmap.ic_kennels_cate_red,
-                R.mipmap.ic_kennels_cate_black
-        );
+    private boolean matchesAnimalClass(Product product) {
+        if (selectedAnimalClass == -2 || selectedAnimalClass == -1) {
+            return true;
+        }
+        return product.getAnimal_class_id() == selectedAnimalClass ||
+                product.getAnimal_class_id() == 2; // 2 might be for both cats and dogs
     }
-
 
     private void setSideActive(TextView textView, View redBar, ImageView iconView,
                                boolean isActive, int iconSelectedResId, int iconUnselectedResId) {
-        textView.setTextColor(isActive ? getColor(R.color.main_color) : Color.GRAY);
-        redBar.setVisibility(isActive ? View.VISIBLE : View.INVISIBLE);
+        textView.setTextColor(isActive ? getColor(R.color.main_color) : getColor(R.color.black));
+        redBar.setVisibility(isActive ? View.VISIBLE : View.GONE);
         iconView.setImageResource(isActive ? iconSelectedResId : iconUnselectedResId);
-    }
-
-
-//    private void updateProductList() {
-//        // Xóa hết sản phẩm cũ trước khi thêm mới
-//        productListLayout.removeAllViews();
-//
-//        for (Category category : listCategory.getCategories()) {
-//
-//            // 1. Nhóm sản phẩm theo child_category
-//            Map<String, List<Product>> groupedProducts = new HashMap<>();
-//            for (Product product : category.getProducts()) {
-//                String childCategory = product.getChild_category();
-//                if (!groupedProducts.containsKey(childCategory)) {
-//                    groupedProducts.put(childCategory, new ArrayList<>());
-//                }
-//                groupedProducts.get(childCategory).add(product);
-//            }
-//
-//            // 2. Duyệt từng nhóm child_category
-//            for (Map.Entry<String, List<Product>> entry : groupedProducts.entrySet()) {
-//                String childCategoryName = entry.getKey();
-//                List<Product> products = entry.getValue();
-//
-//                // 2.1. Thêm tiêu đề cho nhóm sản phẩm (child_category)
-//                TextView title = new TextView(this);
-//                title.setText(childCategoryName);
-//                title.setTextSize(20f);
-//                title.setTextColor(Color.DKGRAY);
-//                title.setTypeface(Typeface.defaultFromStyle(R.font.inter_bold), Typeface.BOLD);
-//                title.setPadding(24, 48, 0, 16);
-//                productListLayout.addView(title);
-//
-//                // 2.2. Tạo TableLayout cho sản phẩm
-//                TableLayout tableLayout = new TableLayout(this);
-//                tableLayout.setStretchAllColumns(true);
-//
-//                int count = 0;
-//                TableRow row = new TableRow(this);
-//
-//                for (Product product : products) {
-//                    View productView = createProductView(product);
-//
-//                    TableRow.LayoutParams params = new TableRow.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
-//                    productView.setLayoutParams(params);
-//
-//                    row.addView(productView);
-//                    count++;
-//
-//                    if (count % 2 == 0) {
-//                        tableLayout.addView(row);
-//                        row = new TableRow(this);
-//                    }
-//
-//                    if (count == 6) {
-//                        break;
-//                    }
-//                }
-//
-//                if (count % 2 != 0) {
-//                    View emptyView = new View(this);
-//                    TableRow.LayoutParams emptyParams = new TableRow.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
-//                    emptyView.setLayoutParams(emptyParams);
-//                    row.addView(emptyView);
-//                    tableLayout.addView(row);
-//                }
-//
-//
-//                if (products.size() > 6) {
-//                    TableRow seeAllRow = new TableRow(this);
-//                    TextView seeAll = new TextView(this);
-//                    seeAll.setText("See all");
-//                    seeAll.setTextColor(Color.RED);
-//                    seeAll.setTextSize(16f);
-//                    seeAll.setPadding(16, 16, 16, 16);
-//                    seeAll.setGravity(Gravity.CENTER);
-//                    seeAllRow.addView(seeAll);
-//                    tableLayout.addView(seeAllRow);
-//                }
-//
-//                productListLayout.addView(tableLayout);
-//
-//                View divider = new View(this);
-//                LinearLayout.LayoutParams dividerParams = new LinearLayout.LayoutParams(
-//                        ViewGroup.LayoutParams.MATCH_PARENT, 2);
-//                dividerParams.setMargins(0, 32, 0, 32); // Trên + Dưới 32px
-//                divider.setLayoutParams(dividerParams);
-//
-//                productListLayout.addView(divider);
-//            }
-//        }
-//    }
-    private void updateProductList() {
-        productListLayout.removeAllViews();
-
-        if (selectedTop == TopCategory.NONE || selectedSide == SideCategory.NONE) return;
-
-        String selectedAnimal = selectedTop == TopCategory.DOGS ? "DOG" : "CAT";
-        Integer selectedCategoryId = sideCategoryMap.get(selectedSide); // null nếu ALL
-
-        Map<String, List<Product>> groupedProducts = new HashMap<>();
-        for (Category category : listCategory.getCategories()) {
-            for (Product product : category.getProducts()) {
-                if (!product.getAnimal_class().contains(selectedAnimal)) continue;
-                if (selectedCategoryId != null && product.getCategory_id() != selectedCategoryId) continue;
-
-                String childCategory = product.getChild_category();
-                groupedProducts.putIfAbsent(childCategory, new ArrayList<>());
-                groupedProducts.get(childCategory).add(product);
-            }
-        }
-
-        if (groupedProducts.isEmpty()) return;
-
-        for (Map.Entry<String, List<Product>> entry : groupedProducts.entrySet()) {
-            String childCategoryName = entry.getKey();
-            List<Product> products = entry.getValue();
-
-            // Tiêu đề nhóm
-            TextView title = new TextView(this);
-            title.setText(childCategoryName);
-            title.setTextSize(20f);
-            title.setTextColor(Color.DKGRAY);
-            title.setTypeface(Typeface.defaultFromStyle(R.font.inter_bold), Typeface.BOLD);
-            title.setPadding(24, 48, 0, 16);
-            productListLayout.addView(title);
-
-            // TableLayout cho sản phẩm
-            TableLayout tableLayout = new TableLayout(this);
-            tableLayout.setStretchAllColumns(true);
-
-            int count = 0;
-            TableRow row = new TableRow(this);
-
-            for (Product product : products) {
-                View productView = createProductView(product);
-                TableRow.LayoutParams params = new TableRow.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
-                productView.setLayoutParams(params);
-                row.addView(productView);
-                count++;
-
-                if (count % 2 == 0) {
-                    tableLayout.addView(row);
-                    row = new TableRow(this);
-                }
-
-                if (count == 6) break;
-            }
-
-            if (count % 2 != 0) {
-                View emptyView = new View(this);
-                TableRow.LayoutParams emptyParams = new TableRow.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
-                emptyView.setLayoutParams(emptyParams);
-                row.addView(emptyView);
-                tableLayout.addView(row);
-            }
-
-            if (products.size() > 6) {
-                TableRow seeAllRow = new TableRow(this);
-
-                // Inflate giao diện từ see_all_item.xml
-                View seeAllView = LayoutInflater.from(this).inflate(R.layout.see_all_item, seeAllRow, false);
-
-                // Gán sự kiện click tại đây
-                seeAllView.setOnClickListener(v -> {
-                    // TODO: Viết xử lý khi click See All ở đây
-                    Toast.makeText(this, "Clicked See All for " + childCategoryName, Toast.LENGTH_SHORT).show();
-                    // Hoặc mở Activity mới / Dialog, tuỳ bạn
-                });
-
-                seeAllRow.addView(seeAllView);
-                tableLayout.addView(seeAllRow);
-            }
-
-
-            productListLayout.addView(tableLayout);
-
-            View divider = new View(this);
-            divider.setLayoutParams(new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, 2));
-            divider.setBackgroundColor(Color.LTGRAY);
-            productListLayout.addView(divider);
-        }
-    }
-
-
-
-
-
-    private View createProductView(Product product) {
-        LayoutInflater inflater = LayoutInflater.from(this);
-        View view = inflater.inflate(R.layout.item_category, null);
-
-        ImageView img = view.findViewById(R.id.img_cate_product);
-        TextView txt = view.findViewById(R.id.txt_cate_product);
-
-        txt.setText(product.getProduct_name()); // hoặc getTitle(), tuỳ cấu trúc của bạn
-
-        // Nếu bạn có URL ảnh, dùng Glide (nếu chưa có thì dùng ảnh mẫu)
-        // Glide.with(this).load(product.getImageUrl()).into(img);
-        img.setImageResource(R.drawable.ic_launcher_foreground); // ảnh mẫu nếu chưa có URL
-
-        return view;
     }
 }

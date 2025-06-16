@@ -38,12 +38,13 @@
 
     <!-- Hình ảnh đại diện -->
     <ImageView
+        android:id="@+id/imgAvatar"
         android:layout_width="130dp"
         android:layout_height="130dp"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
-        android:src="@mipmap/ic_account_footer_red"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        android:src="@mipmap/ic_account_footer_red" />
 
     <!-- Khung thông tin -->
     <LinearLayout
@@ -69,11 +70,12 @@
                 android:textSize="16sp" />
 
             <TextView
+                android:id="@+id/tvName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end"
-                android:text="Hân Nguyễn"
+                android:text=""
                 android:textColor="#000000"
                 android:textSize="16sp" />
         </LinearLayout>
@@ -99,11 +101,12 @@
                 android:textSize="16sp" />
 
             <TextView
+                android:id="@+id/tvGender"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end"
-                android:text="Female"
+                android:text=""
                 android:textColor="#000000"
                 android:textSize="16sp" />
         </LinearLayout>
@@ -129,11 +132,12 @@
                 android:textSize="16sp" />
 
             <TextView
+                android:id="@+id/tvDob"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end"
-                android:text="20/05/2002"
+                android:text=""
                 android:textColor="#000000"
                 android:textSize="16sp" />
         </LinearLayout>
@@ -159,11 +163,12 @@
                 android:textSize="16sp" />
 
             <TextView
+                android:id="@+id/tvPhone"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end"
-                android:text="0123456789"
+                android:text=""
                 android:textColor="#000000"
                 android:textSize="16sp" />
         </LinearLayout>
@@ -189,11 +194,12 @@
                 android:textSize="16sp" />
 
             <TextView
+                android:id="@+id/tvEmail"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end"
-                android:text="hannguyen89@gmail.com"
+                android:text=""
                 android:textColor="#000000"
                 android:textSize="16sp" />
         </LinearLayout>
@@ -219,11 +225,12 @@
                 android:textSize="16sp" />
 
             <TextView
+                android:id="@+id/tvAddress"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end"
-                android:text="1 Le Loi Street, Ward 10, Vung Tau city"
+                android:text=""
                 android:textColor="#000000"
                 android:textSize="16sp" />
         </LinearLayout>

@@ -21,7 +21,7 @@ public class ProductConnector {
         }
         return listProduct.getProducts();
     }
-    public ArrayList<Product> get_products_by_category(int category_id)
+    public ArrayList<Product> get_products_by_category(String category_id)
     {
         if (listProduct==null) {
             listProduct = new ListProduct();

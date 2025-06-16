@@ -2,105 +2,101 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/LinearLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".CategoryActivity">
 
     <!-- Toolbar -->
     <include layout="@layout/activity_tool_bar" />
 
-    <FrameLayout
+    <!-- TopCategory -->
+    <LinearLayout
+        android:id="@+id/TopCategory"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:padding="8dp">
 
         <LinearLayout
-            android:id="@+id/TopCategory"
-            android:layout_width="match_parent"
-            android:layout_height="65dp"
-            android:orientation="horizontal">
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
+            <TextView
+                android:id="@+id/txtForDogs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_bold"
+                android:gravity="center"
+                android:text="@string/title_category_for_dogs"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
 
-                <TextView
-                    android:id="@+id/txtForDogs"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/inter_bold"
-                    android:gravity="center"
-                    android:text="@string/title_category_for_dogs"
-                    android:textColor="@color/black"
-                    android:textSize="20sp" />
-
-                <View
-                    android:id="@+id/redBarDogs"
-                    android:layout_width="match_parent"
-                    android:layout_height="4dp"
-                    android:background="@color/main_color"
-                    android:visibility="gone" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/txtForCats"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/inter_bold"
-                    android:gravity="center"
-                    android:text="@string/title_category_for_cats"
-                    android:textColor="@color/black"
-                    android:textSize="20sp" />
-
-                <!-- Red bar -->
-                <View
-                    android:id="@+id/redBarCats"
-                    android:layout_width="match_parent"
-                    android:layout_height="4dp"
-                    android:background="@color/main_color"
-                    android:visibility="gone" />
-            </LinearLayout>
-
+            <View
+                android:id="@+id/redBarDogs"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_marginStart="16dp"
+                android:background="@color/main_color"
+                android:visibility="gone" />
         </LinearLayout>
-    </FrameLayout>
 
-    <ScrollView
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtForCats"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_bold"
+                android:gravity="center"
+                android:text="@string/title_category_for_cats"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+
+            <View
+                android:id="@+id/redBarCats"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_marginStart="16dp"
+                android:background="@color/main_color"
+                android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Horizontal container for SideCategory and RecyclerView -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:fillViewport="true">
+        android:orientation="horizontal">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+        <!-- SideCategory -->
+        <ScrollView
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
 
             <LinearLayout
                 android:id="@+id/SideCategory"
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:orientation="vertical">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp">
 
+                <!-- All Products -->
                 <FrameLayout
-                    android:layout_width="100dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:layout_marginRight="48dp"
                     android:layout_marginBottom="8dp">
 
-                    <!-- Main category content -->
                     <LinearLayout
                         android:id="@+id/layout_all_products"
                         android:layout_width="match_parent"
@@ -141,18 +137,17 @@
                         android:visibility="visible" />
                 </FrameLayout>
 
+                <!-- Food -->
                 <FrameLayout
-                    android:layout_width="100dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp">
 
-                    <!-- Main category content -->
                     <LinearLayout
                         android:id="@+id/layout_cate_food"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-
                         android:gravity="center_horizontal"
                         android:orientation="vertical">
 
@@ -189,13 +184,13 @@
                         android:visibility="gone" />
                 </FrameLayout>
 
+                <!-- Pet Care -->
                 <FrameLayout
-                    android:layout_width="100dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp">
 
-                    <!-- Main category content -->
                     <LinearLayout
                         android:id="@+id/layout_cate_pet_care"
                         android:layout_width="match_parent"
@@ -236,13 +231,13 @@
                         android:visibility="gone" />
                 </FrameLayout>
 
+                <!-- Furniture -->
                 <FrameLayout
-                    android:layout_width="100dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp">
 
-                    <!-- Main category content -->
                     <LinearLayout
                         android:id="@+id/layout_cate_furniture"
                         android:layout_width="match_parent"
@@ -283,13 +278,13 @@
                         android:visibility="gone" />
                 </FrameLayout>
 
+                <!-- Toys -->
                 <FrameLayout
-                    android:layout_width="100dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp">
 
-                    <!-- Main category content -->
                     <LinearLayout
                         android:id="@+id/layout_cate_toys"
                         android:layout_width="match_parent"
@@ -330,13 +325,13 @@
                         android:visibility="gone" />
                 </FrameLayout>
 
+                <!-- Accessories -->
                 <FrameLayout
-                    android:layout_width="100dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp">
 
-                    <!-- Main category content -->
                     <LinearLayout
                         android:id="@+id/layout_cate_accessories"
                         android:layout_width="match_parent"
@@ -359,7 +354,7 @@
 
                         <TextView
                             android:id="@+id/txt_accesories"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/inter_bold"
                             android:text="@string/title_category_accesories"
@@ -377,13 +372,13 @@
                         android:visibility="gone" />
                 </FrameLayout>
 
+                <!-- Carriers -->
                 <FrameLayout
-                    android:layout_width="100dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp">
 
-                    <!-- Main category content -->
                     <LinearLayout
                         android:id="@+id/layout_cate_carriers"
                         android:layout_width="match_parent"
@@ -423,49 +418,20 @@
                         android:background="@color/main_color"
                         android:visibility="gone" />
                 </FrameLayout>
-
-                <TableLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <TableRow
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
-
-                    <TableRow
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
-
-                    <TableRow
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
-
-                    <TableRow
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
-                </TableLayout>
-
-
             </LinearLayout>
+        </ScrollView>
 
-            <ScrollView
-                android:id="@+id/scrollView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+        <!-- RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/product_list"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="8dp"
+            android:clipToPadding="false" />
+    </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/ProductList"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="12dp"
-                    android:orientation="vertical">
-
-                </LinearLayout>
-            </ScrollView>
-
-        </LinearLayout>
-    </ScrollView>
-
+    <!-- Footer -->
     <include
         layout="@layout/activity_footer"
         android:layout_width="match_parent"

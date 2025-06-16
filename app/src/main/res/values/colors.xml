@@ -8,4 +8,5 @@
     <color name="star_yellow">#FFD700</color>
     <color name="star_gray">#CCCCCC</color>
     <color name="light_background">#f8f1f1</color>
+    <color name="gray_text">#a6a6a6</color>
 </resources>

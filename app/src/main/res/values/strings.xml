@@ -77,6 +77,7 @@
     <string name="title_child_cate_newest">NEWEST</string>
     <string name="title_child_care_rating">RATING</string>
     <string name="title_child_cate_price">PRICE</string>
+    <string name="title_view_all">View all</string>
     <string name="hint_flashdeals">Flash Deals</string>
     <string name="title_order">Order</string>
     <string name="title_search">Search</string>
@@ -90,5 +91,58 @@
     <string name="hint_type_a_message">Type a message ...</string>
     <string name="title_send_image">Send image</string>
     <string name="title_enter_current_password">Enter current password</string>
+
+    <string name="default_web_client_id">482980274516-fvnrke3sovvrb8pbfrijh9c35kgpom6k.apps.googleusercontent.com</string>
+    <string name="facebook_app_id">YOUR_FB_APP_ID</string>
+
+    <string name="policy_content"><![CDATA[
+<b>1. Purpose</b><br/>
+We are committed to protecting the personal information and transactions of users when using the pet supplies buying and selling application. This policy aims to be transparent about how we collect, use, share, and protect your information.<br/><br/>
+
+<b>2. Scope</b><br/>
+This policy applies to all users, including customers, suppliers, and partners, when accessing or using our application.<br/><br/>
+
+<b>3. Information Collected</b><br/>
+We may collect the following information:<br/><br/>
+
+- Account registration information: Full name, email, phone number, address, username, password.<br/>
+- Transaction information: Purchase history, payment method, credit/debit card information, shipping address.<br/>
+- Contact information: Content of communications via email, chat, feedback, and customer support.<br/>
+- Image information: Photos uploaded to the application for product reviews or customer support purposes.<br/>
+- Pet information (if applicable): Name, age, breed, health status, vaccination information (if the application supports pet management).<br/><br/>
+
+<b>4. Purpose of Information Use</b><br/>
+The information collected is used for:<br/><br/>
+
+- Providing and managing services: Registration, authentication, customer support, transaction processing.<br/>
+- Improving user experience: Analyzing behavior, personalizing experiences, developing new features.<br/>
+- Security and fraud prevention: Detecting and preventing fraudulent activities or policy violations.<br/>
+- Legal compliance: Meeting legal requirements, audits, and reporting.<br/><br/>
+
+<b>5. Information Security</b><br/>
+- Data encryption: Transaction information is encrypted using 256-bit SSL technology to ensure security.<br/>
+- Secure payments: We use reputable payment gateways (e.g., Stripe, Authorize.Net) to process transactions and do not store credit/debit card information on our system.<br/>
+- Restricted access: Only authorized personnel can access your personal information.<br/>
+- Physical and technical protection: The system is protected by firewalls, antivirus software, and other technical measures to prevent unauthorized access.<br/><br/>
+
+<b>6. Information Sharing</b><br/>
+We do not sell or disclose your personal information to third parties without your consent, unless required by law.<br/><br/>
+
+<b>7. Cookies and Tracking Technologies</b><br/>
+We use cookies and similar technologies to improve user experience, analyze access, and provide relevant advertising.<br/><br/>
+
+<b>8. User Rights</b><br/>
+You have the right to:<br/><br/>
+
+- Access, edit, or delete your personal information.<br/>
+- Opt out of receiving advertisements or notifications.<br/>
+- Request the suspension or deletion of your account.<br/><br/>
+
+<b>9. Policy Updates</b><br/>
+This policy may be updated periodically. When changes occur, we will notify you via the application or email.<br/><br/>
+
+<b>10. Contact</b><br/>
+If you have any questions or requests regarding our privacy and security policy, please contact us via email or the support section in the application.
+]]></string>
 
 </resources>

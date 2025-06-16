@@ -7,23 +7,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Category implements Serializable {
-    private int category_id;
+    private String category_id;
     private String category_name;
     private String category_description;
-    private int category_image_url;
+    private String category_image_url;
     private int category_rank;
     private List<String> category_keywords;
 
     private ArrayList<Product>products;
 
 
-
-
     public Category() {
-        products=new ArrayList<>();
+
     }
 
-    public Category(int category_id, String category_name, String category_description, int category_image_url, int category_rank, List<String> category_keywords) {
+    public Category(String category_id, String category_name, String category_description, String category_image_url, int category_rank, List<String> category_keywords) {
         this.category_id = category_id;
         this.category_name = category_name;
         this.category_description = category_description;
@@ -34,11 +32,11 @@ public class Category implements Serializable {
         this.products = new ArrayList<>();
     }
 
-    public int getCategory_id() {
+    public String getCategory_id() {
         return category_id;
     }
 
-    public void setCategory_id(int category_id) {
+    public void setCategory_id(String category_id) {
         this.category_id = category_id;
     }
 
@@ -58,11 +56,11 @@ public class Category implements Serializable {
         this.category_description = category_description;
     }
 
-    public int getCategory_image_url() {
+    public String getCategory_image_url() {
         return category_image_url;
     }
 
-    public void setCategory_image_url(int category_image_url) {
+    public void setCategory_image_url(String category_image_url) {
         this.category_image_url = category_image_url;
     }
 
@@ -97,9 +95,6 @@ public class Category implements Serializable {
     }
 
     public void addProduct (Product p){
-        if (products == null) {
-            products = new ArrayList<>();
-        }
         products.add(p);
     }
 
