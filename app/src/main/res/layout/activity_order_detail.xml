@@ -51,7 +51,36 @@
             android:background="#ffffff">
 
             <!-- Status -->
-            <include layout="@layout/order_progress_bar" />
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginTop="12dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#FFF7E8">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="16dp"
+                    android:paddingHorizontal="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Order Status"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#9C162C"
+                        android:paddingStart="10dp"
+                        android:paddingBottom="8dp"/>
+
+                    <include layout="@layout/order_progress_bar" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
             <!-- Section: Delivery Info -->
             <androidx.cardview.widget.CardView
