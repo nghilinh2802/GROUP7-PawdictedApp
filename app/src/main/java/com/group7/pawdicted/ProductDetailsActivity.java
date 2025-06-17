@@ -1,10 +1,13 @@
 package com.group7.pawdicted;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -22,6 +25,7 @@ import com.group7.pawdicted.mobile.models.ListProduct;
 import com.group7.pawdicted.mobile.models.Product;
 
 import java.text.DecimalFormat;
+import java.util.List;
 
 public class ProductDetailsActivity extends AppCompatActivity {
 
@@ -32,7 +36,10 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private android.widget.RatingBar productRatingBar, productRatingBar2;
     private ImageButton btnChat;
     private Button btnAddToCart, btnBuyNow;
+    private LinearLayout lvVariation;
     private ListProduct listProduct;
+    private String selectedVariantId; // Store selected variant ID
+    private String selectedVariantName; // Store selected variant name
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +84,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
         btnChat = findViewById(R.id.btnChat);
         btnAddToCart = findViewById(R.id.btnAddToCart);
         btnBuyNow = findViewById(R.id.btnBuyNow);
+        lvVariation = findViewById(R.id.lvVariation); // Initialize variation layout
 
         listProduct = new ListProduct();
         listProduct.generate_sample_dataset();
@@ -140,7 +148,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
         txtSoldQuantity.setText(product.getSold_quantity() + " sold  ");
 
         // Discount rate
-        txtDiscountRate.setText("-" + (int)product.getDiscount() + "%");
+        txtDiscountRate.setText(" -" + (int)product.getDiscount() + "% ");
 
         // Product name
         txtProductName.setText(product.getProduct_name());
@@ -155,7 +163,86 @@ public class ProductDetailsActivity extends AppCompatActivity {
         // Description
         txtProductDescription.setText(product.getDescription());
 
+        // Load variations
+        List<String> variantIds = product.getVariant_id();
+        List<String> variantNames = product.getVariant_name();
+        Log.d("ProductDetailsActivity", "Variant IDs: " + variantIds + ", Variant Names: " + variantNames);
+        loadVariations(variantIds, variantNames);
+
         Log.d("ProductDetailsActivity", "Loaded product: " + product.getProduct_name());
+    }
+    private int dpToPx(float dp) {
+        return (int) (dp * getResources().getDisplayMetrics().density + 0.5f);
+    }
+
+    private void loadVariations(List<String> variantIds, List<String> variantNames) {
+        // Clear existing variations
+        lvVariation.removeAllViews();
+
+        // Check for invalid or empty variant data
+        if (variantIds == null || variantNames == null || variantIds.isEmpty() || variantIds.size() != variantNames.size()) {
+            Log.w("ProductDetailsActivity", "Invalid or empty variant data");
+            return;
+        }
+
+        // Set first variation as selected by default
+        selectedVariantId = variantIds.get(0);
+        selectedVariantName = variantNames.get(0);
+
+        // Create a TextView for each variation
+        for (int i = 0; i < variantIds.size(); i++) {
+            String currentVariantId = variantIds.get(i);
+            String currentVariantName = variantNames.get(i);
+
+            TextView variationTextView = new TextView(this);
+            variationTextView.setText(currentVariantName);
+            variationTextView.setTextSize(14); // 14sp
+            variationTextView.setGravity(android.view.Gravity.CENTER);
+
+            // Set padding: 20dp horizontal, 4dp vertical
+            int paddingHorizontal = dpToPx(20);
+            int paddingVertical = dpToPx(4);
+            variationTextView.setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
+
+            // Set layout parameters with margins
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            int margin = dpToPx(10); // 10dp margin as per reference
+            params.setMargins(margin, dpToPx(5), margin, dpToPx(5)); // Left: 10dp, Top: 5dp, Right: 10dp, Bottom: 5dp
+            variationTextView.setLayoutParams(params);
+
+            // Apply style based on selection
+            updateVariationStyle(variationTextView, currentVariantName.equals(selectedVariantName));
+
+            // Set click listener
+            variationTextView.setOnClickListener(v -> {
+                // Update selected variant
+                selectedVariantId = currentVariantId;
+                selectedVariantName = currentVariantName;
+                Log.d("ProductDetailsActivity", "Selected variant: " + selectedVariantName + " (" + selectedVariantId + ")");
+
+                // Update styles for all variations
+                for (int j = 0; j < lvVariation.getChildCount(); j++) {
+                    TextView tv = (TextView) lvVariation.getChildAt(j);
+                    updateVariationStyle(tv, tv.getText().toString().equals(selectedVariantName));
+                }
+            });
+
+            // Add to layout
+            lvVariation.addView(variationTextView);
+        }
+    }
+
+    private void updateVariationStyle(TextView textView, boolean isSelected) {
+        if (isSelected) {
+            textView.setBackgroundResource(R.drawable.variation_button_red);
+            textView.setTextColor(getColor(R.color.main_color));
+        } else {
+            textView.setBackgroundResource(R.drawable.variation_button_grey);
+            textView.setTextColor(getColor(R.color.black));
+        }
     }
 
     @Override

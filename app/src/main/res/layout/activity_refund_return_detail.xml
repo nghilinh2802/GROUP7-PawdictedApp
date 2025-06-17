@@ -46,31 +46,39 @@
             android:paddingBottom="16dp">
 
             <!-- Status bar -->
-            <LinearLayout
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="#FAD793"
-                android:padding="16dp">
-
-                <TextView
-                    android:id="@+id/tv_status"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginTop="12dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#FFF7E8">
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Refund Credited Successfully"
-                    android:textColor="#9C162C"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                <TextView
-                    android:id="@+id/tv_status_sub"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Good news! Your refund is approved. Thank you for returning your items in time."
-                    android:textColor="#000000"
-                    android:textSize="13sp"
-                    android:layout_marginTop="4dp"/>
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/tv_status"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Refund Credited Successfully"
+                        android:textColor="#9C162C"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tv_status_sub"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Good news! Your refund is approved. Thank you for returning your items in time."
+                        android:textColor="#000000"
+                        android:textSize="13sp"
+                        android:layout_marginTop="4dp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
             <!-- Refund Summary Card -->
             <androidx.cardview.widget.CardView
@@ -207,6 +215,7 @@
                                 android:text="Refund Credited"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:gravity="center"
                                 android:textSize="12sp"
                                 android:textColor="#000000"/>
                             <TextView

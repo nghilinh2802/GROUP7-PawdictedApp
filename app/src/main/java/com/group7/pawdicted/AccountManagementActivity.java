@@ -16,6 +16,7 @@ public class AccountManagementActivity extends AppCompatActivity {
     ImageView ToConfirm, ToPickUp, ToShip, EvaluateOrder, imgViewPurchaseHistory;
     TextView txtToConfirm, txtToPickUp, txtToShip, txtEvaluateOrder, txtViewPurchaseHistory;
 
+    FooterManager footerManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,6 +29,7 @@ public class AccountManagementActivity extends AppCompatActivity {
         });
         addViews();
         addEvents();
+        footerManager = new FooterManager(this);
     }
 
     private void addViews() {

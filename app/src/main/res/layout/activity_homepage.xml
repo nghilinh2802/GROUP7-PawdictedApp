@@ -73,6 +73,7 @@
                                 android:id="@+id/imgCategory"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
+                                android:onClick="open_category"
                                 android:contentDescription="Icon"
                                 android:padding="0dp"
                                 android:src="@mipmap/ic_category" />
@@ -83,6 +84,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/inter_bold"
+                            android:onClick="open_category"
                             android:text="@string/title_homepage_category"
                             android:textAlignment="center"
                             android:textColor="#FFFDFD"
@@ -142,6 +144,7 @@
                             <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
+                                android:onClick="open_newArrival"
                                 android:contentDescription="Icon"
                                 android:padding="0dp"
                                 android:src="@mipmap/ic_new_arrival" />
@@ -151,6 +154,7 @@
                             android:id="@+id/txt_new_arrival"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:onClick="open_newArrival"
                             android:fontFamily="@font/inter_bold"
                             android:text="@string/title_homepage_new_arrival"
                             android:textAlignment="center"
@@ -255,6 +259,7 @@
                                 android:layout_height="match_parent"
                                 android:contentDescription="Icon"
                                 android:padding="0dp"
+                                android:onClick="open_blogs"
                                 android:scaleType="centerInside"
                                 android:src="@mipmap/ic_blog" />
                         </androidx.cardview.widget.CardView>
@@ -265,6 +270,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/inter_bold"
                             android:text="@string/title_homepage_blog"
+                            android:onClick="open_blogs"
                             android:textAlignment="center"
                             android:textColor="#FFFDFD" />
 
@@ -290,6 +296,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:contentDescription="Icon"
+                                android:onClick="open_faq"
                                 android:padding="0dp"
                                 android:src="@mipmap/ic_faqs" />
                         </androidx.cardview.widget.CardView>
@@ -300,6 +307,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/inter_bold"
                             android:scaleType="centerInside"
+                            android:onClick="open_faq"
                             android:text="@string/title_homepage_FAQs"
                             android:textAlignment="center"
                             android:textColor="#FFFDFD" />
@@ -325,6 +333,7 @@
                                 android:id="@+id/imgPolicy"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
+                                android:onClick="open_policy"
                                 android:contentDescription="Icon"
                                 android:padding="0dp"
                                 android:src="@mipmap/ic_policy" />
@@ -335,6 +344,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/inter_bold"
+                            android:onClick="open_policy"
                             android:text="@string/title_homepage_policy"
                             android:textAlignment="center"
                             android:textColor="#FFFDFD" />

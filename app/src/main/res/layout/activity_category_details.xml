@@ -8,6 +8,9 @@
     android:orientation="vertical"
     tools:context=".CategoryDetailsActivity">
 
+    <!-- Toolbar -->
+    <include layout="@layout/activity_tool_bar" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/child_category_container"
         android:layout_width="match_parent"
@@ -16,17 +19,20 @@
         android:padding="8dp"
         android:clipToPadding="false"
         android:scrollbars="none" />
+
     <LinearLayout
         android:id="@+id/filter_category"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="#FFFFFF">
+        android:layout_height="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/white"
+        android:orientation="horizontal">
 
         <!-- Best Seller -->
         <LinearLayout
             android:id="@+id/layout_best_seller"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
@@ -49,7 +55,7 @@
         <!-- Newest -->
         <LinearLayout
             android:id="@+id/layout_newest"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
@@ -72,7 +78,7 @@
         <!-- Rating -->
         <LinearLayout
             android:id="@+id/layout_rating"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
@@ -95,7 +101,7 @@
         <!-- Price + Arrow -->
         <LinearLayout
             android:id="@+id/layout_price"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
@@ -110,9 +116,9 @@
 
             <ImageView
                 android:id="@+id/img_ascend_arrows"
-                android:layout_width="16dp"
+                android:layout_width="8dp"
                 android:layout_height="16dp"
-                android:layout_marginStart="4dp"
+                android:layout_marginStart="2dp"
                 app:srcCompat="@mipmap/ic_ascend_arrows" />
         </LinearLayout>
     </LinearLayout>

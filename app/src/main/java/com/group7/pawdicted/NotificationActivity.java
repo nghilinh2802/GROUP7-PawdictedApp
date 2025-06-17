@@ -16,7 +16,7 @@ public class NotificationActivity extends AppCompatActivity {
 
     private Button btnPromotions, btnOrders;
     private FrameLayout contentFrame;
-
+    FooterManager footerManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +27,7 @@ public class NotificationActivity extends AppCompatActivity {
         contentFrame = findViewById(R.id.notification_content);
 
         setupTabs();
+        footerManager = new FooterManager(this);
     }
 
     private void setupTabs() {

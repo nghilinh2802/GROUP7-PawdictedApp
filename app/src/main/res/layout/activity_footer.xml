@@ -18,27 +18,21 @@
             android:layout_height="match_parent">
 
             <LinearLayout
+                android:id="@+id/layoutHome"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
 
-                <androidx.cardview.widget.CardView
+                <ImageView
+                    android:id="@+id/imgHome"
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_margin="4dp"
-                    app:cardBackgroundColor="#ffffff"
-                    app:cardCornerRadius="8dp">
-
-                    <ImageView
-                        android:id="@+id/imgHome"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:contentDescription="Icon"
-                        android:padding="0dp"
-                        android:src="@mipmap/ic_homepage_red" />
-                </androidx.cardview.widget.CardView>
+                    android:contentDescription="Icon"
+                    android:padding="0dp"
+                    android:src="@mipmap/ic_homepage_red" />
 
                 <TextView
                     android:id="@+id/txtHome"
@@ -52,29 +46,22 @@
 
             </LinearLayout>
 
-
             <LinearLayout
+                android:id="@+id/layoutCategory"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
 
-                <androidx.cardview.widget.CardView
+                <ImageView
+                    android:id="@+id/imgCategoryFooter"
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_margin="4dp"
-                    app:cardBackgroundColor="#ffffff"
-                    app:cardCornerRadius="8dp">
-
-                    <ImageView
-                        android:id="@+id/imgCategoryFooter"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:contentDescription="Icon"
-                        android:padding="0dp"
-                        android:src="@mipmap/ic_all_product_black" />
-                </androidx.cardview.widget.CardView>
+                    android:contentDescription="Icon"
+                    android:padding="0dp"
+                    android:src="@mipmap/ic_all_product_black" />
 
                 <TextView
                     android:id="@+id/txtCategoryFooter"
@@ -88,29 +75,22 @@
 
             </LinearLayout>
 
-
             <LinearLayout
+                android:id="@+id/layoutNotification"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
 
-                <androidx.cardview.widget.CardView
+                <ImageView
+                    android:id="@+id/imgNotification"
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_margin="4dp"
-                    app:cardBackgroundColor="#ffffff"
-                    app:cardCornerRadius="8dp">
-
-                    <ImageView
-                        android:id="@+id/imgNotification"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:contentDescription="Icon"
-                        android:padding="0dp"
-                        android:src="@mipmap/ic_notification_footer_black" />
-                </androidx.cardview.widget.CardView>
+                    android:contentDescription="Icon"
+                    android:padding="0dp"
+                    android:src="@mipmap/ic_notification_footer_black" />
 
                 <TextView
                     android:id="@+id/txtNotification"
@@ -125,27 +105,21 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/layoutAccount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
 
-                <androidx.cardview.widget.CardView
+                <ImageView
+                    android:id="@+id/imgAccount"
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_margin="4dp"
-                    app:cardBackgroundColor="#ffffff"
-                    app:cardCornerRadius="8dp">
-
-                    <ImageView
-                        android:id="@+id/imgAccount"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:contentDescription="Icon"
-                        android:padding="0dp"
-                        android:src="@mipmap/ic_account_footer_black" />
-                </androidx.cardview.widget.CardView>
+                    android:contentDescription="Icon"
+                    android:padding="0dp"
+                    android:src="@mipmap/ic_account_footer_black" />
 
                 <TextView
                     android:id="@+id/txtAccount"
@@ -159,7 +133,6 @@
 
             </LinearLayout>
         </TableRow>
-
 
     </TableLayout>
 </LinearLayout>
