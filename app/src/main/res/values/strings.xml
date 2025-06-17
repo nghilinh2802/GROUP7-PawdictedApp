@@ -1,0 +1,149 @@
+<resources>
+    <string name="app_name">Pawdicted</string>
+    <string name="title_to_confirm">To confirm</string>
+    <string name="title_to_pick_up">To Pick Up</string>
+    <string name="title_to_ship">To Ship</string>
+    <string name="title_evaluate_order">Evaluate</string>
+    <string name="title_my_purchases">My Purchases</string>
+    <string name="title_view_purchase_history">View purchase history</string>
+    <string name="title_utilities">Utilities</string>
+    <string name="title_wishlist">Wishlist</string>
+    <string name="title_voucher">Voucher</string>
+    <string name="title_blogs">Blogs</string>
+    <string name="title_history">History</string>
+    <string name="title_help">Help</string>
+    <string name="title_faqs">FAQs</string>
+    <string name="title_policies">Policies</string>
+    <string name="hp_searchText_hint">Search...</string>
+    <string name="title_homepage_category">Category</string>
+    <string name="title_homepage_flash_deals">Flash Deals</string>
+    <string name="title_homepage_new_arrival">New Arrival</string>
+    <string name="title_homepage_voucher">Voucher</string>
+    <string name="title_homepage_order">Order</string>
+    <string name="title_homepage_blog">Blog</string>
+    <string name="title_homepage_FAQs">FAQs</string>
+    <string name="title_homepage_policy">Policy</string>
+    <string name="title_footer_home">Home</string>
+    <string name="title_footer_notification">Notification</string>
+    <string name="title_footer_account">Account</string>
+    <string name="title_footer_category">Category</string>
+    <string name="title_login_login">LOG IN</string>
+    <string name="title_remember_me">Remember me?</string>
+    <string name="title_forgot_password">Forgot password?</string>
+    <string name="title_or_login_with">Or log in with</string>
+    <string name="title_dont_have_account">Don\'t have an account?</string>
+    <string name="title_signup_login">Sign up</string>
+    <string name="title_forgot_password_main">FORGOT PASSWORD</string>
+    <string name="title_send_recover_code">SEND RECOVER CODE</string>
+    <string name="title_change_password">CHANGE PASSWORD</string>
+    <string name="title_enter_new_password">Enter new password</string>
+    <string name="title_reenter_new_password">Re-enter new password</string>
+    <string name="title_signup">SIGN UP</string>
+    <string name="title_or_signup_with">Or Signup with</string>
+    <string name="title_already_have_account">Already have an account?</string>
+    <string name="title_login_signup">Log in</string>
+    <string name="title_hot">Hot</string>
+    <string name="title_flashdeals">Flash Deals</string>
+    <string name="title_end_in">Ends in</string>
+    <string name="title_on_going">On going</string>
+    <string name="title_upcoming">Upcoming</string>
+    <string name="title_buy_now">Buy now</string>
+    <string name="title_products_sold">products sold</string>
+    <string name="title_all">All</string>
+    <string name="title_toys">Toys</string>
+    <string name="title_food">Food</string>
+    <string name="title_accessories">Accessories</string>
+    <string-array name="gender_array">
+        <item>Female</item>
+        <item>Male</item>
+        <item>Other</item>
+    </string-array>
+    <string name="title_category_for_dogs">For Dogs</string>
+    <string name="title_category_for_cats">For Cats</string>
+    <string name="title_category_all_products">All Products</string>
+    <string name="title_category_food_treats">
+<![CDATA[ Food & Treats ]]>
+</string>
+    <string name="title_category_pet_care">Pet Care</string>
+    <string name="title_category_furniture">Furniture</string>
+    <string name="title_category_toys">Toys</string>
+    <string name="title_category_accesories">Accessories</string>
+    <string name="title_category_carriers">
+<![CDATA[ Carriers & Kennels ]]>
+</string>
+
+    <string name="see_all">See All</string>
+    <string name="title_child_cate_best_seller">BEST SELLER</string>
+    <string name="title_child_cate_newest">NEWEST</string>
+    <string name="title_child_care_rating">RATING</string>
+    <string name="title_child_cate_price">PRICE</string>
+    <string name="title_view_all">View all</string>
+    <string name="hint_flashdeals">Flash Deals</string>
+    <string name="title_order">Order</string>
+    <string name="title_search">Search</string>
+    <string name="title_back">Back</string>
+    <string name="title_FAQ">FAQs</string>
+    <string name="title_refund">Refund</string>
+    <string name="title_member">Member</string>
+    <string name="title_other">Other</string>
+    <string name="title_policy_security"><![CDATA[POLICY & SECURITY]]></string>
+    <string name="title_chatting">CHATTING</string>
+    <string name="hint_type_a_message">Type a message ...</string>
+    <string name="title_send_image">Send image</string>
+    <string name="title_enter_current_password">Enter current password</string>
+
+    <string name="default_web_client_id">482980274516-fvnrke3sovvrb8pbfrijh9c35kgpom6k.apps.googleusercontent.com</string>
+    <string name="facebook_app_id">YOUR_FB_APP_ID</string>
+
+    <string name="policy_content"><![CDATA[
+<b>1. Purpose</b><br/>
+We are committed to protecting the personal information and transactions of users when using the pet supplies buying and selling application. This policy aims to be transparent about how we collect, use, share, and protect your information.<br/><br/>
+
+<b>2. Scope</b><br/>
+This policy applies to all users, including customers, suppliers, and partners, when accessing or using our application.<br/><br/>
+
+<b>3. Information Collected</b><br/>
+We may collect the following information:<br/><br/>
+
+- Account registration information: Full name, email, phone number, address, username, password.<br/>
+- Transaction information: Purchase history, payment method, credit/debit card information, shipping address.<br/>
+- Contact information: Content of communications via email, chat, feedback, and customer support.<br/>
+- Image information: Photos uploaded to the application for product reviews or customer support purposes.<br/>
+- Pet information (if applicable): Name, age, breed, health status, vaccination information (if the application supports pet management).<br/><br/>
+
+<b>4. Purpose of Information Use</b><br/>
+The information collected is used for:<br/><br/>
+
+- Providing and managing services: Registration, authentication, customer support, transaction processing.<br/>
+- Improving user experience: Analyzing behavior, personalizing experiences, developing new features.<br/>
+- Security and fraud prevention: Detecting and preventing fraudulent activities or policy violations.<br/>
+- Legal compliance: Meeting legal requirements, audits, and reporting.<br/><br/>
+
+<b>5. Information Security</b><br/>
+- Data encryption: Transaction information is encrypted using 256-bit SSL technology to ensure security.<br/>
+- Secure payments: We use reputable payment gateways (e.g., Stripe, Authorize.Net) to process transactions and do not store credit/debit card information on our system.<br/>
+- Restricted access: Only authorized personnel can access your personal information.<br/>
+- Physical and technical protection: The system is protected by firewalls, antivirus software, and other technical measures to prevent unauthorized access.<br/><br/>
+
+<b>6. Information Sharing</b><br/>
+We do not sell or disclose your personal information to third parties without your consent, unless required by law.<br/><br/>
+
+<b>7. Cookies and Tracking Technologies</b><br/>
+We use cookies and similar technologies to improve user experience, analyze access, and provide relevant advertising.<br/><br/>
+
+<b>8. User Rights</b><br/>
+You have the right to:<br/><br/>
+
+- Access, edit, or delete your personal information.<br/>
+- Opt out of receiving advertisements or notifications.<br/>
+- Request the suspension or deletion of your account.<br/><br/>
+
+<b>9. Policy Updates</b><br/>
+This policy may be updated periodically. When changes occur, we will notify you via the application or email.<br/><br/>
+
+<b>10. Contact</b><br/>
+If you have any questions or requests regarding our privacy and security policy, please contact us via email or the support section in the application.
+]]></string>
+    <string name="title_selected_product">Selected Product</string>
+
+</resources>
