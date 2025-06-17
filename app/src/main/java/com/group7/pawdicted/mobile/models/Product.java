@@ -10,8 +10,8 @@ public class Product {
     private String product_id;
     private String product_name;
 
-    private String variant_id;
-    private String variant_name;
+    private List<String> variant_id;
+    private List<String> variant_name;
 
     private double price;
     private String description;
@@ -27,6 +27,7 @@ public class Product {
     private String category_id;
 
     private String child_category_id;
+
 
 
     private List<String> also_buy;
@@ -45,7 +46,7 @@ public class Product {
     public Product() {
     }
 
-    public Product(String product_id, String product_name, String variant_id, String variant_name, double price, String description, String details, double average_rating, int rating_number, int quantity, String product_image, int animal_class_id, String category_id, String child_category_id, List<String> also_buy, List<String> also_view, List<String> similar_item, int rank, Date date_listed, int discount, int sold_quantity) {
+    public Product(String product_id, String product_name, List<String> variant_id, List<String> variant_name, double price, String description, String details, double average_rating, int rating_number, int quantity, String product_image, int animal_class_id, String category_id, String child_category_id,  List<String> also_buy, List<String> also_view, List<String> similar_item, int rank, Date date_listed, int discount, int sold_quantity) {
         this.product_id = product_id;
         this.product_name = product_name;
         this.variant_id = variant_id;
@@ -85,19 +86,19 @@ public class Product {
         this.product_name = product_name;
     }
 
-    public String getVariant_id() {
+    public List<String> getVariant_id() {
         return variant_id;
     }
 
-    public void setVariant_id(String variant_id) {
+    public void setVariant_id(List<String> variant_id) {
         this.variant_id = variant_id;
     }
 
-    public String getVariant_name() {
+    public List<String> getVariant_name() {
         return variant_name;
     }
 
-    public void setVariant_name(String variant_name) {
+    public void setVariant_name(List<String> variant_name) {
         this.variant_name = variant_name;
     }
 
@@ -180,6 +181,7 @@ public class Product {
     public void setChild_category_id(String child_category_id) {
         this.child_category_id = child_category_id;
     }
+
 
     public List<String> getAlso_buy() {
         return also_buy;

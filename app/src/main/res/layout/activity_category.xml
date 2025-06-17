@@ -104,18 +104,13 @@
                         android:gravity="center_horizontal"
                         android:orientation="vertical">
 
-                        <androidx.cardview.widget.CardView
+                        <ImageView
+                            android:id="@+id/img_cate_all_products"
                             android:layout_width="48dp"
                             android:layout_height="48dp"
                             android:layout_gravity="center"
-                            android:padding="8dp">
-
-                            <ImageView
-                                android:id="@+id/img_cate_all_products"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                app:srcCompat="@mipmap/ic_all_product_red" />
-                        </androidx.cardview.widget.CardView>
+                            android:padding="8dp"
+                            app:srcCompat="@mipmap/ic_all_product_red" />
 
                         <TextView
                             android:id="@+id/txt_cate_all_products"
@@ -151,18 +146,13 @@
                         android:gravity="center_horizontal"
                         android:orientation="vertical">
 
-                        <androidx.cardview.widget.CardView
+                        <ImageView
+                            android:id="@+id/img_cate_food"
                             android:layout_width="48dp"
                             android:layout_height="48dp"
                             android:layout_gravity="center"
-                            android:padding="8dp">
-
-                            <ImageView
-                                android:id="@+id/img_cate_food"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                app:srcCompat="@mipmap/ic_food_cate_black" />
-                        </androidx.cardview.widget.CardView>
+                            android:padding="8dp"
+                            app:srcCompat="@mipmap/ic_food_cate_black" />
 
                         <TextView
                             android:id="@+id/txt_cate_food"
@@ -198,18 +188,13 @@
                         android:gravity="center_horizontal"
                         android:orientation="vertical">
 
-                        <androidx.cardview.widget.CardView
+                        <ImageView
+                            android:id="@+id/img_pet_care"
                             android:layout_width="48dp"
                             android:layout_height="48dp"
                             android:layout_gravity="center"
-                            android:padding="8dp">
-
-                            <ImageView
-                                android:id="@+id/img_pet_care"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                app:srcCompat="@mipmap/ic_petcare_cate_black" />
-                        </androidx.cardview.widget.CardView>
+                            android:padding="8dp"
+                            app:srcCompat="@mipmap/ic_petcare_cate_black" />
 
                         <TextView
                             android:id="@+id/txt_pet_care"
@@ -245,18 +230,13 @@
                         android:gravity="center_horizontal"
                         android:orientation="vertical">
 
-                        <androidx.cardview.widget.CardView
+                        <ImageView
+                            android:id="@+id/img_furniture"
                             android:layout_width="48dp"
                             android:layout_height="48dp"
                             android:layout_gravity="center"
-                            android:padding="8dp">
-
-                            <ImageView
-                                android:id="@+id/img_furniture"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                app:srcCompat="@mipmap/ic_furniture_cate_black" />
-                        </androidx.cardview.widget.CardView>
+                            android:padding="8dp"
+                            app:srcCompat="@mipmap/ic_furniture_cate_black" />
 
                         <TextView
                             android:id="@+id/txt_furniture"
@@ -292,18 +272,13 @@
                         android:gravity="center_horizontal"
                         android:orientation="vertical">
 
-                        <androidx.cardview.widget.CardView
+                        <ImageView
+                            android:id="@+id/img_cate_toys"
                             android:layout_width="48dp"
                             android:layout_height="48dp"
                             android:layout_gravity="center"
-                            android:padding="8dp">
-
-                            <ImageView
-                                android:id="@+id/img_cate_toys"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                app:srcCompat="@mipmap/ic_toy_cate_black" />
-                        </androidx.cardview.widget.CardView>
+                            android:padding="8dp"
+                            app:srcCompat="@mipmap/ic_toy_cate_black" />
 
                         <TextView
                             android:id="@+id/txt_cate_toys"
@@ -339,18 +314,13 @@
                         android:gravity="center_horizontal"
                         android:orientation="vertical">
 
-                        <androidx.cardview.widget.CardView
+                        <ImageView
+                            android:id="@+id/img_accesories"
                             android:layout_width="48dp"
                             android:layout_height="48dp"
                             android:layout_gravity="center"
-                            android:padding="8dp">
-
-                            <ImageView
-                                android:id="@+id/img_accesories"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                app:srcCompat="@mipmap/ic_accessories_cate_black" />
-                        </androidx.cardview.widget.CardView>
+                            android:padding="8dp"
+                            app:srcCompat="@mipmap/ic_accessories_cate_black" />
 
                         <TextView
                             android:id="@+id/txt_accesories"
@@ -386,18 +356,13 @@
                         android:gravity="center_horizontal"
                         android:orientation="vertical">
 
-                        <androidx.cardview.widget.CardView
+                        <ImageView
+                            android:id="@+id/img_carriers"
                             android:layout_width="48dp"
                             android:layout_height="48dp"
                             android:layout_gravity="center"
-                            android:padding="8dp">
-
-                            <ImageView
-                                android:id="@+id/img_carriers"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                app:srcCompat="@mipmap/ic_kennels_cate_black" />
-                        </androidx.cardview.widget.CardView>
+                            android:padding="8dp"
+                            app:srcCompat="@mipmap/ic_kennels_cate_black" />
 
                         <TextView
                             android:id="@+id/txt_carriers"

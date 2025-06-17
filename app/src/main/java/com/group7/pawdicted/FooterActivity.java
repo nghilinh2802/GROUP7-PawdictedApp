@@ -24,7 +24,6 @@ public class FooterActivity extends AppCompatActivity {
     // List chứa thông tin icon + text + icon resource tương ứng
     List<MenuItem> menuItems = new ArrayList<>();
 
-
     // Class đại diện cho 1 mục menu
     static class MenuItem {
         ImageView icon;

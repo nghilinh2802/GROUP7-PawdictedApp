@@ -31,4 +31,18 @@ public class HomepageActivity extends AppCompatActivity {
         footerManager = new FooterManager(this);
     }
 
+    public void open_blogs(View view) {
+        Intent intent=new Intent(HomepageActivity.this,BlogActivity.class);
+        startActivity(intent);
+    }
+
+    public void open_policy(View view) {
+        Intent intent=new Intent(HomepageActivity.this,PolicynSecurityActivity.class);
+        startActivity(intent);
+    }
+
+    public void open_faq(View view) {
+        Intent intent=new Intent(HomepageActivity.this,FAQActivity.class);
+        startActivity(intent);
+    }
 }

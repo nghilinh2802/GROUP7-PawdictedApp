@@ -37,6 +37,7 @@ public class CategoryActivity extends AppCompatActivity {
     private ProductAdapter adapter;
     private int selectedAnimalClass = -2; // -2: none, -1: all, 0: cat, 1: dog
     private String selectedSideCategory = "ALL"; // ALL, FT, FU, PC, TO, AC, CK
+    private String selectedChildCategoryId = null;
     private List<Object> displayItems;
 
     private ListChildCategory listChildCategory;
@@ -237,6 +238,11 @@ public class CategoryActivity extends AppCompatActivity {
                 setSideActive(txtAllProducts, redBarAllProducts, imgAllProducts, true, R.mipmap.ic_all_product_red, R.mipmap.ic_all_product_black);
                 selectedSideCategory = "ALL";
                 filterProducts();
+            } else {
+                layoutAllProducts.setSelected(false);
+                setSideActive(txtAllProducts, redBarAllProducts, imgAllProducts, false, R.mipmap.ic_all_product_red, R.mipmap.ic_all_product_black);
+                selectedSideCategory = null;
+                filterProducts();
             }
         });
 
@@ -246,6 +252,11 @@ public class CategoryActivity extends AppCompatActivity {
                 layoutFood.setSelected(true);
                 setSideActive(txtFood, redBarFood, imgFood, true, R.mipmap.ic_food_cate_red, R.mipmap.ic_food_cate_black);
                 selectedSideCategory = "FT";
+                filterProducts();
+            } else {
+                layoutFood.setSelected(false);
+                setSideActive(txtFood, redBarFood, imgFood, false, R.mipmap.ic_food_cate_red, R.mipmap.ic_food_cate_black);
+                selectedSideCategory = null;
                 filterProducts();
             }
         });
@@ -257,6 +268,11 @@ public class CategoryActivity extends AppCompatActivity {
                 setSideActive(txtPetCare, redBarPetCare, imgPetCare, true, R.mipmap.ic_petcare_cate_red, R.mipmap.ic_petcare_cate_black);
                 selectedSideCategory = "PC";
                 filterProducts();
+            } else {
+                layoutPetCare.setSelected(false);
+                setSideActive(txtPetCare, redBarPetCare, imgPetCare, false, R.mipmap.ic_petcare_cate_red, R.mipmap.ic_petcare_cate_black);
+                selectedSideCategory = null;
+                filterProducts();
             }
         });
 
@@ -266,6 +282,11 @@ public class CategoryActivity extends AppCompatActivity {
                 layoutFurniture.setSelected(true);
                 setSideActive(txtFurniture, redBarFurniture, imgFurniture, true, R.mipmap.ic_furniture_cate_red, R.mipmap.ic_furniture_cate_black);
                 selectedSideCategory = "FU";
+                filterProducts();
+            } else {
+                layoutFurniture.setSelected(false);
+                setSideActive(txtFurniture, redBarFurniture, imgFurniture, false, R.mipmap.ic_furniture_cate_red, R.mipmap.ic_furniture_cate_black);
+                selectedSideCategory = null;
                 filterProducts();
             }
         });
@@ -277,6 +298,11 @@ public class CategoryActivity extends AppCompatActivity {
                 setSideActive(txtToys, redBarToys, imgToys, true, R.mipmap.ic_toy_cate_red, R.mipmap.ic_toy_cate_black);
                 selectedSideCategory = "TO";
                 filterProducts();
+            } else {
+                layoutToys.setSelected(false);
+                setSideActive(txtToys, redBarToys, imgToys, false, R.mipmap.ic_toy_cate_red, R.mipmap.ic_toy_cate_black);
+                selectedSideCategory = null;
+                filterProducts();
             }
         });
 
@@ -286,6 +312,11 @@ public class CategoryActivity extends AppCompatActivity {
                 layoutAccessories.setSelected(true);
                 setSideActive(txtAccesories, redBarAccessories, imgAccesories, true, R.mipmap.ic_accessories_cate_red, R.mipmap.ic_accessories_cate_black);
                 selectedSideCategory = "AC";
+                filterProducts();
+            } else {
+                layoutAccessories.setSelected(false);
+                setSideActive(txtAccesories, redBarAccessories, imgAccesories, false, R.mipmap.ic_accessories_cate_red, R.mipmap.ic_accessories_cate_black);
+                selectedSideCategory = null;
                 filterProducts();
             }
         });
@@ -297,26 +328,39 @@ public class CategoryActivity extends AppCompatActivity {
                 setSideActive(txtCarriers, redBarCarriers, imgCarriers, true, R.mipmap.ic_kennels_cate_red, R.mipmap.ic_kennels_cate_black);
                 selectedSideCategory = "CK";
                 filterProducts();
+            } else {
+                layoutCarriers.setSelected(false);
+                setSideActive(txtCarriers, redBarCarriers, imgCarriers, false, R.mipmap.ic_kennels_cate_red, R.mipmap.ic_kennels_cate_black);
+                selectedSideCategory = null;
+                filterProducts();
             }
         });
 
-        View.OnLongClickListener longClickListener = v -> {
-            String categoryId = layoutToCategoryMap.get(v.getId());
-            if (categoryId != null) {
-                Intent intent = new Intent(CategoryActivity.this, CategoryDetailsActivity.class);
-                intent.putExtra("category_id", categoryId);
-                startActivity(intent);
-            }
-            return true;
-        };
+//        View.OnLongClickListener longClickListener = v -> {
+//            String categoryId = layoutToCategoryMap.get(v.getId());
+//            if (categoryId != null) {
+//                Intent intent = new Intent(CategoryActivity.this, CategoryDetailsActivity.class);
+//                intent.putExtra("category_id", categoryId);
+//                startActivity(intent);
+//            }
+//            return true;
+//        };
 
-        layoutAllProducts.setOnLongClickListener(longClickListener);
-        layoutFood.setOnLongClickListener(longClickListener);
-        layoutPetCare.setOnLongClickListener(longClickListener);
-        layoutFurniture.setOnLongClickListener(longClickListener);
-        layoutToys.setOnLongClickListener(longClickListener);
-        layoutAccessories.setOnLongClickListener(longClickListener);
-        layoutCarriers.setOnLongClickListener(longClickListener);
+        adapter.setOnChildCategoryClickListener(childCategory -> {
+            Intent intent = new Intent(CategoryActivity.this, CategoryDetailsActivity.class);
+            intent.putExtra("child_category_id", childCategory.getChildCategory_id());
+            intent.putExtra("category_id", childCategory.getCategory_id());
+            intent.putExtra("animal_class", selectedAnimalClass);
+            startActivity(intent);
+        });
+
+//        layoutAllProducts.setOnLongClickListener(longClickListener);
+//        layoutFood.setOnLongClickListener(longClickListener);
+//        layoutPetCare.setOnLongClickListener(longClickListener);
+//        layoutFurniture.setOnLongClickListener(longClickListener);
+//        layoutToys.setOnLongClickListener(longClickListener);
+//        layoutAccessories.setOnLongClickListener(longClickListener);
+//        layoutCarriers.setOnLongClickListener(longClickListener);
     }
 
     private void resetSideCategories() {
@@ -340,65 +384,23 @@ public class CategoryActivity extends AppCompatActivity {
     private void filterProducts() {
         displayItems.clear();
 
-        List<Product> products = listProduct.getProducts();
         List<ChildCategory> childCategories = listChildCategory.getChildCategories();
 
-        if (products == null || childCategories == null) {
-            Log.e("CategoryActivity", "Products or ChildCategories is null");
+        if (childCategories == null) {
+            Log.e("CategoryActivity", "ChildCategories is null");
             return;
         }
 
-        Log.d("CategoryActivity", "Products size: " + products.size());
-        Log.d("CategoryActivity", "ChildCategories size: " + childCategories.size());
-        Log.d("CategoryActivity", "SelectedSideCategory: " + selectedSideCategory);
-
-        String[] categoriesWithChild = {"FT", "PC", "FU", "TO", "AC", "CK"};
-        boolean isCategoryWithChild = false;
-        for (String category : categoriesWithChild) {
-            if (category.equals(selectedSideCategory)) {
-                isCategoryWithChild = true;
-                break;
-            }
-        }
-
-        if (isCategoryWithChild) {
+        if (selectedSideCategory != null && !"ALL".equals(selectedSideCategory)) {
             for (ChildCategory childCategory : childCategories) {
                 if (selectedSideCategory.equals(childCategory.getCategory_id())) {
                     displayItems.add(childCategory);
                     Log.d("CategoryActivity", "Added ChildCategory: " + childCategory.getChildCategory_name());
-                    int productCount = 0;
-                    List<Product> matchingProducts = new ArrayList<>();
-                    for (Product product : products) {
-                        boolean matchesChildCategory = product.getChild_category_id() != null &&
-                                product.getChild_category_id().equals(childCategory.getChildCategory_id());
-                        boolean matchesAnimal = matchesAnimalClass(product);
-                        if (matchesChildCategory && matchesAnimal) {
-                            matchingProducts.add(product);
-                            productCount++;
-                        }
-                    }
-                    for (int i = 0; i < Math.min(6, matchingProducts.size()); i++) {
-                        displayItems.add(matchingProducts.get(i));
-                        Log.d("CategoryActivity", "Added Product: " + matchingProducts.get(i).getProduct_name());
-                    }
-                    if (productCount > 6) {
-                        displayItems.add(new ProductAdapter.SeeAllItem());
-                        Log.d("CategoryActivity", "Added SeeAll for ChildCategory: " + childCategory.getChildCategory_name());
-                    }
                 }
             }
         } else {
-            for (Product product : products) {
-                boolean matchesSideCategory = true;
-                if (selectedSideCategory != null && !"ALL".equals(selectedSideCategory)) {
-                    matchesSideCategory = selectedSideCategory.equals(product.getCategory_id());
-                }
-                boolean matchesAnimal = matchesAnimalClass(product);
-                if (matchesSideCategory && matchesAnimal) {
-                    displayItems.add(product);
-                    Log.d("CategoryActivity", "Added Product: " + product.getProduct_name());
-                }
-            }
+            // Nếu chọn "ALL" hoặc không chọn SideCategory, hiển thị tất cả ChildCategory
+            displayItems.addAll(childCategories);
         }
 
         Log.d("CategoryActivity", "DisplayItems size: " + displayItems.size());

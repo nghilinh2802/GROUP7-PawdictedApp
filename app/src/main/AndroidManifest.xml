@@ -87,7 +87,8 @@
             android:exported="true" /> <!-- LoginActivity will be the launcher activity -->
         <activity
             android:name=".LoginActivity"
-            android:exported="false" />
+            android:exported="true" />
+
 
         <activity
             android:name=".CategoryActivity"
@@ -98,6 +99,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".CategoryDetailsActivity"
             android:exported="false" />
         <activity
