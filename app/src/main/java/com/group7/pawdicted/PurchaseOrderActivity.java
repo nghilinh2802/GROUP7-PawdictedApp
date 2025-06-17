@@ -137,7 +137,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                     monthView.setTextSize(16f);
                     monthView.setTypeface(null, android.graphics.Typeface.BOLD);
                     monthView.setTextColor(Color.parseColor("#782421"));
-                    monthView.setPadding(0, 16, 0, 8);
+                    monthView.setPadding(0, 10, 0, 8);
                     orderListContainer.addView(monthView);
                     lastMonthYear = monthYear;
                 }

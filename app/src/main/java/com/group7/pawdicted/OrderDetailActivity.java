@@ -233,7 +233,6 @@ public class OrderDetailActivity extends AppCompatActivity {
     }
 
 
-
     private void loadOrderDetail(String orderId) {
         SQLiteConnector dbHelper = new SQLiteConnector(this);
         SQLiteDatabase db = dbHelper.getDatabase();
@@ -253,21 +252,19 @@ public class OrderDetailActivity extends AppCompatActivity {
         // Danh sách sản phẩm
         LinearLayout productList = findViewById(R.id.ll_products);
         Cursor productCursor = db.rawQuery(
-                "SELECT product_name, quantity, total_cost_of_goods FROM order_items WHERE order_id = ?",
+                "SELECT product_name, quantity, unit_price FROM order_items WHERE order_id = ?",
                 new String[]{orderId}
         );
         productList.removeAllViews();
         while (productCursor.moveToNext()) {
             String productName = productCursor.getString(0);
             int quantity = productCursor.getInt(1);
-            int totalCost = productCursor.getInt(2);
-            int unitPrice = totalCost / quantity;
+            int unitPrice = productCursor.getInt(2);
 
-            View itemView = getLayoutInflater().inflate(R.layout.layout_product_item, productList, false);
-            ((TextView) itemView.findViewById(R.id.tv_product_name)).setText(productName);
-            ((TextView) itemView.findViewById(R.id.tv_unit_price)).setText(formatCurrency(unitPrice) + " ₫");
-            ((TextView) itemView.findViewById(R.id.tv_quantity)).setText("x" + quantity);
-            ((TextView) itemView.findViewById(R.id.tv_total)).setText(formatCurrency(totalCost) + " ₫");
+            View itemView = getLayoutInflater().inflate(R.layout.checkout_item, productList, false);
+            ((TextView) itemView.findViewById(R.id.txtProductName)).setText(productName);
+            ((TextView) itemView.findViewById(R.id.txtProductPrice)).setText(formatCurrency(unitPrice) + " ₫");
+            ((TextView) itemView.findViewById(R.id.txtProductQuantity)).setText("x" + quantity);
 
             Cursor imgCursor = db.rawQuery(
                     "SELECT ImageLink FROM products WHERE product_name = ? LIMIT 1",
@@ -275,7 +272,7 @@ public class OrderDetailActivity extends AppCompatActivity {
             );
             if (imgCursor.moveToFirst()) {
                 String imgUrl = imgCursor.getString(0);
-                ImageView imageView = itemView.findViewById(R.id.img_product);
+                ImageView imageView = itemView.findViewById(R.id.imgProduct);
                 Glide.with(this).load(imgUrl).into(imageView);
             }
             imgCursor.close();
