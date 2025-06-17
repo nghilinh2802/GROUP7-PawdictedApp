@@ -28,6 +28,9 @@
             android:name=".EvaluateActivity"
             android:exported="false" />
         <activity
+            android:name=".NotificationActivity"
+            android:exported="true" />
+        <activity
             android:name=".CheckoutActivity"
             android:exported="false" />
         <activity

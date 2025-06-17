@@ -1,6 +1,9 @@
 package com.group7.pawdicted;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +29,20 @@ public class HomepageActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         footerManager = new FooterManager(this);
+    }
 
+    public void open_blogs(View view) {
+        Intent intent=new Intent(HomepageActivity.this,BlogActivity.class);
+        startActivity(intent);
+    }
+
+    public void open_policy(View view) {
+        Intent intent=new Intent(HomepageActivity.this,PolicynSecurityActivity.class);
+        startActivity(intent);
+    }
+
+    public void open_faq(View view) {
+        Intent intent=new Intent(HomepageActivity.this,FAQActivity.class);
+        startActivity(intent);
     }
 }

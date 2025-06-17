@@ -55,10 +55,11 @@ public class FooterManager {
                 if (item.text.getId() == R.id.txtCategoryFooter || item.icon.getId() == R.id.imgCategoryFooter) {
                     Intent intent = new Intent(activity, CategoryActivity.class);
                     activity.startActivity(intent);
-                }
-
-                else if (item.text.getId() == R.id.txtAccount || item.icon.getId() == R.id.imgAccount) {
+                } else if (item.text.getId() == R.id.txtAccount || item.icon.getId() == R.id.imgAccount) {
                     Intent intent = new Intent(activity, AccountManagementActivity.class);
+                    activity.startActivity(intent);
+                } else if (item.text.getId() == R.id.txtNotification || item.icon.getId() == R.id.imgNotification) {
+                    Intent intent = new Intent(activity, NotificationActivity.class);
                     activity.startActivity(intent);
                 }
             };

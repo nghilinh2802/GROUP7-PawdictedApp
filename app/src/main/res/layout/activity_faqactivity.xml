@@ -112,7 +112,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:divider="#A62332"
+        android:divider="#FFFFFF"
         android:dividerHeight="8dp"
         android:background="#F5F5F5"
         android:indicatorLeft="16dp"

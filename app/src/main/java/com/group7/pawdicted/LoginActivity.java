@@ -30,9 +30,9 @@ import java.util.*;
 public class LoginActivity extends AppCompatActivity {
     private static final int RC_GOOGLE_SIGN_IN = 1001;
     private static final String TAG = "LOGIN";
-    private static final String PREFS = "prefs", KEY_USER = "username", KEY_REMEMBER = "remember";
+    private static final String PREFS = "prefs", KEY_USER = "phone", KEY_REMEMBER = "remember";
 
-    private EditText edtUsername, edtPassword;
+    private EditText edtPhone, edtPassword;
     private CheckBox chkRemember;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -44,68 +44,80 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(s);
         setContentView(R.layout.activity_login);
 
-        edtUsername = findViewById(R.id.edtUsername); // dùng lại ID nhưng gán là username
+        edtPhone = findViewById(R.id.edtPhone);
         edtPassword = findViewById(R.id.edtPassword);
         chkRemember = findViewById(R.id.ckbRememberInfo);
-        findViewById(R.id.btnLogin).setOnClickListener(v -> loginWithUsername());
+        findViewById(R.id.btnLogin).setOnClickListener(v -> loginWithPhone());
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
         setupGoogle();
         setupFacebook();
-
         loadPrefs();
     }
 
     private void loadPrefs() {
         SharedPreferences p = getSharedPreferences(PREFS, MODE_PRIVATE);
         if (p.getBoolean(KEY_REMEMBER, false)) {
-            edtUsername.setText(p.getString(KEY_USER, ""));
+            edtPhone.setText(p.getString(KEY_USER, ""));
             chkRemember.setChecked(true);
         }
     }
 
-    private void savePrefs(String user, boolean remember) {
+    private void savePrefs(String phone, boolean remember) {
         SharedPreferences.Editor ed = getSharedPreferences(PREFS, MODE_PRIVATE).edit();
         if (remember) {
-            ed.putString(KEY_USER, user).putBoolean(KEY_REMEMBER, true);
+            ed.putString(KEY_USER, phone).putBoolean(KEY_REMEMBER, true);
         } else {
             ed.remove(KEY_USER).remove(KEY_REMEMBER);
         }
         ed.apply();
     }
 
-    private void loginWithUsername() {
-        String u = edtUsername.getText().toString().trim();
-        String pass = edtPassword.getText().toString();
+    private void loginWithPhone() {
+        String phone = edtPhone.getText().toString().trim();
+        String password = edtPassword.getText().toString();
 
-        if (u.isEmpty() || pass.isEmpty()) {
-            Toast.makeText(this, "Nhập username & mật khẩu!", Toast.LENGTH_SHORT).show();
+        if (phone.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập số điện thoại và mật khẩu!", Toast.LENGTH_SHORT).show();
             return;
         }
 
         db.collection("customers")
-                .whereEqualTo("customer_username", u)
+                .whereEqualTo("phone_number", phone)
                 .limit(1)
                 .get()
-                .addOnSuccessListener(q -> {
-                    if (q.isEmpty()) {
-                        Toast.makeText(this, "Username không tồn tại!", Toast.LENGTH_SHORT).show();
+                .addOnSuccessListener(snapshot -> {
+                    if (snapshot.isEmpty()) {
+                        Toast.makeText(this, "Không tìm thấy số điện thoại!", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    String email = q.getDocuments().get(0).getString("customer_email");
-                    mAuth.signInWithEmailAndPassword(email, pass)
-                            .addOnCompleteListener(this, t -> {
-                                if (t.isSuccessful()) {
-                                    savePrefs(u, chkRemember.isChecked());
+
+                    DocumentSnapshot userDoc = snapshot.getDocuments().get(0);
+                    String email = userDoc.getString("customer_email");
+
+                    if (email == null || email.isEmpty()) {
+                        Toast.makeText(this, "Tài khoản không có email hợp lệ!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    mAuth.signInWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(this, task -> {
+                                if (task.isSuccessful()) {
+                                    savePrefs(phone, chkRemember.isChecked());
+                                    Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
                                     navigateToHome();
                                 } else {
-                                    Toast.makeText(this, "Sai mật khẩu!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(this, "Sai mật khẩu hoặc email không đúng!", Toast.LENGTH_SHORT).show();
+                                    Log.e(TAG, "Login error", task.getException());
                                 }
                             });
                 })
-                .addOnFailureListener(e -> Toast.makeText(this, "Lỗi DB: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Lỗi kết nối đến Firestore: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Log.e(TAG, "Firestore error", e);
+                });
     }
 
     private void setupGoogle() {

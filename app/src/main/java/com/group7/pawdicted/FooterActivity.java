@@ -1,5 +1,6 @@
 package com.group7.pawdicted;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import android.view.View;
@@ -53,7 +54,7 @@ public class FooterActivity extends AppCompatActivity {
         // Ánh xạ view
         imgHome = findViewById(R.id.imgHome);
         txtHome = findViewById(R.id.txtHome);
-        imgCategory = findViewById(R.id.imgCategory);
+        imgCategory = findViewById(R.id.imgCategoryFooter);
         txtCategory = findViewById(R.id.txtCategoryFooter);
         imgNotification = findViewById(R.id.imgNotification);
         txtNotification = findViewById(R.id.txtNotification);

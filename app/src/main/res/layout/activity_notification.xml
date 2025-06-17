@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Header -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="#9C1B2C">
+
+        <TextView
+            android:id="@+id/title_notification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Notification"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:layout_centerInParent="true" />
+    </RelativeLayout>
+
+    <!-- Tabs -->
+    <!-- Tabs in rounded container -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/tab_card"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="2dp"
+        android:backgroundTint="#ffffff"
+        app:cardBackgroundColor="#ffffff">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_promotions"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Promotions"
+                android:background="@drawable/tab_selected_left"
+                app:backgroundTint="@null"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:textSize="15sp" />
+
+            <Button
+                android:id="@+id/btn_orders"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Orders"
+                android:background="@drawable/tab_unselected_right"
+                app:backgroundTint="@null"
+                android:textColor="#9C1B2C"
+                android:textStyle="bold"
+                android:textSize="15sp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+
+    <!-- Content Frame -->
+    <FrameLayout
+        android:id="@+id/notification_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</LinearLayout>

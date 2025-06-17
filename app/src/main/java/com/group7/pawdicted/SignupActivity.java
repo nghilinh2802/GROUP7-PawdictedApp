@@ -8,9 +8,11 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -23,6 +25,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.*;
 import com.google.firebase.firestore.*;
 import com.group7.pawdicted.mobile.models.Customer;
+
 import java.util.*;
 
 public class SignupActivity extends AppCompatActivity implements SuccessSignupDialogFragment.OnSignupListener {
@@ -47,7 +50,6 @@ public class SignupActivity extends AppCompatActivity implements SuccessSignupDi
         edtPassword = findViewById(R.id.edtEnterPassword);
         chkAgree = findViewById(R.id.ckbAgree);
 
-
         findViewById(R.id.btnLogin).setOnClickListener(v -> registerUser());
 
         mAuth = FirebaseAuth.getInstance();
@@ -67,8 +69,7 @@ public class SignupActivity extends AppCompatActivity implements SuccessSignupDi
                     Toast.makeText(SignupActivity.this, "FB lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
-            LoginManager.getInstance()
-                    .logInWithReadPermissions(this, Arrays.asList("email","public_profile"));
+            LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email","public_profile"));
         });
     }
 
@@ -136,10 +137,7 @@ public class SignupActivity extends AppCompatActivity implements SuccessSignupDi
                     if (f==null) return;
 
                     Customer cust = new Customer(
-                            f.getUid(), u, e, u, pass, p, "",
-                            "Male", new Date(), new Date(), "",
-                            "Customer", new ArrayList<>(), new ArrayList<>(),
-                            new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()
+                            f.getUid(), u, e, u, p, "", "Male", new Date(), new Date(), "", "Customer"
                     );
 
                     db.collection("customers").document(f.getUid())
@@ -180,13 +178,18 @@ public class SignupActivity extends AppCompatActivity implements SuccessSignupDi
                         googleSignInClient.signOut();
                         return;
                     }
-                    Customer cust = new Customer(uid, user.getDisplayName(), e, user.getDisplayName(),
-                            null, user.getPhoneNumber()!=null?user.getPhoneNumber():"",
+                    Customer cust = new Customer(
+                            uid,
+                            user.getDisplayName(),
+                            e,
+                            user.getDisplayName(),
+                            user.getPhoneNumber()!=null?user.getPhoneNumber():"",
+                            "",
+                            "Male",
+                            new Date(),
+                            new Date(),
                             user.getPhotoUrl()!=null?user.getPhotoUrl().toString():"",
-                            "Male", new Date(), new Date(),
-                            user.getPhotoUrl()!=null?user.getPhotoUrl().toString():"",
-                            "Customer", new ArrayList<>(), new ArrayList<>(),
-                            new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()
+                            "Customer"
                     );
                     db.collection("customers").document(uid)
                             .set(cust)
