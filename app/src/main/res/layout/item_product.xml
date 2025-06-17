@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginLeft="6dp"
+    android:padding="8dp">
+
+    <!-- Container -->
+    <LinearLayout
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="6dp"
+        android:orientation="vertical">
+
+        <!-- Product Image -->
+        <ImageView
+            android:id="@+id/img_child_cate_product"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            tools:srcCompat="@mipmap/ic_logo" />
+
+        <!-- Product Name -->
+        <TextView
+            android:id="@+id/txt_child_cate_product_name"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Product Name"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:paddingTop="4dp" />
+
+        <!-- Rating -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="4dp"
+            android:gravity="start">
+
+            <RatingBar
+                android:id="@+id/rating_bar"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:isIndicator="true"
+                android:numStars="5"
+                android:stepSize="0.5"
+                android:scaleX="0.8"
+                android:scaleY="0.8"
+                android:layout_marginEnd="4dp"
+                android:progressTint="@color/star_yellow"
+                android:secondaryProgressTint="@color/star_gray"
+                android:backgroundTint="@color/star_gray"
+                />
+
+
+            <TextView
+                android:id="@+id/txt_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4.5"
+                android:textColor="@color/main_color"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- Price and Discount -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingTop="4dp">
+
+            <TextView
+                android:id="@+id/txt_child_cate_product_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="180.000đ"
+                android:textColor="@color/main_color"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txt_child_cate_product_discount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-10%"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/discount_background"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:layout_marginStart="8dp"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Original Price + Sold (Left & Right) -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="2dp">
+
+            <TextView
+                android:id="@+id/txt_child_cate_original_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="198.000đ"
+                android:textColor="#A9A9A9"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txt_child_cate_sold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:text="76 sold"
+                android:textColor="#555555"
+                android:textSize="12sp" />
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>

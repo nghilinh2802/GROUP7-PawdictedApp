@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".CategoryDetailsActivity">
+
+    <!-- Toolbar -->
+    <include layout="@layout/activity_tool_bar" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/child_category_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/light_background"
+        android:padding="8dp"
+        android:clipToPadding="false"
+        android:scrollbars="none" />
+
+    <LinearLayout
+        android:id="@+id/filter_category"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <!-- Best Seller -->
+        <LinearLayout
+            android:id="@+id/layout_best_seller"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/child_cate_best_seller"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
+                android:text="@string/title_child_cate_best_seller" />
+        </LinearLayout>
+
+        <!-- Divider 1 -->
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#000000" />
+
+        <!-- Newest -->
+        <LinearLayout
+            android:id="@+id/layout_newest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/child_cate_newest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
+                android:text="@string/title_child_cate_newest" />
+        </LinearLayout>
+
+        <!-- Divider 2 -->
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#000000" />
+
+        <!-- Rating -->
+        <LinearLayout
+            android:id="@+id/layout_rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/child_care_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
+                android:text="@string/title_child_care_rating" />
+        </LinearLayout>
+
+        <!-- Divider 3 -->
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#000000" />
+
+        <!-- Price + Arrow -->
+        <LinearLayout
+            android:id="@+id/layout_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/child_cate_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
+                android:text="@string/title_child_cate_price" />
+
+            <ImageView
+                android:id="@+id/img_ascend_arrows"
+                android:layout_width="8dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="2dp"
+                app:srcCompat="@mipmap/ic_ascend_arrows" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/product_filtered_category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

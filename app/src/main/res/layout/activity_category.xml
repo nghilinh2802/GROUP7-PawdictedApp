@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".CategoryActivity">
+
+    <!-- Toolbar -->
+    <include layout="@layout/activity_tool_bar" />
+
+    <!-- TopCategory -->
+    <LinearLayout
+        android:id="@+id/TopCategory"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtForDogs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_bold"
+                android:gravity="center"
+                android:text="@string/title_category_for_dogs"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+
+            <View
+                android:id="@+id/redBarDogs"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_marginStart="16dp"
+                android:background="@color/main_color"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtForCats"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_bold"
+                android:gravity="center"
+                android:text="@string/title_category_for_cats"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+
+            <View
+                android:id="@+id/redBarCats"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_marginStart="16dp"
+                android:background="@color/main_color"
+                android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Horizontal container for SideCategory and RecyclerView -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <!-- SideCategory -->
+        <ScrollView
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:id="@+id/SideCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <!-- All Products -->
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="8dp">
+
+                    <LinearLayout
+                        android:id="@+id/layout_all_products"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/img_cate_all_products"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_gravity="center"
+                            android:padding="8dp"
+                            app:srcCompat="@mipmap/ic_all_product_red" />
+
+                        <TextView
+                            android:id="@+id/txt_cate_all_products"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter_bold"
+                            android:text="@string/title_category_all_products"
+                            android:textAlignment="center"
+                            android:textColor="@color/main_color"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:id="@+id/red_bar_all_products"
+                        android:layout_width="2dp"
+                        android:layout_height="75dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:background="@color/main_color"
+                        android:visibility="visible" />
+                </FrameLayout>
+
+                <!-- Food -->
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp">
+
+                    <LinearLayout
+                        android:id="@+id/layout_cate_food"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/img_cate_food"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_gravity="center"
+                            android:padding="8dp"
+                            app:srcCompat="@mipmap/ic_food_cate_black" />
+
+                        <TextView
+                            android:id="@+id/txt_cate_food"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter_bold"
+                            android:text="@string/title_category_food_treats"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:id="@+id/red_bar_food"
+                        android:layout_width="2dp"
+                        android:layout_height="75dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:background="@color/main_color"
+                        android:visibility="gone" />
+                </FrameLayout>
+
+                <!-- Pet Care -->
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp">
+
+                    <LinearLayout
+                        android:id="@+id/layout_cate_pet_care"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/img_pet_care"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_gravity="center"
+                            android:padding="8dp"
+                            app:srcCompat="@mipmap/ic_petcare_cate_black" />
+
+                        <TextView
+                            android:id="@+id/txt_pet_care"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter_bold"
+                            android:text="@string/title_category_pet_care"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:id="@+id/red_bar_pet_care"
+                        android:layout_width="2dp"
+                        android:layout_height="75dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:background="@color/main_color"
+                        android:visibility="gone" />
+                </FrameLayout>
+
+                <!-- Furniture -->
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp">
+
+                    <LinearLayout
+                        android:id="@+id/layout_cate_furniture"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/img_furniture"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_gravity="center"
+                            android:padding="8dp"
+                            app:srcCompat="@mipmap/ic_furniture_cate_black" />
+
+                        <TextView
+                            android:id="@+id/txt_furniture"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter_bold"
+                            android:text="@string/title_category_furniture"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:id="@+id/red_bar_furniture"
+                        android:layout_width="2dp"
+                        android:layout_height="75dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:background="@color/main_color"
+                        android:visibility="gone" />
+                </FrameLayout>
+
+                <!-- Toys -->
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp">
+
+                    <LinearLayout
+                        android:id="@+id/layout_cate_toys"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/img_cate_toys"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_gravity="center"
+                            android:padding="8dp"
+                            app:srcCompat="@mipmap/ic_toy_cate_black" />
+
+                        <TextView
+                            android:id="@+id/txt_cate_toys"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter_bold"
+                            android:text="@string/title_category_toys"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:id="@+id/red_bar_toys"
+                        android:layout_width="2dp"
+                        android:layout_height="75dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:background="@color/main_color"
+                        android:visibility="gone" />
+                </FrameLayout>
+
+                <!-- Accessories -->
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp">
+
+                    <LinearLayout
+                        android:id="@+id/layout_cate_accessories"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/img_accesories"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_gravity="center"
+                            android:padding="8dp"
+                            app:srcCompat="@mipmap/ic_accessories_cate_black" />
+
+                        <TextView
+                            android:id="@+id/txt_accesories"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter_bold"
+                            android:text="@string/title_category_accesories"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:id="@+id/red_bar_accesories"
+                        android:layout_width="2dp"
+                        android:layout_height="75dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:background="@color/main_color"
+                        android:visibility="gone" />
+                </FrameLayout>
+
+                <!-- Carriers -->
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp">
+
+                    <LinearLayout
+                        android:id="@+id/layout_cate_carriers"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/img_carriers"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_gravity="center"
+                            android:padding="8dp"
+                            app:srcCompat="@mipmap/ic_kennels_cate_black" />
+
+                        <TextView
+                            android:id="@+id/txt_carriers"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter_bold"
+                            android:text="@string/title_category_carriers"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:id="@+id/red_bar_carriers"
+                        android:layout_width="2dp"
+                        android:layout_height="75dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:background="@color/main_color"
+                        android:visibility="gone" />
+                </FrameLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/product_list"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="8dp"
+            android:clipToPadding="false" />
+    </LinearLayout>
+
+    <!-- Footer -->
+    <include
+        layout="@layout/activity_footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

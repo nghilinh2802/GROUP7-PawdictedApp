@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#f8f1f1"
+    android:id="@+id/main"
+    tools:context=".LanguageSettingActivity">
+
+    <!-- Thanh tiêu đề -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#9c162c"
+        android:padding="16dp"
+        android:gravity="center_vertical">
+
+        <ImageButton
+            android:layout_width="44dp"
+            android:layout_height="33dp"
+            android:onClick="go_back"
+            android:src="@mipmap/ic_back_icon_white"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="Back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="LANGUAGE"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Danh sách các mục -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="8dp">
+
+        <!-- English -->
+        <LinearLayout
+            android:id="@+id/layoutEnglish"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            android:background="?attr/selectableItemBackground"
+            android:foreground="?attr/selectableItemBackground"
+            android:backgroundTint="#FFFFFF"
+            android:layout_marginBottom="4dp"
+            android:elevation="2dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="English"
+                android:textSize="16sp"
+                android:textColor="#9c162c"
+                android:layout_weight="1"
+                android:layout_marginStart="15dp" />
+
+            <ImageView
+                android:id="@+id/imgTickEnglish"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="15dp"
+                android:src="@mipmap/ic_tick_red"
+                android:contentDescription="Tick Icon"
+                android:visibility="visible" /> <!-- Mặc định ẩn hoặc hiển thị tùy chọn -->
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp" />
+
+        <!-- Vietnamese -->
+        <LinearLayout
+            android:id="@+id/layoutVietnamese"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            android:background="?attr/selectableItemBackground"
+            android:foreground="?attr/selectableItemBackground"
+            android:backgroundTint="#FFFFFF"
+            android:layout_marginBottom="4dp"
+            android:elevation="2dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Vietnamese"
+                android:textSize="16sp"
+                android:textColor="#9c162c"
+                android:layout_weight="1"
+                android:layout_marginStart="15dp" />
+
+            <ImageView
+                android:id="@+id/imgTickVietnamese"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="15dp"
+                android:src="@mipmap/ic_tick_red"
+                android:contentDescription="Tick Icon"
+                android:visibility="gone" /> <!-- Mặc định ẩn -->
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,65 @@
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:stretchColumns="1,2,3"
+    android:padding="8dp"
+    android:layout_marginBottom="8dp">
+
+    <!-- Row 1 -->
+    <TableRow>
+
+        <ImageView
+            android:id="@+id/img_product"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:scaleType="centerCrop"
+            android:layout_span="1"
+            android:layout_rowSpan="2"
+            android:layout_marginEnd="8dp" />
+
+        <TextView
+            android:id="@+id/tv_product_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Product Name"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_span="3"
+            android:paddingBottom="4dp" />
+    </TableRow>
+
+    <!-- Row 2 -->
+    <TableRow>
+
+        <TextView
+            android:id="@+id/tv_unit_price"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="start"
+            android:text="Unit Price"
+            android:textColor="#333333"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_quantity"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Qty"
+            android:textColor="#333333"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_total"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:text="Total"
+            android:textColor="#333333"
+            android:textSize="14sp" />
+    </TableRow>
+</TableLayout>
