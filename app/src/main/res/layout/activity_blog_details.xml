@@ -71,15 +71,10 @@
             android:textSize="16sp" />
 
         <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="match_parent"
-            android:layout_height="179dp"
-            tools:src="@mipmap/banner" />
-
-        <ImageView
             android:id="@+id/imgBlogDetails"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            app:srcCompat="@mipmap/banner" />
 
         <TextView
             android:id="@+id/txtBlogDetailsDescription"

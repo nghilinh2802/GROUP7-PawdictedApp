@@ -4,37 +4,54 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.group7.pawdicted.mobile.adapters.BlogAdapter;
 import com.group7.pawdicted.mobile.models.Blog;
-import com.group7.pawdicted.mobile.models.ListBlog;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class BlogActivity extends AppCompatActivity {
+    private List<Blog> blogs = new ArrayList<>();
+    private BlogAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_blog); // XML của bạn
 
         ListView listView = findViewById(R.id.lvBlog);
-
-        // Lấy danh sách blog
-        List<Blog> blogs = ListBlog.getFakeBlogs(); // Hoặc lấy từ nguồn khác nếu bạn không dùng fake data
-
-        // Tạo adapter và gắn vào ListView
-        BlogAdapter adapter = new BlogAdapter(this, blogs);
+        adapter = new BlogAdapter(this, blogs);
         listView.setAdapter(adapter);
+
+        // Lấy dữ liệu từ Firestore
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("blogs") // Tên collection trong Firestore
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        blogs.clear();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Blog blog = document.toObject(Blog.class);
+                            blogs.add(blog);
+                        }
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        // Xử lý lỗi nếu cần
+                    }});
 
         // Xử lý click vào item
         listView.setOnItemClickListener((parent, view, position, id) -> {
             Blog blog = blogs.get(position);
-            Intent intent = getIntent();
+            Intent intent = new Intent(this, BlogDetailsActivity.class);
             intent.putExtra("title", blog.getTitle());
             intent.putExtra("description", blog.getDescription());
             intent.putExtra("content", blog.getContent());
             intent.putExtra("author", blog.getAuthor());
-            intent.putStringArrayListExtra("images", new java.util.ArrayList<>(blog.getImages()));
-            intent.putExtra("createAt", blog.getCreateAt());
-            intent.putExtra("updateAt", blog.getUpdateAt());
+            intent.putExtra("imageURL", blog.getImageURL());
+            intent.putExtra("createdAt", blog.getCreatedAt());
+            intent.putExtra("updatedAt", blog.getUpdatedAt());
             startActivity(intent);
         });
     }
