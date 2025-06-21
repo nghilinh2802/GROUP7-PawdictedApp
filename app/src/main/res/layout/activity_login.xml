@@ -55,11 +55,10 @@
         android:layout_marginEnd="32dp"
         android:background="@drawable/rounded_login_edittext"
         android:drawableStart="@mipmap/ic_password"
-        android:drawableEnd="@android:drawable/ic_menu_view"
         android:drawablePadding="8dp"
         android:hint="Password"
         android:inputType="textPassword"
-        android:padding="11dp"
+        android:padding="15dp"
         android:textColorHint="#777777"
         android:textSize="16sp" />
 
