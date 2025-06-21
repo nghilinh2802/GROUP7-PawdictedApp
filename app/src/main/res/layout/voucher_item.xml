@@ -39,7 +39,7 @@
 
             <TextView
                 android:id="@+id/voucher_title"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="15% off Capped at 100K"
                 android:textColor="@android:color/black"
@@ -72,11 +72,14 @@
 
         </LinearLayout>
 
-        <CheckBox
-            android:id="@+id/voucher_checkbox"
+        <RadioButton
+            android:id="@+id/voucher_radio_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical" />
+            android:layout_gravity="center_vertical"
+            android:buttonTint="@drawable/button_selector"
+            app:buttonTint="@null"
+            android:layout_marginStart="16dp"/>
 
     </LinearLayout>
 

@@ -14,18 +14,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Pawdicted"
         tools:targetApi="31">
-        <activity
-            android:name=".SelectProductActivity"
-            android:exported="false" />
-        <activity
-            android:name=".NewArrivalActivity"
-            android:exported="false" />
-        <meta-data
-            android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id" />
-
-        <activity
-            android:name="com.facebook.FacebookActivity"
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+        <activity android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"/>
         <activity
@@ -52,6 +42,7 @@
         <activity
             android:name=".mobile.HeaderActivity"
             android:exported="false" />
+
         <activity
             android:name=".CancellationDetailActivity"
             android:exported="false" />
@@ -96,16 +87,24 @@
             android:exported="true" /> <!-- LoginActivity will be the launcher activity -->
         <activity
             android:name=".LoginActivity"
-            android:exported="true" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".CategoryActivity"
-            android:exported="true"/>
-        <activity
-            android:name=".CategoryDetailsActivity"
+            android:exported="false"/>
+
+        <activity android:name=".CategoryDetailsActivity"
             android:exported="false" />
         <activity
             android:name=".ProductDetailsActivity"
             android:exported="false" />
+
         <activity
             android:name=".FooterActivity"
             android:exported="false" />
@@ -117,12 +116,7 @@
             android:exported="false" />
         <activity
             android:name=".HomepageActivity"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="false" />
         <activity
             android:name=".ChangeForgetPasswordActivity"
             android:exported="false" />

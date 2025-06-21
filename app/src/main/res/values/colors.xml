@@ -9,4 +9,6 @@
     <color name="star_gray">#CCCCCC</color>
     <color name="light_background">#f8f1f1</color>
     <color name="gray_text">#a6a6a6</color>
+    <color name="colorSelected">#9c162c</color>
+    <color name="colorUnselected">#d3d3d3</color>
 </resources>
