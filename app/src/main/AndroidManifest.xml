@@ -98,13 +98,13 @@
             android:exported="true" /> <!-- LoginActivity will be the launcher activity -->
         <activity
             android:name=".LoginActivity"
-            android:exported="true">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+            android:exported="true"/>
+<!--        <intent-filter>-->
+<!--            <action android:name="android.intent.action.MAIN" />-->
 
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-    </activity>
+<!--            <category android:name="android.intent.category.LAUNCHER" />-->
+<!--        </intent-filter>-->
+<!--    </activity>-->
 
         <activity
             android:name=".CategoryActivity"
@@ -124,7 +124,13 @@
             android:exported="false" />
         <activity
             android:name=".AccountManagementActivity"
-            android:exported="false" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".HomepageActivity"
             android:exported="false" />
