@@ -1,22 +1,35 @@
 package com.group7.pawdicted.mobile.models;
 
-import java.util.List;
-
 public class Blog {
-    private int id;
+    private String id;
     private String title;
     private String description;
     private String content;
     private String author;
-    private List<String> images;
-    private String createAt;
-    private String updateAt;
+    private String imageURL;
+    private String createdAt;
+    private String updatedAt;
 
-    public int getId() {
+    public Blog() {
+        // Constructor mặc định để Firestore mapping tự động
+    }
+
+    public Blog(String id, String title, String description, String content, String author, String imageURL, String createAt, String updateAt) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.content = content;
+        this.author = author;
+        this.imageURL = imageURL;
+        this.createdAt = createAt;
+        this.updatedAt = updateAt;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -52,41 +65,27 @@ public class Blog {
         this.author = author;
     }
 
-    public List<String> getImages() {
-        return images;
+    public String getImageURL() {
+        return imageURL;
     }
 
-    public void setImages(List<String> images) {
-        this.images = images;
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 
-    public String getCreateAt() {
-        return createAt;
+    public String getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreateAt(String createAt) {
-        this.createAt = createAt;
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public String getUpdateAt() {
-        return updateAt;
+    public String getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdateAt(String updateAt) {
-        this.updateAt = updateAt;
-    }
-
-    public Blog(int id, String title, String description, String content, String author, List<String> images, String createAt, String updateAt) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.content = content;
-        this.author = author;
-        this.images = images;
-        this.createAt = createAt;
-        this.updateAt = updateAt;
-    }
-
-    public Blog() {
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
