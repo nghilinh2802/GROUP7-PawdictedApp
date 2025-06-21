@@ -76,7 +76,7 @@
             android:id="@+id/ckbRememberInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:buttonTint="#9c162c"
+            app:buttonTint="#9c162c"
             android:text="@string/title_remember_me"
             android:textColor="@color/black" />
 
