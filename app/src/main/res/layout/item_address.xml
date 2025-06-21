@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:elevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/addressName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lê Nguyễn Hà"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/addressPhone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="(+84) 967 663 867"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/addressDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/defaultAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Default"
+            android:textSize="12sp"
+            android:textColor="@android:color/holo_red_dark"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/editButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
