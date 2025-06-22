@@ -143,9 +143,7 @@ This policy may be updated periodically. When changes occur, we will notify you 
 <b>10. Contact</b><br/>
 If you have any questions or requests regarding our privacy and security policy, please contact us via email or the support section in the application.
 ]]></string>
-    <string name="title_selected_product">Selected Product</string>
     <string name="language_vietnamese">Vietnamese</string>
-    <string name="title_language">LANGUAGE</string>
     <string name="language_english">English</string>
 
     <string name="title_load_more">Load more</string>
