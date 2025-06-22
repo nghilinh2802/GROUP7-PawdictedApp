@@ -40,6 +40,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:background="@drawable/bg_rounded"
+                android:onClick="open_address_selection_activity"
                 android:padding="16dp">
 
                 <ImageView
@@ -81,7 +82,8 @@
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_gravity="center_vertical"
-                    android:src="@mipmap/ic_arrow_right_grey" />
+                    android:src="@mipmap/ic_arrow_right_grey"
+                    android:onClick="open_address_selection_activity"/>
             </LinearLayout>
 
             <!-- Order + Voucher + Message + Shipping + Total in one CardView -->

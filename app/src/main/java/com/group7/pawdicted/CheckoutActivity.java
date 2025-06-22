@@ -40,4 +40,8 @@ public class CheckoutActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void open_address_selection_activity(View view) {
+        Intent intent = new Intent(this, AddressSelectionActivity.class);
+        startActivity(intent);
+    }
 }

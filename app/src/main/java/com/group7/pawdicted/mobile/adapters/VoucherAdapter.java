@@ -5,7 +5,7 @@ import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
+import android.widget.RadioButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,10 +22,18 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
 
     private List<Voucher> vouchers;
     private int type;
+    private int selectedPosition = -1; // Theo dõi vị trí được chọn, -1 nếu chưa chọn
 
     public VoucherAdapter(List<Voucher> vouchers, int type) {
         this.vouchers = vouchers;
         this.type = type;
+        // Kiểm tra nếu có voucher nào được chọn mặc định
+        for (int i = 0; i < vouchers.size(); i++) {
+            if (vouchers.get(i).isSelected()) {
+                selectedPosition = i;
+                break;
+            }
+        }
     }
 
     @Override
@@ -40,7 +48,7 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
         holder.title.setText(voucher.getTitle());
         holder.minSpend.setText(voucher.getMinSpend());
         holder.validity.setText(voucher.getValidity());
-        holder.checkbox.setChecked(voucher.isSelected());
+        holder.radioButton.setChecked(position == selectedPosition);
 
         if (type == TYPE_DISCOUNT) {
             holder.icon.setImageResource(R.drawable.ic_discount);
@@ -51,6 +59,16 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
         holder.terms.setText("Terms and Conditions");
         holder.terms.setTextColor(Color.BLUE);
         holder.terms.setPaintFlags(holder.terms.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+
+        // Xử lý sự kiện khi RadioButton được click
+        holder.radioButton.setOnClickListener(v -> {
+            int previousSelected = selectedPosition;
+            selectedPosition = holder.getAdapterPosition();
+            if (previousSelected != selectedPosition) {
+                notifyItemChanged(previousSelected); // Cập nhật item trước đó
+                notifyItemChanged(selectedPosition); // Cập nhật item hiện tại
+            }
+        });
     }
 
     @Override
@@ -61,7 +79,7 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
     static class VoucherViewHolder extends RecyclerView.ViewHolder {
         ImageView icon;
         TextView title, minSpend, validity, terms;
-        CheckBox checkbox;
+        RadioButton radioButton;
 
         public VoucherViewHolder(View itemView) {
             super(itemView);
@@ -70,7 +88,7 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
             minSpend = itemView.findViewById(R.id.voucher_min_spend);
             validity = itemView.findViewById(R.id.voucher_validity);
             terms = itemView.findViewById(R.id.terms_and_conditions);
-            checkbox = itemView.findViewById(R.id.voucher_checkbox);
+            radioButton = itemView.findViewById(R.id.voucher_radio_button); // Cập nhật ID
         }
     }
 }
