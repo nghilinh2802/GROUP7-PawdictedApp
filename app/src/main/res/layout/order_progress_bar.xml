@@ -1,0 +1,180 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/status_bar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:background="@android:color/transparent"
+    android:padding="5dp"
+    android:weightSum="4">
+
+    <!-- Step Item Template -->
+    <!-- STEP 1: PENDING -->
+    <LinearLayout
+        android:id="@+id/step_pending"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:gravity="top|center_horizontal"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:elevation="2dp"
+            android:clipToOutline="true"
+            android:shape="oval">
+
+            <ImageView
+                android:id="@+id/icon_pending"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="top"
+                android:scaleType="centerInside"
+                android:src="@mipmap/ic_to_confirm_gray" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_marginTop="6dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pending"
+            android:textColor="#6A4E3D"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Connector -->
+    <View
+        android:layout_width="18dp"
+        android:layout_height="2dp"
+        android:background="#D6B189" />
+
+    <!-- STEP 2: SHIPPED -->
+    <LinearLayout
+        android:id="@+id/step_shipped"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:gravity="top|center_horizontal"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:elevation="2dp"
+            android:clipToOutline="true"
+            android:shape="oval">
+
+            <ImageView
+                android:id="@+id/icon_shipped"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="top"
+                android:scaleType="centerInside"
+                android:src="@mipmap/ic_to_pickup_gray" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_marginTop="6dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Shipped"
+            android:textColor="#6A4E3D"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Connector -->
+    <View
+        android:layout_width="18dp"
+        android:layout_height="2dp"
+        android:background="#D6B189" />
+
+    <!-- STEP 3: OUT -->
+    <LinearLayout
+        android:id="@+id/step_out"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:gravity="top|center_horizontal"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:gravity="center"
+            android:backgroundTint="#FFEBCD"
+            android:elevation="2dp"
+            android:clipToOutline="true"
+            android:shape="oval">
+
+            <ImageView
+                android:id="@+id/icon_out"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="top"
+                android:scaleType="centerInside"
+                android:src="@mipmap/ic_to_ship_gray" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_marginTop="6dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Out for Delivery"
+            android:gravity="center"
+            android:textColor="#6A4E3D"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Connector -->
+    <View
+        android:layout_width="18dp"
+        android:layout_height="2dp"
+        android:background="#D6B189" />
+
+    <!-- STEP 4: COMPLETED -->
+    <LinearLayout
+        android:id="@+id/step_completed"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:gravity="top|center_horizontal"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:gravity="center"
+            android:backgroundTint="#FFEBCD"
+            android:elevation="2dp"
+            android:clipToOutline="true"
+            android:shape="oval">
+
+            <ImageView
+                android:id="@+id/icon_completed"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="top"
+                android:scaleType="centerInside"
+                android:src="@mipmap/ic_completed_gray" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_marginTop="6dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Completed"
+            android:textColor="#6A4E3D"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+</LinearLayout>

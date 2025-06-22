@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/txt_variation_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/red_rounded_background"
+        android:gravity="center"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="4dp"
+        android:text="Red"
+        android:textColor="#9c162c"
+        android:textSize="14sp" />
+
+</LinearLayout>

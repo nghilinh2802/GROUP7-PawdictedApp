@@ -1,0 +1,148 @@
+<resources>
+    <string name="app_name">Pawdicted</string>
+    <string name="title_to_confirm">Xác nhận</string>
+    <string name="title_to_pick_up">Đợi lấy hàng</string>
+    <string name="title_to_ship">Đợi giao hàng</string>
+    <string name="title_evaluate_order">Đánh giá</string>
+    <string name="title_my_purchases">Đơn hàng của tôi</string>
+    <string name="title_view_purchase_history">Xem lịch sử mua hàng</string>
+    <string name="title_utilities">Tiện ích</string>
+    <string name="title_wishlist">Danh sách yêu thích</string>
+    <string name="title_voucher">Phiếu giảm giá</string>
+    <string name="title_blogs">Blog</string>
+    <string name="title_history">Lịch sử</string>
+    <string name="title_help">Trợ giúp</string>
+    <string name="title_faqs">Câu hỏi thường gặp</string>
+    <string name="title_policies">Chính sách</string>
+    <string name="hp_searchText_hint">Tìm kiếm...</string>
+    <string name="title_homepage_category">Danh mục</string>
+    <string name="title_homepage_flash_deals">Ưu đãi nhanh</string>
+    <string name="title_homepage_new_arrival">Sản phẩm mới</string>
+    <string name="title_homepage_voucher">Phiếu giảm giá</string>
+    <string name="title_homepage_order">Đơn hàng</string>
+    <string name="title_homepage_blog">Blog</string>
+    <string name="title_homepage_FAQs">Câu hỏi thường gặp</string>
+    <string name="title_homepage_policy">Chính sách</string>
+    <string name="title_footer_home">Trang chủ</string>
+    <string name="title_footer_notification">Thông báo</string>
+    <string name="title_footer_account">Tài khoản</string>
+    <string name="title_footer_category">Danh mục</string>
+    <string name="title_login_login">ĐĂNG NHẬP</string>
+    <string name="title_remember_me">Ghi nhớ đăng nhập?</string>
+    <string name="title_forgot_password">Quên mật khẩu?</string>
+    <string name="title_or_login_with">Hoặc đăng nhập với</string>
+    <string name="title_dont_have_account">Chưa có tài khoản?</string>
+    <string name="title_signup_login">Đăng ký</string>
+    <string name="title_forgot_password_main">QUÊN MẬT KHẨU</string>
+    <string name="title_send_recover_code">GỬI MÃ KHỞI PHỤC</string>
+    <string name="title_change_password">THAY ĐỔI MẬT KHẨU</string>
+    <string name="title_enter_new_password">Nhập mật khẩu mới</string>
+    <string name="title_reenter_new_password">Nhập lại mật khẩu mới</string>
+    <string name="title_signup">ĐĂNG KÝ</string>
+    <string name="title_or_signup_with">Hoặc đăng ký với</string>
+    <string name="title_already_have_account">Đã có tài khoản?</string>
+    <string name="title_login_signup">Đăng nhập</string>
+    <string name="title_hot">Nổi bật</string>
+    <string name="title_flashdeals">Ưu đãi nhanh</string>
+    <string name="title_end_in">Kết thúc trong</string>
+    <string name="title_on_going">Đang diễn ra</string>
+    <string name="title_upcoming">Sắp diễn ra</string>
+    <string name="title_buy_now">Mua ngay</string>
+    <string name="title_products_sold">sản phẩm đã bán</string>
+    <string name="title_all">Tất cả</string>
+    <string name="title_toys">Đồ chơi</string>
+    <string name="title_food">Thức ăn</string>
+    <string name="title_accessories">Phụ kiện</string>
+    <string-array name="gender_array">
+        <item>Nữ</item>
+        <item>Nam</item>
+        <item>Khác</item>
+    </string-array>
+    <string name="title_category_for_dogs">Cho Chó</string>
+    <string name="title_category_for_cats">Cho Mèo</string>
+    <string name="title_category_all_products">Tất cả sản phẩm</string>
+    <string name="title_category_food_treats">
+    <![CDATA[ Thức ăn & Đồ ăn vặt ]]>
+</string>
+    <string name="title_category_pet_care">Chăm sóc thú cưng</string>
+    <string name="title_category_furniture">Đồ nội thất</string>
+    <string name="title_category_toys">Đồ chơi</string>
+    <string name="title_category_accesories">Phụ kiện</string>
+    <string name="title_category_carriers">
+    <![CDATA[ Chuồng & Thùng chở ]]>
+</string>
+
+    <string name="see_all">Xem tất cả</string>
+    <string name="title_child_cate_best_seller">BÁN CHẠY NHẤT</string>
+    <string name="title_child_cate_newest">MỚI NHẤT</string>
+    <string name="title_child_care_rating">ĐÁNH GIÁ</string>
+    <string name="title_child_cate_price">GIÁ</string>
+    <string name="hint_flashdeals">Ưu đãi nhanh</string>
+    <string name="title_order">Đơn hàng</string>
+    <string name="title_search">Tìm kiếm</string>
+    <string name="title_back">Quay lại</string>
+    <string name="title_FAQ">Câu hỏi thường gặp</string>
+    <string name="title_refund">Hoàn tiền</string>
+    <string name="title_member">Thành viên</string>
+    <string name="title_other">Khác</string>
+    <string name="title_policy_security">
+    <![CDATA[CHÍNH SÁCH & BẢO MẬT]]>
+</string>
+    <string name="title_chatting">NHẮN TIN</string>
+    <string name="hint_type_a_message">Nhập tin nhắn...</string>
+    <string name="title_send_image">Gửi hình ảnh</string>
+    <string name="title_enter_current_password">Nhập mật khẩu hiện tại</string>
+    <string name="policy_content"><![CDATA[
+<b>1. Mục Đích</b><br/>
+Chúng tôi cam kết bảo vệ thông tin cá nhân và giao dịch của người dùng khi sử dụng ứng dụng mua bán đồ dùng thú cưng. Chính sách này nhằm minh bạch về cách chúng tôi thu thập, sử dụng, chia sẻ và bảo vệ thông tin của bạn.<br/><br/>
+
+<b>2. Phạm Vi Áp Dụng</b><br/>
+Chính sách này áp dụng cho tất cả người dùng, bao gồm khách hàng, nhà cung cấp và các đối tác khi truy cập hoặc sử dụng ứng dụng của chúng tôi.<br/><br/>
+
+<b>3. Thông Tin Thu Thập</b><br/>
+Chúng tôi có thể thu thập các thông tin sau đây:<br/><br/>
+
+- Thông tin đăng ký tài khoản: Họ tên, email, số điện thoại, địa chỉ, tên người dùng, mật khẩu.<br/>
+- Thông tin giao dịch: Lịch sử mua hàng, phương thức thanh toán, thông tin thẻ tín dụng/thẻ ghi nợ, địa chỉ giao hàng.<br/>
+- Thông tin liên lạc: Nội dung trao đổi qua email, chat, phản hồi và hỗ trợ khách hàng.<br/>
+- Thông tin hình ảnh: Ảnh tải lên ứng dụng cho mục đích đánh giá sản phẩm hoặc hỗ trợ khách hàng.<br/>
+- Thông tin về thú cưng (nếu có): Tên, tuổi, giống, tình trạng sức khỏe, thông tin tiêm chủng (nếu ứng dụng hỗ trợ quản lý thú cưng).<br/><br/>
+
+<b>4. Mục Đích Sử Dụng Thông Tin</b><br/>
+Thông tin thu thập được sử dụng để:<br/><br/>
+
+- Cung cấp và quản lý dịch vụ: Đăng ký, xác thực, hỗ trợ khách hàng, xử lý giao dịch.<br/>
+- Cải thiện trải nghiệm người dùng: Phân tích hành vi, cá nhân hóa trải nghiệm, phát triển tính năng mới.<br/>
+- Bảo mật và phòng chống gian lận: Phát hiện, ngăn chặn hành vi gian lận hoặc vi phạm chính sách.<br/>
+- Tuân thủ pháp luật: Đáp ứng các yêu cầu pháp lý, kiểm toán, báo cáo.<br/><br/>
+
+<b>5. Bảo Mật Thông Tin</b><br/>
+- Mã hóa dữ liệu: Thông tin giao dịch được mã hóa bằng công nghệ SSL 256-bit để đảm bảo an toàn.<br/>
+- Thanh toán an toàn: Chúng tôi sử dụng các cổng thanh toán uy tín (ví dụ: Stripe, Authorize.Net) để xử lý giao dịch, không lưu trữ thông tin thẻ tín dụng/thẻ ghi nợ trên hệ thống.<br/>
+- Quyền truy cập hạn chế: Chỉ nhân viên được ủy quyền mới có thể truy cập thông tin cá nhân của bạn.<br/>
+- Bảo vệ vật lý và kỹ thuật: Hệ thống được bảo vệ bởi tường lửa, phần mềm chống virus và các biện pháp kỹ thuật khác để ngăn chặn truy cập trái phép.<br/><br/>
+
+<b>6. Chia Sẻ Thông Tin</b><br/>
+Chúng tôi không bán hoặc công khai thông tin cá nhân của bạn cho bên thứ ba mà không có sự đồng ý của bạn, trừ khi pháp luật yêu cầu.<br/><br/>
+
+<b>7. Cookie và Công Nghệ Theo Dõi</b><br/>
+Chúng tôi sử dụng cookie và công nghệ tương tự để cải thiện trải nghiệm người dùng, phân tích truy cập và quảng cáo phù hợp.<br/><br/>
+
+<b>8. Quyền Lợi Người Dùng</b><br/>
+Bạn có quyền:<br/><br/>
+
+- Truy cập, chỉnh sửa hoặc xóa thông tin cá nhân.<br/>
+- Từ chối nhận quảng cáo hoặc thông báo.<br/>
+- Yêu cầu ngừng sử dụng hoặc xóa tài khoản.<br/><br/>
+
+<b>9. Cập Nhật Chính Sách</b><br/>
+Chính sách này có thể được cập nhật định kỳ. Khi có thay đổi, chúng tôi sẽ thông báo trên ứng dụng hoặc qua email.<br/><br/>
+
+<b>10. Liên Hệ</b><br/>
+Nếu bạn có bất kỳ câu hỏi hoặc yêu cầu nào liên quan đến chính sách bảo mật và an toàn, vui lòng liên hệ với chúng tôi qua email hoặc mục hỗ trợ trên ứng dụng.
+]]></string>
+    <string name="title_load_more">Tải thêm</string>
+    <string name="title_viewing_result">Bạn đang xem %1$d thuộc %2$d sản phẩm</string>
+    <string name="title_view_all">Xem tất cả</string>
+
+</resources>
