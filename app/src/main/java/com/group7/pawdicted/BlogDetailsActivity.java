@@ -31,7 +31,7 @@ public class BlogDetailsActivity extends AppCompatActivity {
         String content = getIntent().getStringExtra("content");
         String author = getIntent().getStringExtra("author");
         String imageURL = getIntent().getStringExtra("imageURL");
-        String createAt = getIntent().getStringExtra("createAt");
+        String createdAt = getIntent().getStringExtra("createdAt");
 
         // Hiển thị tiêu đề, mô tả, nội dung
         txtTitle.setText(title);
@@ -47,17 +47,17 @@ public class BlogDetailsActivity extends AppCompatActivity {
 
         // Định dạng ngày giờ
         String formattedDate = "";
-        if (createAt != null && !createAt.isEmpty()) {
+        if (createdAt != null && !createdAt.isEmpty()) {
             try {
                 SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
                 isoFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-                Date date = isoFormat.parse(createAt);
+                Date date = isoFormat.parse(createdAt);
 
                 SimpleDateFormat displayFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
                 displayFormat.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
                 formattedDate = displayFormat.format(date);
             } catch (ParseException e) {
-                formattedDate = createAt;
+                formattedDate = createdAt;
             }
         } else {
             formattedDate = "Không rõ thời gian";

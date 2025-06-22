@@ -47,9 +47,9 @@
                 android:id="@+id/search_bar"
                 android:layout_width="250dp"
                 android:layout_height="40dp"
-                android:orientation="horizontal"
                 android:background="@drawable/red_rounded_background"
                 android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp">
 
@@ -74,7 +74,6 @@
                     android:textColor="@android:color/black"
                     android:textSize="18sp" />
             </LinearLayout>
-
 
 
             <!-- Icon giỏ hàng -->
