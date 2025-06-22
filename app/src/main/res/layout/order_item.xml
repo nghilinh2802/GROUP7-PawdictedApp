@@ -38,7 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="To Pay"
-                android:background="@drawable/bg_status_to_pay"
+                android:background="@drawable/yellow_fill_rounded_background"
                 android:textColor="@android:color/white"
                 android:textSize="12sp"
                 android:paddingLeft="12dp"

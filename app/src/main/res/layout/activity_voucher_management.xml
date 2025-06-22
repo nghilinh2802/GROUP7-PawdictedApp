@@ -10,12 +10,41 @@
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="#9c162c"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+            android:layout_height="56dp"
+            android:background="@color/main_color"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp">
+
+            <ImageView
+                android:id="@+id/imgBack"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:contentDescription="Back"
+                android:src="@mipmap/ic_back_icon_white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Tiêu đề căn giữa toàn bộ layout -->
+            <TextView
+                android:id="@+id/txt_page_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="@font/inter_bold"
+                android:maxLines="1"
+                android:text="@string/title_voucher_cap"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -39,18 +68,18 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint="Enter your voucher code"
-                android:background="@drawable/rounded_edittext"
+                android:background="@drawable/gray_rounded_background"
                 android:padding="12dp" />
 
             <Button
                 android:id="@+id/apply_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Apply"
-                android:background="@drawable/rounded_button"
-                app:backgroundTint="@null"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/red_fill_rounded_background"
+                android:text="@string/title_apply"
                 android:textColor="@android:color/white"
-                android:layout_marginStart="8dp" />
+                app:backgroundTint="@null" />
 
         </LinearLayout>
 

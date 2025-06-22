@@ -11,13 +11,42 @@
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <androidx.appcompat.widget.Toolbar
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/toolbar_checkout"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="#9c162c"
-            android:title="Checkout"
-            android:titleTextColor="@android:color/white" />
+            android:layout_height="56dp"
+            android:background="@color/main_color"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp">
+
+            <ImageView
+                android:id="@+id/imgBack"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:contentDescription="Back"
+                android:src="@mipmap/ic_back_icon_white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Tiêu đề căn giữa toàn bộ layout -->
+            <TextView
+                android:id="@+id/txt_page_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="@font/inter_bold"
+                android:maxLines="1"
+                android:text="@string/title_checkout"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
@@ -39,7 +68,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:background="@drawable/bg_rounded"
+                android:background="@drawable/white_fill_rounded_background"
                 android:onClick="open_address_selection_activity"
                 android:padding="16dp">
 
@@ -100,7 +129,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:background="@drawable/bg_rounded"
+                    android:background="@drawable/white_fill_rounded_background"
                     android:padding="16dp">
 
                     <!-- Order Items Title -->
@@ -173,7 +202,7 @@
                         android:hint="Please leave a message"
                         android:textColorHint="#808080"
                         android:textSize="14sp"
-                        android:background="@drawable/rounded_border"
+                        android:background="@drawable/gray_rounded_background"
                         android:padding="12dp"
                         android:layout_marginBottom="16dp" />
 
@@ -205,7 +234,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="12dp"
-                                android:background="@drawable/rounded_border_selector"
+                                android:background="@drawable/gray_rounded_background"
                                 android:clickable="true"
                                 android:focusable="true"
                                 android:foreground="?attr/selectableItemBackground"
@@ -248,7 +277,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="8dp"
-                                android:background="@drawable/rounded_border_selector"
+                                android:background="@drawable/gray_rounded_background"
                                 android:clickable="true"
                                 android:focusable="true"
                                 android:foreground="?attr/selectableItemBackground"
@@ -296,7 +325,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="@drawable/bg_rounded"
+                android:background="@drawable/white_fill_rounded_background"
                 android:padding="12dp"
                 android:layout_marginBottom="16dp"
                 android:backgroundTint="#FFFFFF"
@@ -320,7 +349,7 @@
                     android:gravity="center_vertical"
                     android:padding="12dp"
                     android:layout_marginBottom="12dp"
-                    android:background="@drawable/rounded_border">
+                    android:background="@drawable/gray_rounded_background">
 
                     <ImageView
                         android:layout_width="24dp"
@@ -344,7 +373,7 @@
                     android:gravity="center_vertical"
                     android:padding="12dp"
                     android:layout_marginBottom="12dp"
-                    android:background="@drawable/rounded_border">
+                    android:background="@drawable/gray_rounded_background">
 
                     <ImageView
                         android:layout_width="24dp"
@@ -368,7 +397,7 @@
                     android:gravity="center_vertical"
                     android:padding="12dp"
                     android:layout_marginBottom="12dp"
-                    android:background="@drawable/rounded_border">
+                    android:background="@drawable/gray_rounded_background">
 
                     <ImageView
                         android:layout_width="24dp"
@@ -392,7 +421,7 @@
                     android:gravity="center_vertical"
                     android:padding="12dp"
                     android:layout_marginBottom="12dp"
-                    android:background="@drawable/rounded_border_selector">
+                    android:background="@drawable/gray_rounded_background">
 
                     <ImageView
                         android:layout_width="24dp"
@@ -413,7 +442,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="@drawable/bg_rounded"
+                android:background="@drawable/white_fill_rounded_background"
                 android:padding="16dp"
                 android:layout_marginBottom="16dp">
 
@@ -555,7 +584,7 @@
             android:id="@+id/btn_place_order"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/rounded_button_red"
+            android:background="@drawable/red_fill_rounded_background"
             android:paddingStart="24dp"
             android:paddingTop="12dp"
             android:paddingEnd="24dp"

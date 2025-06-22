@@ -7,12 +7,9 @@
     android:background="@color/white"
     android:orientation="vertical">
 
-
-    <!-- Toolbar -->
-    <include layout="@layout/activity_tool_bar" />
+    <include layout="@layout/activity_back_bar" />
 
     <!-- Scrollable content -->
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -27,6 +24,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingBottom="16dp"
                 android:orientation="vertical"
                 android:paddingHorizontal="16dp">
 
@@ -36,7 +34,7 @@
                     android:layout_height="200dp"
                     android:layout_gravity="center"
                     android:scaleType="fitCenter"
-                    android:src="@mipmap/banner" />
+                    android:src="@mipmap/ic_banner" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -105,7 +103,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                            android:background="@drawable/discount_background"
+                            android:background="@drawable/red_fill_rounded_background"
                             android:padding="2dp"
                             android:text="-10%"
                             android:textColor="#FFFFFF"
@@ -135,6 +133,7 @@
                         style="?android:attr/ratingBarStyleSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="-8dp"
                         android:layout_marginEnd="4dp"
                         android:backgroundTint="@color/star_gray"
                         android:isIndicator="true"
@@ -144,7 +143,6 @@
                         android:scaleY="0.8"
                         android:secondaryProgressTint="@color/star_gray"
                         android:stepSize="0.5" />
-
 
                     <TextView
                         android:id="@+id/txt_product_rating_count"
@@ -164,55 +162,25 @@
                 android:layout_marginEnd="-16dp"
                 android:background="#DDDDDD" />
 
-            <!-- Description -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="12dp"
                 android:orientation="vertical"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp">
 
-                <LinearLayout
+
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Select Variation"
-                        android:textColor="@color/black"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/txt_viewAll_variation"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="4dp"
-                            android:text="@string/title_view_all"
-                            android:textColor="@color/gray_text"
-                            android:textSize="12sp" />
-
-                        <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:src="@mipmap/ic_next_gray"
-                            app:tint="@color/gray_text" />
-                    </LinearLayout>
-                </LinearLayout>
-
+                    android:text="Select Variation"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:id="@+id/lvVariation"
@@ -222,31 +190,13 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/txt_variation_1"
+                        android:id="@+id/txt_no_variants"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="10dp"
-                        android:background="@drawable/variation_button_red"
-                        android:gravity="center"
-                        android:paddingHorizontal="20dp"
-                        android:paddingVertical="4dp"
-                        android:text="Red"
-                        android:textColor="#9c162c"
-                        android:textSize="14sp" />
-
-
-                    <TextView
-                        android:id="@+id/tvYellow"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="10dp"
-                        android:background="@drawable/variation_button_grey"
-                        android:gravity="center"
-                        android:paddingHorizontal="20dp"
-                        android:paddingVertical="4dp"
-                        android:text="Yellow"
-                        android:textColor="@color/black"
-                        android:textSize="14sp" />
+                        android:text="No variants available"
+                        android:textColor="#888888"
+                        android:textSize="14sp"
+                        android:visibility="gone" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -258,12 +208,11 @@
                 android:layout_marginEnd="-16dp"
                 android:background="#DDDDDD" />
 
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="12dp"
                 android:orientation="vertical"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp">
@@ -285,6 +234,7 @@
                         android:textStyle="bold" />
 
                     <LinearLayout
+                        android:id="@+id/view_all_description"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
@@ -307,13 +257,14 @@
                     </LinearLayout>
                 </LinearLayout>
 
-
                 <TextView
                     android:id="@+id/txt_product_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="This clicker with a spiral wrist look is here to help make dog training easier/teach your dog new tricks. This clicker sound works for dogs, cats and rabbits of any age and breed."
+                    android:maxLines="3"
+                    android:ellipsize="end"
+                    android:text="This clicker with a spiral wrist loop is here to help make dog training easier/teach your dog new tricks. This clicker sound works for dogs, cats and rabbits of any age and breed."
                     android:textColor="#444444"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -326,12 +277,11 @@
                 android:layout_marginEnd="-16dp"
                 android:background="#DDDDDD" />
 
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="12dp"
                 android:orientation="vertical"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp">
@@ -353,6 +303,7 @@
                         android:textStyle="bold" />
 
                     <LinearLayout
+                        android:id="@+id/view_all_rating"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
@@ -375,16 +326,14 @@
                     </LinearLayout>
                 </LinearLayout>
 
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-
                     <RatingBar
-                        android:id="@+id/product_rating_bar_2"
+                        android:id="@+id/product_rating_bar_again"
                         style="?android:attr/ratingBarStyleSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -398,7 +347,7 @@
                         android:stepSize="0.5" />
 
                     <TextView
-                        android:id="@+id/txt_avarage_rating"
+                        android:id="@+id/txt_average_rating"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/inter_tight_light"
@@ -419,10 +368,8 @@
                         android:textSize="14sp" />
                 </LinearLayout>
             </LinearLayout>
-
         </LinearLayout>
     </ScrollView>
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -435,7 +382,7 @@
         android:paddingRight="8dp">
 
         <ImageButton
-            android:id="@+id/btnChat"
+            android:id="@+id/img_avatar"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_margin="1dp"
@@ -469,6 +416,4 @@
             android:textAllCaps="true"
             android:textColor="#FFFFFF" />
     </LinearLayout>
-
 </LinearLayout>
-

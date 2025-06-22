@@ -16,7 +16,26 @@
         android:theme="@style/Theme.Pawdicted"
         tools:targetApi="31">
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
-        <activity android:name="com.facebook.FacebookActivity"
+
+        <activity
+            android:name=".ProductDescriptionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BackBarActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RatingActivity"
+            android:exported="true" />
+        <activity
+            android:name=".NewArrivalActivity"
+            android:exported="false" />
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+
+        <activity
+            android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"/>
         <activity
@@ -40,10 +59,6 @@
         <activity
             android:name=".VoucherManagementActivity"
             android:exported="false" />
-        <activity
-            android:name=".mobile.HeaderActivity"
-            android:exported="false" />
-
         <activity
             android:name=".CancellationDetailActivity"
             android:exported="false" />
@@ -85,27 +100,26 @@
             android:exported="true" />
         <activity
             android:name=".BlogActivity"
-            android:exported="true" /> <!-- LoginActivity will be the launcher activity -->
+            android:exported="true" />
         <activity
             android:name=".LoginActivity"
-            android:exported="true"/>
-<!--        <intent-filter>-->
-<!--            <action android:name="android.intent.action.MAIN" />-->
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-<!--            <category android:name="android.intent.category.LAUNCHER" />-->
-<!--        </intent-filter>-->
-<!--    </activity>-->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".CategoryActivity"
-            android:exported="false"/>
-
-        <activity android:name=".CategoryDetailsActivity"
-            android:exported="false" />
+            android:exported="true" />
+        <activity
+            android:name=".CategoryDetailsActivity"
+            android:exported="true" />
         <activity
             android:name=".ProductDetailsActivity"
             android:exported="false" />
-
         <activity
             android:name=".FooterActivity"
             android:exported="false" />

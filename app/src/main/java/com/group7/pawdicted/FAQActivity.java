@@ -3,14 +3,11 @@ package com.group7.pawdicted;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.group7.pawdicted.mobile.adapters.FAQAdapter;
 import com.group7.pawdicted.mobile.models.FAQItem;
@@ -32,6 +29,11 @@ public class FAQActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_faqactivity);
+
+        ImageView imgBack = findViewById(R.id.imgBack);
+        if (imgBack != null) {
+            imgBack.setOnClickListener(v -> finish());
+        }
 
         expandableListView = findViewById(R.id.faq_expandable_list);
 
@@ -101,11 +103,11 @@ public class FAQActivity extends AppCompatActivity {
 
         selectedTab.setSelected(true);
 
-        tabOrder.setBackgroundResource(R.drawable.bg_tab_unselected);
-        tabRefund.setBackgroundResource(R.drawable.bg_tab_unselected);
-        tabMember.setBackgroundResource(R.drawable.bg_tab_unselected);
-        tabOther.setBackgroundResource(R.drawable.bg_tab_unselected);
+        tabOrder.setBackgroundResource(R.drawable.red_large_rounded_background);
+        tabRefund.setBackgroundResource(R.drawable.red_large_rounded_background);
+        tabMember.setBackgroundResource(R.drawable.red_large_rounded_background);
+        tabOther.setBackgroundResource(R.drawable.red_large_rounded_background);
 
-        selectedTab.setBackgroundResource(R.drawable.bg_tab_selected);
+        selectedTab.setBackgroundResource(R.drawable.red_fill_rounded_background);
     }
 }

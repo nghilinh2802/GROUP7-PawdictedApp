@@ -8,34 +8,42 @@
     android:orientation="vertical">
 
     <!-- AppBar -->
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toolbar"
+        android:title="Notification"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="#A62332"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:background="@color/main_color"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
 
-        <ImageButton
-            android:id="@+id/btn_back"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+        <ImageView
+            android:id="@+id/imgBack"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:contentDescription="Back"
             android:src="@mipmap/ic_back_icon_white"
-            app:tint="#FFFFFF" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
+        <!-- Tiêu đề căn giữa toàn bộ layout -->
         <TextView
-            android:id="@+id/tv_title"
-            android:layout_width="0dp"
+            android:id="@+id/txt_page_title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
+            android:ellipsize="end"
+            android:fontFamily="@font/inter_bold"
+            android:maxLines="1"
             android:text="@string/title_chatting"
             android:textColor="#FFFFFF"
             android:textSize="20sp"
-            android:textStyle="bold" />
-
-    </LinearLayout>
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Danh sách tin nhắn -->
     <androidx.recyclerview.widget.RecyclerView
@@ -61,7 +69,7 @@
             android:layout_width="0dp"
             android:layout_height="40dp"
             android:layout_weight="1"
-            android:background="@drawable/bg_edittext"
+            android:background="@drawable/gray_rounded_background"
             android:hint="@string/hint_type_a_message"
             android:textColor="#222"
             android:textSize="15sp"

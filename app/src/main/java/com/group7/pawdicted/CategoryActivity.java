@@ -91,8 +91,11 @@ public class CategoryActivity extends AppCompatActivity {
             return insets;
         });
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
+        ImageView imgBack = findViewById(R.id.imgBack);
+        if (imgBack != null) {
+            imgBack.setOnClickListener(v -> finish());
+        }
 
         footerManager = new FooterManager(this);
 
@@ -178,7 +181,7 @@ public class CategoryActivity extends AppCompatActivity {
         adapter = new ProductAdapter(this);
         productList.setLayoutManager(new GridLayoutManager(this, 2));
         productList.setAdapter(adapter);
-        productList.addItemDecoration(new DividerItemDecoration(this));
+//        productList.addItemDecoration(new DividerItemDecoration(this));
 
         // Ensure datasets are initialized
         if (listProduct.getProducts() == null || listChildCategory.getChildCategories() == null) {

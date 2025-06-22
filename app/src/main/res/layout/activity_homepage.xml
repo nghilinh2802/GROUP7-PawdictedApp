@@ -39,7 +39,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="383px"
                     android:scaleType="centerCrop"
-                    android:src="@mipmap/banner" />
+                    android:src="@mipmap/ic_banner" />
             </androidx.cardview.widget.CardView>
 
             <!-- TableLayout chứa icon -->
@@ -190,7 +190,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/inter_bold"
-                            android:text="@string/title_homepage_voucher"
+                            android:text="@string/title_voucher"
                             android:textAlignment="center"
                             android:textColor="#FFFDFD" />
 
@@ -308,7 +308,7 @@
                             android:fontFamily="@font/inter_bold"
                             android:scaleType="centerInside"
                             android:onClick="open_faq"
-                            android:text="@string/title_homepage_FAQs"
+                            android:text="@string/title_faqs"
                             android:textAlignment="center"
                             android:textColor="#FFFDFD" />
 

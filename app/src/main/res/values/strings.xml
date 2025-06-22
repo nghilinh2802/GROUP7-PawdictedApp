@@ -9,7 +9,7 @@
     <string name="title_utilities">Utilities</string>
     <string name="title_wishlist">Wishlist</string>
     <string name="title_voucher">Voucher</string>
-    <string name="title_blogs">Blogs</string>
+    <string name="title_blogs">BLOGS</string>
     <string name="title_history">History</string>
     <string name="title_help">Help</string>
     <string name="title_faqs">FAQs</string>
@@ -18,10 +18,9 @@
     <string name="title_homepage_category">Category</string>
     <string name="title_homepage_flash_deals">Flash Deals</string>
     <string name="title_homepage_new_arrival">New Arrival</string>
-    <string name="title_homepage_voucher">Voucher</string>
+    <string name="title_voucher_cap">VOUCHER</string>
     <string name="title_homepage_order">Order</string>
     <string name="title_homepage_blog">Blog</string>
-    <string name="title_homepage_FAQs">FAQs</string>
     <string name="title_homepage_policy">Policy</string>
     <string name="title_footer_home">Home</string>
     <string name="title_footer_notification">Notification</string>
@@ -43,7 +42,6 @@
     <string name="title_already_have_account">Already have an account?</string>
     <string name="title_login_signup">Log in</string>
     <string name="title_hot">Hot</string>
-    <string name="title_flashdeals">Flash Deals</string>
     <string name="title_end_in">Ends in</string>
     <string name="title_on_going">On going</string>
     <string name="title_upcoming">Upcoming</string>
@@ -78,11 +76,10 @@
     <string name="title_child_care_rating">RATING</string>
     <string name="title_child_cate_price">PRICE</string>
     <string name="title_view_all">View all</string>
-    <string name="hint_flashdeals">Flash Deals</string>
+    <string name="hint_flashdeals">FLASH DEALS</string>
     <string name="title_order">Order</string>
     <string name="title_search">Search</string>
     <string name="title_back">Back</string>
-    <string name="title_FAQ">FAQs</string>
     <string name="title_refund">Refund</string>
     <string name="title_member">Member</string>
     <string name="title_other">Other</string>
@@ -151,4 +148,29 @@ If you have any questions or requests regarding our privacy and security policy,
     <string name="title_language">LANGUAGE</string>
     <string name="language_english">English</string>
 
+    <string name="title_load_more">Load more</string>
+    <string name="title_viewing_result">You\'re viewing %1$d of %2$d results</string>
+    <string name="title_product_ratings">Product Ratings</string>
+    <string name="title_related_product">Related Products</string>
+    <string name="title_you_may">You May Also Like</string>
+    <string name="title_description_cap">DESCRIPTION</string>
+    <string name="title_description">Description</string>
+    <string name="title_flash_deals">Flash Deals</string>
+    <string name="title_apply">Apply</string>
+    <string name="title_cart_cap">CART</string>
+    <string name="title_enter_code"><![CDATA[Select or enter code >]]></string>
+    <string name="title_vouchers">Vouchers</string>
+    <string name="title_checkout">CHECKOUT</string>
+    <string name="title_notification_cap">NOTIFICATION</string>
+    <string name="title_profile_cap">PROFILE</string>
+    <string name="title_edit_cap">EDIT</string>
+    <string name="title_language">LANGUAGE</string>
+    <string name="title_cancel">CANCELLATION DETAILS</string>
+    <string name="title_category_cap">CATEGORY</string>
+    <string name="title_send">Send</string>
+    <string name="title_evaluate_cap">EVALUATE</string>
+    <string name="title_new_arrival_cap">NEW ARRIVAL</string>
+    <string name="title_setting_cap">SETTING</string>
+    <string name="title_details">Details</string>
+    <string name="title_selected_product">Selected product</string>
 </resources>

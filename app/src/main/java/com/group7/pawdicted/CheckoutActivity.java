@@ -27,7 +27,7 @@ public class CheckoutActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         List<OrderItem> items = new ArrayList<>();
-        items.add(new OrderItem("Barkbutler x Fofos Cheese Box Interactive Toy for Cats", "ORANGE", "đ240.000", 1, R.mipmap.cat_toy));
+        items.add(new OrderItem("Barkbutler x Fofos Cheese Box Interactive Toy for Cats", "ORANGE", "đ240.000", 1, R.mipmap.fofos));
         items.add(new OrderItem("Squeeezys Latex Monster Brother Chew Toy for Dogs", "", "đ85.000", 2, R.mipmap.fofos));
 
         OrderItemAdapter adapter = new OrderItemAdapter(this, items);
@@ -40,8 +40,4 @@ public class CheckoutActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void open_address_selection_activity(View view) {
-        Intent intent = new Intent(this, AddressSelectionActivity.class);
-        startActivity(intent);
-    }
 }

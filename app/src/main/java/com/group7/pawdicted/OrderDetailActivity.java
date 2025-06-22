@@ -152,7 +152,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                 layoutBottomActions.setVisibility(View.VISIBLE);
                 btnCancel.setText("Buy Again");
 
-                findViewById(R.id.btn_return).setOnClickListener(v -> {
+                findViewById(R.id.btn_back).setOnClickListener(v -> {
                     Intent intent = new Intent(OrderDetailActivity.this, RefundReturnRequestActivity.class);
                     startActivity(intent);
                 });

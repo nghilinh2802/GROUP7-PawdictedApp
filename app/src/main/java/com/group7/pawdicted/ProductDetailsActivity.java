@@ -1,6 +1,7 @@
 package com.group7.pawdicted;
 
-import android.graphics.Color;
+import android.content.Intent;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,17 +13,16 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.group7.pawdicted.mobile.models.ListProduct;
+import com.group7.pawdicted.mobile.models.ListVariant;
 import com.group7.pawdicted.mobile.models.Product;
+import com.group7.pawdicted.mobile.models.Variant;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -32,14 +32,17 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private ImageView imgProductImage;
     private TextView txtDiscountPrice, txtSoldQuantity, txtProductPrice, txtDiscountRate;
     private TextView txtProductName, txtProductRatingCount, txtProductDescription;
-    private TextView txtAverageRating, txtRatingCount;
+    private TextView txtAverageRating, txtRatingCount, txtNoVariants;
     private android.widget.RatingBar productRatingBar, productRatingBar2;
     private ImageButton btnChat;
     private Button btnAddToCart, btnBuyNow;
-    private LinearLayout lvVariation;
+    private LinearLayout lvVariation, viewAllDescription;
+    private LinearLayout viewAllRating;
+
     private ListProduct listProduct;
-    private String selectedVariantId; // Store selected variant ID
-    private String selectedVariantName; // Store selected variant name
+    private ListVariant listVariant;
+    private String selectedVariantId;
+    private String defaultProductImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,17 +50,15 @@ public class ProductDetailsActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_product_details);
 
-        // Fix View ID
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.LinearLayout), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ImageView imgBack = findViewById(R.id.imgBack);
+        if (imgBack != null) {
+            imgBack.setOnClickListener(v -> finish());
         }
 
         // Clear Glide cache for debugging
@@ -78,21 +79,55 @@ public class ProductDetailsActivity extends AppCompatActivity {
         productRatingBar = findViewById(R.id.product_rating_bar);
         txtProductRatingCount = findViewById(R.id.txt_product_rating_count);
         txtProductDescription = findViewById(R.id.txt_product_description);
-        productRatingBar2 = findViewById(R.id.product_rating_bar_2);
-        txtAverageRating = findViewById(R.id.txt_avarage_rating);
+        productRatingBar2 = findViewById(R.id.product_rating_bar_again);
+        txtAverageRating = findViewById(R.id.txt_average_rating);
         txtRatingCount = findViewById(R.id.txt_rating_count);
-        btnChat = findViewById(R.id.btnChat);
+        btnChat = findViewById(R.id.img_avatar);
         btnAddToCart = findViewById(R.id.btnAddToCart);
         btnBuyNow = findViewById(R.id.btnBuyNow);
-        lvVariation = findViewById(R.id.lvVariation); // Initialize variation layout
+        lvVariation = findViewById(R.id.lvVariation);
+        txtNoVariants = findViewById(R.id.txt_no_variants);
+        viewAllRating = findViewById(R.id.view_all_rating);
+        viewAllDescription = findViewById(R.id.view_all_description);
+
+        // Thiết lập click cho view_all_description
+        viewAllDescription.setOnClickListener(v -> {
+            String productId = getIntent().getStringExtra("product_id");
+            Product product = null;
+            for (Product p : listProduct.getProducts()) {
+                if (p.getProduct_id().equals(productId)) {
+                    product = p;
+                    break;
+                }
+            }
+            if (product != null) {
+                Intent intent = new Intent(ProductDetailsActivity.this, ProductDescriptionActivity.class);
+                intent.putExtra("product_id", productId);
+                intent.putExtra("product_name", product.getProduct_name());
+                intent.putExtra("description", product.getDescription());
+                intent.putExtra("details", product.getDetails());
+                startActivity(intent);
+            } else {
+                Log.e("ProductDetailsActivity", "Không tìm thấy sản phẩm với ID: " + productId);
+            }
+        });
+
+        viewAllRating.setOnClickListener(v -> {
+            String productId = getIntent().getStringExtra("product_id");
+            Intent intent = new Intent(ProductDetailsActivity.this, RatingActivity.class);
+            intent.putExtra("product_id", productId);
+            startActivity(intent);
+        });
 
         listProduct = new ListProduct();
         listProduct.generate_sample_dataset();
+        listVariant = new ListVariant();
+        listVariant.generate_sample_dataset();
     }
 
     private void loadProductDetails() {
         String productId = getIntent().getStringExtra("product_id");
-        Log.d("ProductDetailsActivity", "Received product_id: " + productId);
+        Log.d("ProductDetailsActivity", "Received product_id: " + (productId != null ? productId : "null"));
         if (productId == null) {
             Log.e("ProductDetailsActivity", "No product_id received");
             finish();
@@ -113,134 +148,140 @@ public class ProductDetailsActivity extends AppCompatActivity {
             return;
         }
 
-        // Log product details
         Log.d("ProductDetailsActivity", "Product: " + product.getProduct_name() + ", Image URL: " + product.getProduct_image());
+        defaultProductImage = product.getProduct_image();
 
-        // Load image with Glide
-        Product finalProduct = product;
-        Glide.with(this)
-                .load(product.getProduct_image())
-                .placeholder(R.mipmap.ic_ascend_arrows)
-                .error(R.mipmap.ic_ascend_arrows)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .listener(new RequestListener<android.graphics.drawable.Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@androidx.annotation.Nullable com.bumptech.glide.load.engine.GlideException e, Object model, Target<android.graphics.drawable.Drawable> target, boolean isFirstResource) {
-                        Log.e("ProductDetailsActivity", "Glide load failed for URL: " + finalProduct.getProduct_image(), e);
-                        return false;
-                    }
+        loadImage(defaultProductImage, product);
 
-                    @Override
-                    public boolean onResourceReady(android.graphics.drawable.Drawable resource, Object model, Target<android.graphics.drawable.Drawable> target, com.bumptech.glide.load.DataSource dataSource, boolean isFirstResource) {
-                        Log.d("ProductDetailsActivity", "Glide load success for URL: " + finalProduct.getProduct_image());
-                        return false;
-                    }
-                })
-                .into(imgProductImage);
-
-        // Format prices
         DecimalFormat formatter = new DecimalFormat("#,###đ");
         double discountPrice = product.getPrice() * (1 - product.getDiscount() / 100.0);
         txtDiscountPrice.setText(formatter.format(discountPrice));
         txtProductPrice.setText(formatter.format(product.getPrice()));
-
-        // Sold quantity
+        // Thêm gạch ngang nếu có giảm giá
+        if (product.getDiscount() > 0) {
+            txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        } else {
+            txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+        }
         txtSoldQuantity.setText(product.getSold_quantity() + " sold  ");
-
-        // Discount rate
         txtDiscountRate.setText(" -" + (int)product.getDiscount() + "% ");
-
-        // Product name
         txtProductName.setText(product.getProduct_name());
-
-        // Ratings
         productRatingBar.setRating((float) product.getAverage_rating());
         productRatingBar2.setRating((float) product.getAverage_rating());
         txtProductRatingCount.setText(product.getRating_number() + " Đánh giá");
         txtAverageRating.setText(String.format("%.1f", product.getAverage_rating()));
         txtRatingCount.setText("(" + product.getRating_number() + " Đánh giá)");
-
-        // Description
         txtProductDescription.setText(product.getDescription());
 
-        // Load variations
         List<String> variantIds = product.getVariant_id();
-        List<String> variantNames = product.getVariant_name();
-        Log.d("ProductDetailsActivity", "Variant IDs: " + variantIds + ", Variant Names: " + variantNames);
-        loadVariations(variantIds, variantNames);
-
-        Log.d("ProductDetailsActivity", "Loaded product: " + product.getProduct_name());
+        Log.d("ProductDetailsActivity", "Variant IDs from product: " + (variantIds != null ? variantIds.toString() : "null"));
+        loadVariations(variantIds, productId);
     }
+
+    private void loadImage(String imageUrl, Product product) {
+        Glide.with(this)
+                .load(imageUrl)
+                .placeholder(R.mipmap.ic_ascend_arrows)
+                .error(R.mipmap.ic_ascend_arrows)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(imgProductImage);
+    }
+
     private int dpToPx(float dp) {
         return (int) (dp * getResources().getDisplayMetrics().density + 0.5f);
     }
 
-    private void loadVariations(List<String> variantIds, List<String> variantNames) {
-        // Clear existing variations
+    private void loadVariations(List<String> variantIds, String productId) {
         lvVariation.removeAllViews();
 
-        // Check for invalid or empty variant data
-        if (variantIds == null || variantNames == null || variantIds.isEmpty() || variantIds.size() != variantNames.size()) {
-            Log.w("ProductDetailsActivity", "Invalid or empty variant data");
+        if (productId == null) {
+            Log.e("ProductDetailsActivity", "productId is null, cannot load variations");
+            txtNoVariants.setVisibility(View.VISIBLE);
+            return;
+        }
+        if (variantIds == null || variantIds.isEmpty()) {
+            Log.w("ProductDetailsActivity", "No variants for product ID: " + productId);
+            txtNoVariants.setVisibility(View.VISIBLE);
             return;
         }
 
-        // Set first variation as selected by default
-        selectedVariantId = variantIds.get(0);
-        selectedVariantName = variantNames.get(0);
+        List<Variant> variants = listVariant.getVariantsByProductId(productId);
+        Log.d("ProductDetailsActivity", "Variants found for productId " + productId + ": " + (variants != null ? variants.size() : 0));
+        if (variants == null || variants.isEmpty()) {
+            Log.w("ProductDetailsActivity", "No variants found for product ID: " + productId);
+            txtNoVariants.setVisibility(View.VISIBLE);
+            return;
+        }
 
-        // Create a TextView for each variation
-        for (int i = 0; i < variantIds.size(); i++) {
-            String currentVariantId = variantIds.get(i);
-            String currentVariantName = variantNames.get(i);
+        txtNoVariants.setVisibility(View.GONE);
+        selectedVariantId = variantIds.get(0);
+        Variant firstVariant = null;
+        for (Variant v : variants) {
+            if (v != null && v.getVariant_id() != null && v.getVariant_id().equals(selectedVariantId)) {
+                firstVariant = v;
+                break;
+            }
+        }
+
+        for (Variant variant : variants) {
+            if (variant == null || variant.getVariant_id() == null) {
+                Log.w("ProductDetailsActivity", "Skipping null variant or variant_id");
+                continue;
+            }
+            Log.d("ProductDetailsActivity", "Processing variant: " + variant.getVariant_id() + ", name: " + variant.getVariant_name());
+            if (!variantIds.contains(variant.getVariant_id())) {
+                Log.w("ProductDetailsActivity", "Variant " + variant.getVariant_id() + " not in variantIds, skipping");
+                continue;
+            }
 
             TextView variationTextView = new TextView(this);
-            variationTextView.setText(currentVariantName);
-            variationTextView.setTextSize(14); // 14sp
+            variationTextView.setText(variant.getVariant_name());
+            variationTextView.setTextSize(14);
             variationTextView.setGravity(android.view.Gravity.CENTER);
 
-            // Set padding: 20dp horizontal, 4dp vertical
             int paddingHorizontal = dpToPx(20);
             int paddingVertical = dpToPx(4);
             variationTextView.setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
 
-            // Set layout parameters with margins
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
             );
-            int margin = dpToPx(10); // 10dp margin as per reference
-            params.setMargins(margin, dpToPx(5), margin, dpToPx(5)); // Left: 10dp, Top: 5dp, Right: 10dp, Bottom: 5dp
+            int margin = dpToPx(10);
+            params.setMargins(0, dpToPx(5), margin, dpToPx(5));
             variationTextView.setLayoutParams(params);
 
-            // Apply style based on selection
-            updateVariationStyle(variationTextView, currentVariantName.equals(selectedVariantName));
+            updateVariationStyle(variationTextView, variant.getVariant_id().equals(selectedVariantId));
 
-            // Set click listener
             variationTextView.setOnClickListener(v -> {
-                // Update selected variant
-                selectedVariantId = currentVariantId;
-                selectedVariantName = currentVariantName;
-                Log.d("ProductDetailsActivity", "Selected variant: " + selectedVariantName + " (" + selectedVariantId + ")");
-
-                // Update styles for all variations
+                selectedVariantId = variant.getVariant_id();
+                Log.d("ProductDetailsActivity", "Selected variant: " + variant.getVariant_name() + " (" + selectedVariantId + ")");
+                loadImage(variant.getVariant_image() != null ? variant.getVariant_image() : defaultProductImage, null);
                 for (int j = 0; j < lvVariation.getChildCount(); j++) {
                     TextView tv = (TextView) lvVariation.getChildAt(j);
-                    updateVariationStyle(tv, tv.getText().toString().equals(selectedVariantName));
+                    updateVariationStyle(tv, tv.getText().toString().equals(variant.getVariant_name()));
                 }
             });
 
-            // Add to layout
             lvVariation.addView(variationTextView);
+            Log.d("ProductDetailsActivity", "Added variant: " + variant.getVariant_name());
+        }
+
+        if (firstVariant != null) {
+            loadImage(firstVariant.getVariant_image() != null ? firstVariant.getVariant_image() : defaultProductImage, null);
+        } else if (defaultProductImage != null) {
+            loadImage(defaultProductImage, null);
+        } else {
+            Log.w("ProductDetailsActivity", "No image to load for default or first variant");
         }
     }
 
     private void updateVariationStyle(TextView textView, boolean isSelected) {
         if (isSelected) {
-            textView.setBackgroundResource(R.drawable.variation_button_red);
+            textView.setBackgroundResource(R.drawable.red_rounded_background);
             textView.setTextColor(getColor(R.color.main_color));
         } else {
-            textView.setBackgroundResource(R.drawable.variation_button_grey);
+            textView.setBackgroundResource(R.drawable.gray_rounded_background);
             textView.setTextColor(getColor(R.color.black));
         }
     }

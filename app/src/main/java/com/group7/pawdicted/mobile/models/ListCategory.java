@@ -31,7 +31,7 @@ public class ListCategory implements Serializable {
     }
 
 
-    private static Date getDate(String dateString) {
+    static Date getDate(String dateString) {
         try {
             return new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
         } catch (ParseException e) {

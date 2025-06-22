@@ -58,9 +58,9 @@ public class VoucherManagementActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // Kiểm tra nếu có nội dung nhập vào
                 if (s.length() > 0) {
-                    applyButton.setBackgroundResource(R.drawable.rounded_button_red);
+                    applyButton.setBackgroundResource(R.drawable.red_fill_rounded_background);
                 } else {
-                    applyButton.setBackgroundResource(R.drawable.rounded_button_gray);
+                    applyButton.setBackgroundResource(R.drawable.dark_gray_fill_rounded_background);
                 }
             }
 
