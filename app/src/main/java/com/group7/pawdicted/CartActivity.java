@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -35,8 +36,10 @@ public class CartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
 
-        Toolbar toolbar = findViewById(R.id.toolbar_checkout);
-        setSupportActionBar(toolbar);
+        ImageView imgBack = findViewById(R.id.imgBack);
+        if (imgBack != null) {
+            imgBack.setOnClickListener(v -> finish());
+        }
 
         recyclerView = findViewById(R.id.recycler_cart);
         totalText = findViewById(R.id.text_total_price);
@@ -46,7 +49,7 @@ public class CartActivity extends AppCompatActivity {
         // Dummy data
         cartItemList = new ArrayList<>();
         cartItemList.add(new CartItem("Nutri Plan Tuna", 50, R.mipmap.fofos, Collections.emptyList(), ""));
-        cartItemList.add(new CartItem("Steel Bowl", 60, R.mipmap.fofos,
+        cartItemList.add(new CartItem("Steel Bowl", 60, R.mipmap.cat_toy,
                 Arrays.asList("Size M", "Size L", "Red", "Blue"), "Size M"));
 
         cartAdapter = new CartAdapter(this, cartItemList);

@@ -24,7 +24,7 @@
             <ImageView
                 android:id="@+id/voucher_icon"
                 android:layout_width="24dp"
-                android:layout_height="14dp"
+                android:layout_height="24dp"
                 android:layout_gravity="center"
                 android:src="@mipmap/ic_discount" />
 
@@ -72,11 +72,14 @@
 
         </LinearLayout>
 
-        <CheckBox
-            android:id="@+id/voucher_checkbox"
+        <RadioButton
+            android:id="@+id/voucher_radio_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical" />
+            android:layout_gravity="center_vertical"
+            android:buttonTint="@drawable/button_selector"
+            app:buttonTint="@null"
+            android:layout_marginStart="16dp"/>
 
     </LinearLayout>
 

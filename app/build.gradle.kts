@@ -62,4 +62,6 @@ dependencies {
     implementation ("com.google.firebase:firebase-bom:33.15.0")
     implementation ("com.google.firebase:firebase-firestore:25.1.4")
 
+    implementation ("com.google.code.gson:gson:2.8.9")
+    implementation ("androidx.appcompat:appcompat:1.6.1")
 }

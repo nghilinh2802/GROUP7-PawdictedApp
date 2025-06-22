@@ -22,12 +22,12 @@
 
         <TextView
             android:id="@+id/text_title"
-            android:text="Big Sale on Whiskas"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="Big Sale on Whiskas"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/text_description"
