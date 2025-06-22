@@ -92,6 +92,8 @@
     <string name="default_web_client_id">482980274516-fvnrke3sovvrb8pbfrijh9c35kgpom6k.apps.googleusercontent.com</string>
     <string name="facebook_app_id">YOUR_FB_APP_ID</string>
 
+
+
     <string name="policy_content"><![CDATA[
 <b>1. Purpose</b><br/>
 We are committed to protecting the personal information and transactions of users when using the pet supplies buying and selling application. This policy aims to be transparent about how we collect, use, share, and protect your information.<br/><br/>
@@ -141,6 +143,8 @@ This policy may be updated periodically. When changes occur, we will notify you 
 <b>10. Contact</b><br/>
 If you have any questions or requests regarding our privacy and security policy, please contact us via email or the support section in the application.
 ]]></string>
+    <string name="language_vietnamese">Vietnamese</string>
+    <string name="language_english">English</string>
 
     <string name="title_load_more">Load more</string>
     <string name="title_viewing_result">You\'re viewing %1$d of %2$d results</string>

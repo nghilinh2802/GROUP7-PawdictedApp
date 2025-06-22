@@ -30,7 +30,10 @@ import java.util.*;
 public class LoginActivity extends AppCompatActivity {
     private static final int RC_GOOGLE_SIGN_IN = 1001;
     private static final String TAG = "LOGIN";
-    private static final String PREFS = "prefs", KEY_USER = "phone", KEY_REMEMBER = "remember";
+    private static final String PREFS = "prefs";
+    private static final String KEY_USER = "phone";
+    private static final String KEY_PASSWORD = "password";
+    private static final String KEY_REMEMBER = "remember";
 
     private EditText edtPhone, edtPassword;
     private CheckBox chkRemember;
@@ -61,16 +64,19 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences p = getSharedPreferences(PREFS, MODE_PRIVATE);
         if (p.getBoolean(KEY_REMEMBER, false)) {
             edtPhone.setText(p.getString(KEY_USER, ""));
+            edtPassword.setText(p.getString(KEY_PASSWORD, ""));
             chkRemember.setChecked(true);
         }
     }
 
-    private void savePrefs(String phone, boolean remember) {
+    private void savePrefs(String phone, String password, boolean remember) {
         SharedPreferences.Editor ed = getSharedPreferences(PREFS, MODE_PRIVATE).edit();
         if (remember) {
-            ed.putString(KEY_USER, phone).putBoolean(KEY_REMEMBER, true);
+            ed.putString(KEY_USER, phone);
+            ed.putString(KEY_PASSWORD, password);
+            ed.putBoolean(KEY_REMEMBER, true);
         } else {
-            ed.remove(KEY_USER).remove(KEY_REMEMBER);
+            ed.remove(KEY_USER).remove(KEY_PASSWORD).remove(KEY_REMEMBER);
         }
         ed.apply();
     }
@@ -105,7 +111,7 @@ public class LoginActivity extends AppCompatActivity {
                     mAuth.signInWithEmailAndPassword(email, password)
                             .addOnCompleteListener(this, task -> {
                                 if (task.isSuccessful()) {
-                                    savePrefs(phone, chkRemember.isChecked());
+                                    savePrefs(phone, password, chkRemember.isChecked());
                                     Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
                                     navigateToHome();
                                 } else {
@@ -148,17 +154,46 @@ public class LoginActivity extends AppCompatActivity {
     private void facebookAuth(AccessToken token) {
         AuthCredential c = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(c).addOnCompleteListener(t -> {
-            if (t.isSuccessful()) navigateToHome();
-            else Toast.makeText(this, "Facebook login failed", Toast.LENGTH_SHORT).show();
+            if (t.isSuccessful()) {
+                checkIfUserExistsAndProceed(mAuth.getCurrentUser());
+            } else {
+                Toast.makeText(this, "Facebook login failed", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
     private void googleAuth(String idToken) {
         AuthCredential c = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(c).addOnCompleteListener(t -> {
-            if (t.isSuccessful()) navigateToHome();
-            else Toast.makeText(this, "Google login failed", Toast.LENGTH_SHORT).show();
+            if (t.isSuccessful()) {
+                checkIfUserExistsAndProceed(mAuth.getCurrentUser());
+            } else {
+                Toast.makeText(this, "Google login failed", Toast.LENGTH_SHORT).show();
+            }
         });
+    }
+
+    private void checkIfUserExistsAndProceed(FirebaseUser firebaseUser) {
+        if (firebaseUser == null || firebaseUser.getEmail() == null) {
+            Toast.makeText(this, "Không thể xác định tài khoản!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        db.collection("customers")
+                .whereEqualTo("customer_email", firebaseUser.getEmail())
+                .limit(1)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (snapshot.isEmpty()) {
+                        Toast.makeText(this, "Tài khoản chưa được đăng ký!", Toast.LENGTH_SHORT).show();
+                        mAuth.signOut();
+                    } else {
+                        navigateToHome();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Lỗi kiểm tra tài khoản: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     @Override
@@ -169,7 +204,10 @@ public class LoginActivity extends AppCompatActivity {
             Task<GoogleSignInAccount> t = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 googleAuth(t.getResult(ApiException.class).getIdToken());
-            } catch (Exception e) { Log.e(TAG, "Google error", e); }
+            } catch (Exception e) {
+                Log.e(TAG, "Google error", e);
+                Toast.makeText(this, "Lỗi đăng nhập Google!", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
