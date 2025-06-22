@@ -1,0 +1,28 @@
+<resources>
+    <!-- Theme mặc định của ứng dụng (nếu cần) -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Các thuộc tính khác -->
+    </style>
+
+    <!-- Style cho TextView cột trái (in đậm) -->
+    <style name="TableTextViewBold">
+        <item name="android:fontFamily">@font/inter_tight_light</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:singleLine">false</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Style cho TextView cột phải và hàng 1 ô (không in đậm) -->
+    <style name="TableTextViewNormal">
+        <item name="android:fontFamily">@font/inter_tight_light</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:singleLine">false</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+</resources>
