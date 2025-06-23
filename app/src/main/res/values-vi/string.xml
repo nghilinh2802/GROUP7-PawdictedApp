@@ -84,7 +84,7 @@
     <string name="title_send_image">Gửi ảnh</string>
     <string name="title_enter_current_password">Nhập mật khẩu hiện tại</string>
 
-    <string name="default_web_client_id">482980274516-fvnrke3sovvrb8pbfrijh9c35kgpom6k.apps.googleusercontent.com</string>
+    <string name="default_web_client_id" translatable="false">482980274516-iio3f0ajfgnk4le2u298irqjb49mmh8g.apps.googleusercontent.com</string>
     <string name="facebook_app_id">YOUR_FB_APP_ID</string>
 
     <string name="policy_content"><![CDATA[
