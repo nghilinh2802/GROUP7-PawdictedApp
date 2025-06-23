@@ -18,7 +18,7 @@
         <FrameLayout
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:background="@drawable/rounded_icon_voucher"
+            android:background="@drawable/dark_gray_fill_rounded_background"
             android:gravity="center">
 
             <ImageView
@@ -26,7 +26,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_discount" />
+                android:src="@mipmap/ic_discount" />
 
         </FrameLayout>
 
@@ -39,7 +39,7 @@
 
             <TextView
                 android:id="@+id/voucher_title"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="15% off Capped at 100K"
                 android:textColor="@android:color/black"

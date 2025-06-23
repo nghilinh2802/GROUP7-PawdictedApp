@@ -69,7 +69,6 @@
                 android:background="@drawable/bg_tab_selected"
                 android:text="@string/title_order"
                 android:textColor="#FFFFFF"
-                android:textStyle="bold"
                 android:backgroundTint="@null"/>
 
             <androidx.appcompat.widget.AppCompatButton
@@ -112,9 +111,11 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:divider="#FFFFFF"
-        android:dividerHeight="8dp"
-        android:background="#F5F5F5"
-        android:indicatorLeft="16dp"
-        android:padding="16dp"/>
+        android:divider="@android:color/transparent"
+        android:dividerHeight="16dp"
+        android:padding="12dp"
+        android:clipToPadding="false"
+        android:scrollbars="vertical"
+        android:groupIndicator="@null"
+        android:background="#F5F5F5"/>
 </LinearLayout>

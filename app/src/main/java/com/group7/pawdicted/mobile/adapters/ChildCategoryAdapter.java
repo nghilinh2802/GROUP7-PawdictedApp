@@ -46,8 +46,8 @@ public class ChildCategoryAdapter extends RecyclerView.Adapter<ChildCategoryAdap
         holder.txtChildCategory.setText(childCategory.getChildCategory_name());
         Glide.with(context)
                 .load(childCategory.getChildCategory_image())
-                .placeholder(R.mipmap.ic_phone)
-                .error(R.mipmap.ic_phone)
+                .placeholder(R.mipmap.ic_logo)
+                .error(R.mipmap.ic_logo)
                 .into(holder.imgChildCategory);
 
         // Set click listener on the item view

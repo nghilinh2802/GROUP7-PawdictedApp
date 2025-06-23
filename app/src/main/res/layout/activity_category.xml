@@ -8,14 +8,13 @@
     android:orientation="vertical"
     tools:context=".CategoryActivity">
 
-    <!-- Toolbar -->
-    <include layout="@layout/activity_tool_bar" />
+    <include layout="@layout/activity_back_bar" />
 
     <!-- TopCategory -->
     <LinearLayout
         android:id="@+id/TopCategory"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="54dp"
         android:orientation="horizontal"
         android:padding="8dp">
 
@@ -29,6 +28,7 @@
                 android:id="@+id/txtForDogs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingBottom="6dp"
                 android:fontFamily="@font/inter_bold"
                 android:gravity="center"
                 android:text="@string/title_category_for_dogs"
@@ -54,6 +54,7 @@
                 android:id="@+id/txtForCats"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingBottom="6dp"
                 android:fontFamily="@font/inter_bold"
                 android:gravity="center"
                 android:text="@string/title_category_for_cats"
@@ -64,7 +65,7 @@
                 android:id="@+id/redBarCats"
                 android:layout_width="match_parent"
                 android:layout_height="4dp"
-                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:background="@color/main_color"
                 android:visibility="gone" />
         </LinearLayout>

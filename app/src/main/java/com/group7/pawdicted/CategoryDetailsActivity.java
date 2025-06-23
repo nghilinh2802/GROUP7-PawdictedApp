@@ -1,5 +1,7 @@
 package com.group7.pawdicted;
 
+import static android.icu.util.ULocale.getDisplayName;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,7 +14,6 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -21,7 +22,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.group7.pawdicted.mobile.adapters.ChildCategoryAdapter;
 import com.group7.pawdicted.mobile.adapters.ProductFilteredAdapter;
+import com.group7.pawdicted.mobile.models.Category;
 import com.group7.pawdicted.mobile.models.ChildCategory;
+import com.group7.pawdicted.mobile.models.ListCategory;
 import com.group7.pawdicted.mobile.models.ListChildCategory;
 import com.group7.pawdicted.mobile.models.ListProduct;
 import com.group7.pawdicted.mobile.models.Product;
@@ -40,6 +43,7 @@ public class CategoryDetailsActivity extends AppCompatActivity {
     private ChildCategoryAdapter childCategoryAdapter;
     private ProductFilteredAdapter productAdapter;
     private ListChildCategory listChildCategory;
+    private ListCategory listCategory;
     private ListProduct listProduct;
     private String categoryId;
     private String childCategoryId;
@@ -60,26 +64,31 @@ public class CategoryDetailsActivity extends AppCompatActivity {
             return insets;
         });
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ImageView imgBack = findViewById(R.id.imgBack);
+        if (imgBack != null) {
+            imgBack.setOnClickListener(v -> finish());
         }
 
-        // Nhận dữ liệu từ Intent
         Intent intent = getIntent();
         categoryId = intent.getStringExtra("category_id");
         childCategoryId = intent.getStringExtra("child_category_id");
         animalClass = intent.getIntExtra("animal_class", -2);
         Log.d("CategoryDetailsActivity", "Received: category_id=" + categoryId + ", child_category_id=" + childCategoryId + ", animal_class=" + animalClass);
 
-        // Khởi tạo dữ liệu
+        listCategory = new ListCategory();
+        try {
+            listCategory.generate_sample_dataset();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         listChildCategory = new ListChildCategory();
         try {
             listChildCategory.generate_sample_dataset();
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         listProduct = new ListProduct();
         try {
             listProduct.generate_sample_dataset();
@@ -87,7 +96,15 @@ public class CategoryDetailsActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        // Khởi tạo views
+        TextView txtPageTitle=findViewById(R.id.txt_page_title);
+
+        String displayName = getDisplayName(categoryId, childCategoryId);
+        if (displayName != null && txtPageTitle != null) {
+            txtPageTitle.setText(displayName);
+        } else {
+            txtPageTitle.setText(R.string.title_blogs); // Fallback
+        }
+
         childCategoryRecyclerView = findViewById(R.id.child_category_container);
         filterCategoryLayout = findViewById(R.id.filter_category);
         productContainer = findViewById(R.id.product_filtered_category);
@@ -101,17 +118,15 @@ public class CategoryDetailsActivity extends AppCompatActivity {
         priceText = findViewById(R.id.child_cate_price);
         priceArrow = findViewById(R.id.img_ascend_arrows);
 
-        // Thiết lập RecyclerView cho ChildCategory
         childCategoryRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         updateChildCategories();
 
-        // Khởi tạo danh sách sản phẩm
         filteredProducts = getProductsByChildCategoryId(childCategoryId);
         productAdapter = new ProductFilteredAdapter(this, filteredProducts);
         updateFilterUI();
         updateProductContainer();
 
-        // Thiết lập sự kiện cho các bộ lọc
+
         bestSellerLayout.setOnClickListener(v -> {
             if (!selectedFilter.equals("best_seller")) {
                 selectedFilter = "best_seller";
@@ -165,6 +180,26 @@ public class CategoryDetailsActivity extends AppCompatActivity {
             sortProductsByPrice();
             updateProductContainer();
         });
+    }
+
+    private String getDisplayName(String categoryId, String childCategoryId) {
+        // Prefer childCategory_name if childCategoryId is provided
+        if (childCategoryId != null) {
+            for (ChildCategory childCategory : listChildCategory.getChildCategories()) {
+                if (childCategory.getChildCategory_id().equals(childCategoryId)) {
+                    return childCategory.getChildCategory_name(); // Return child category name (e.g., "Food")
+                }
+            }
+        }
+        // Fallback to category_name if childCategoryId is null or not found
+        if (categoryId != null) {
+            for (Category category : listCategory.getCategories()) {
+                if (category.getCategory_id().equals(categoryId)) {
+                    return category.getCategory_name(); // Return category name (e.g., "Food & Treats")
+                }
+            }
+        }
+        return null; // Return null if neither is found
     }
 
     private void updateChildCategories() {

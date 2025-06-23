@@ -11,7 +11,6 @@ public class Product {
     private String product_name;
 
     private List<String> variant_id;
-    private List<String> variant_name;
 
     private double price;
     private String description;
@@ -46,11 +45,10 @@ public class Product {
     public Product() {
     }
 
-    public Product(String product_id, String product_name, List<String> variant_id, List<String> variant_name, double price, String description, String details, double average_rating, int rating_number, int quantity, String product_image, int animal_class_id, String category_id, String child_category_id,  List<String> also_buy, List<String> also_view, List<String> similar_item, int rank, Date date_listed, int discount, int sold_quantity) {
+    public Product(String product_id, String product_name, List<String> variant_id, double price, String description, String details, double average_rating, int rating_number, int quantity, String product_image, int animal_class_id, String category_id, String child_category_id,  List<String> also_buy, List<String> also_view, List<String> similar_item, int rank, Date date_listed, int discount, int sold_quantity) {
         this.product_id = product_id;
         this.product_name = product_name;
         this.variant_id = variant_id;
-        this.variant_name = variant_name;
         this.price = price;
         this.description = description;
         this.details = details;
@@ -94,13 +92,6 @@ public class Product {
         this.variant_id = variant_id;
     }
 
-    public List<String> getVariant_name() {
-        return variant_name;
-    }
-
-    public void setVariant_name(List<String> variant_name) {
-        this.variant_name = variant_name;
-    }
 
     public double getPrice() {
         return price;
@@ -244,7 +235,6 @@ public class Product {
         return "Product{" +
                 "product_id=" + product_id +
                 ", product_name='" + product_name + '\'' +
-                ", variant_name='" + variant_name + '\'' +
                 ", price=" + price +
                 ", description='" + description + '\'' +
                 ", average_rating=" + average_rating +

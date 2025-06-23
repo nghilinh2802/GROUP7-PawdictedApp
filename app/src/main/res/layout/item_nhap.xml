@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/txt_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@mipmap/ic_phone"
+        android:fontFamily="@font/inter_semibold"
+        android:padding="16dp"
+        android:text="Hello. Nice to meet you."
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/txt_status2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:fontFamily="@font/inter_semibold"
+        android:padding="16dp"
+        android:text="Hello. Nice to meet you."
+        android:background="@drawable/red_rounded_background"
+        android:textColor="#555555"
+        android:textSize="16sp" />
+
+</LinearLayout>

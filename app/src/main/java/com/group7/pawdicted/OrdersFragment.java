@@ -36,7 +36,7 @@ public class OrdersFragment extends Fragment {
                 "Order successful",
                 "Hello Chau, Karu has received the order 20030624 you just placed",
                 "18-05-2025 11:14:40",
-                R.drawable.whiskas));
+                R.mipmap.fofos));
 
         adapter = new OrderAdapter(orderList);
         recyclerView.setAdapter(adapter);

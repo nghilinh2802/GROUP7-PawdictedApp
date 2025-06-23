@@ -198,7 +198,7 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:contentDescription="No Orders"
-            android:src="@mipmap/hourglass" />
+            android:src="@mipmap/ic_hourglass" />
 
         <TextView
             android:layout_marginTop="8dp"

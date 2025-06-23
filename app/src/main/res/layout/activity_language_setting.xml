@@ -10,30 +10,41 @@
     tools:context=".LanguageSettingActivity">
 
     <!-- Thanh tiêu đề -->
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#9c162c"
-        android:padding="16dp"
-        android:gravity="center_vertical">
+        android:layout_height="56dp"
+        android:background="@color/main_color"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
 
-        <ImageButton
-            android:layout_width="44dp"
-            android:layout_height="33dp"
-            android:onClick="go_back"
+        <ImageView
+            android:id="@+id/imgBack"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:contentDescription="Back"
             android:src="@mipmap/ic_back_icon_white"
-            android:background="?android:attr/selectableItemBackground"
-            android:contentDescription="Back" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
+        <!-- Tiêu đề căn giữa toàn bộ layout -->
         <TextView
+            android:id="@+id/txt_page_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text="LANGUAGE"
+            android:ellipsize="end"
+            android:fontFamily="@font/inter_bold"
+            android:maxLines="1"
+            android:text="@string/title_language"
             android:textColor="#FFFFFF"
             android:textSize="20sp"
-            android:textStyle="bold" />
-    </LinearLayout>
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Danh sách các mục -->
     <LinearLayout
@@ -60,7 +71,7 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="English"
+                android:text="@string/language_english"
                 android:textSize="16sp"
                 android:textColor="#9c162c"
                 android:layout_weight="1"
@@ -72,8 +83,7 @@
                 android:layout_height="20dp"
                 android:layout_marginEnd="15dp"
                 android:src="@mipmap/ic_tick_red"
-                android:contentDescription="Tick Icon"
-                android:visibility="visible" /> <!-- Mặc định ẩn hoặc hiển thị tùy chọn -->
+                android:visibility="visible" />
         </LinearLayout>
 
         <View
@@ -100,7 +110,7 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Vietnamese"
+                android:text="@string/language_vietnamese"
                 android:textSize="16sp"
                 android:textColor="#9c162c"
                 android:layout_weight="1"
@@ -112,8 +122,7 @@
                 android:layout_height="20dp"
                 android:layout_marginEnd="15dp"
                 android:src="@mipmap/ic_tick_red"
-                android:contentDescription="Tick Icon"
-                android:visibility="gone" /> <!-- Mặc định ẩn -->
+                android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

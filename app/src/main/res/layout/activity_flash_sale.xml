@@ -12,42 +12,73 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#A01B1B"
+        android:background="@color/main_color"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="8dp"
-        android:gravity="center_vertical">
+        android:paddingVertical="12dp"
+        android:paddingLeft="8dp"
+        android:weightSum="10">
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@mipmap/ic_back"
-            app:tint="#fff" />
+            android:id="@+id/imgBack"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:contentDescription="Logo"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/ic_leftarrow_white" />
 
-        <EditText
-            android:layout_width="0dp"
+
+        <LinearLayout
+            android:id="@+id/search_bar"
+            android:layout_width="250dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="18dp"
+            android:background="@drawable/red_rounded_background"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp">
+
+            <ImageView
+                android:id="@+id/imgSearch"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="Search icon"
+                android:src="@mipmap/ic_search"
+                app:tint="@android:color/darker_gray" />
+
+            <EditText
+                android:id="@+id/edtSearch"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:fontFamily="@font/inter_semibold"
+                android:hint="@string/title_flash_deals"
+                android:inputType="text"
+                android:paddingStart="8dp"
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+
+        <ImageView
+            android:id="@+id/imgCartBackbar"
+            android:layout_width="36dp"
             android:layout_height="36dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginStart="12dp"
             android:layout_weight="1"
-            android:background="@drawable/rounded_rectangle"
-            android:drawableLeft="@mipmap/ic_searchsmall"
-            android:hint="@string/hint_flashdeals"
-            android:paddingLeft="12dp"
-            android:textColor="#fff"
-            android:textColorHint="#625858" />
+            android:contentDescription="Cart"
+            android:src="@mipmap/ic_cart" />
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="8dp"
-            android:src="@mipmap/ic_cart"
-            app:tint="#fff" />
-
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@mipmap/ic_account_footer_white"
-            app:tint="#fff" />
+            android:id="@+id/imgChatBackbar"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:contentDescription="Chat"
+            android:src="@mipmap/ic_chat_white" />
     </LinearLayout>
 
     <!-- Banner Flash Deals + Countdown -->
@@ -63,7 +94,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:text="@string/title_flashdeals"
+            android:text="@string/hint_flashdeals"
             android:textColor="#fff"
             android:textSize="18sp"
             android:textStyle="bold" />

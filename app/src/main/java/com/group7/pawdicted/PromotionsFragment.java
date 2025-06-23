@@ -36,12 +36,12 @@ public class PromotionsFragment extends Fragment {
         promotionList.add(new PromotionNotification(
                 "Big Sale on Whiskas",
                 "Get 20% off for all Whiskas products this week!",
-                R.drawable.whiskas));
+                R.mipmap.fofos));
 
         promotionList.add(new PromotionNotification(
                 "Free Delivery!",
                 "Enjoy free delivery for orders over $30 until Sunday!",
-                R.drawable.whiskas));
+                R.mipmap.fofos));
 
         adapter = new PromotionAdapter(promotionList);
         recyclerView.setAdapter(adapter);
