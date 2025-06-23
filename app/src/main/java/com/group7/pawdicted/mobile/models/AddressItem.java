@@ -1,6 +1,8 @@
 package com.group7.pawdicted.mobile.models;
 
-public class AddressItem {
+import java.io.Serializable;
+
+public class AddressItem implements Serializable {
     private String name;
     private String phone;
     private String address;
@@ -44,5 +46,9 @@ public class AddressItem {
     public void setDefault(boolean aDefault) {
         isDefault = aDefault;
     }
-}
 
+    @Override
+    public String toString() {
+        return name + " - " + phone + " - " + address + (isDefault ? " (Default)" : "");
+    }
+}

@@ -14,10 +14,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Pawdicted"
         tools:targetApi="31">
-        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
-        <activity android:name="com.facebook.FacebookActivity"
+        <activity
+            android:name=".AddressEditActivity"
+            android:exported="false" />
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+
+        <activity
+            android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:label="@string/app_name"/>
+            android:label="@string/app_name" />
         <activity
             android:name=".RefundReturnRequestActivity"
             android:exported="false" />
@@ -34,6 +42,12 @@
             android:name=".CheckoutActivity"
             android:exported="false" />
         <activity
+            android:name=".AddressSelectionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NewAddressActivity"
+            android:exported="false" />
+        <activity
             android:name=".CartActivity"
             android:exported="false" />
         <activity
@@ -42,7 +56,6 @@
         <activity
             android:name=".mobile.HeaderActivity"
             android:exported="false" />
-
         <activity
             android:name=".CancellationDetailActivity"
             android:exported="false" />
@@ -94,17 +107,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".CategoryActivity"
-            android:exported="false"/>
-
-        <activity android:name=".CategoryDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CategoryDetailsActivity"
             android:exported="false" />
         <activity
             android:name=".ProductDetailsActivity"
             android:exported="false" />
-
         <activity
             android:name=".FooterActivity"
             android:exported="false" />

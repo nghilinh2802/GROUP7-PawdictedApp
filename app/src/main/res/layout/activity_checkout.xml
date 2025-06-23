@@ -56,7 +56,7 @@
                     android:paddingStart="8dp">
 
                     <TextView
-                        android:text="Lê Nguyễn Hà Châu"
+                        android:id="@+id/addressNameTextView"
                         android:textColor="#000000"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -64,14 +64,14 @@
                         android:layout_height="wrap_content" />
 
                     <TextView
-                        android:text="(+84) 967 663 867"
+                        android:id="@+id/addressPhoneTextView"
                         android:textColor="#000000"
                         android:textSize="14sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
 
                     <TextView
-                        android:text="2 Đống Khởi, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh"
+                        android:id="@+id/addressDetailTextView"
                         android:textColor="#000000"
                         android:textSize="14sp"
                         android:layout_width="wrap_content"
