@@ -46,26 +46,46 @@
             android:orientation="vertical">
 
             <FrameLayout
-                android:layout_width="130dp"
+                android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="0dp">
 
-                <ImageView
-                    android:id="@+id/imgAvatar"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@mipmap/ic_account_footer_red" />
 
-                <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="bottom|right"
-                    android:layout_marginBottom="15dp"
-                    android:layout_marginRight="5dp"
-                    android:src="@mipmap/ic_edit" />
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    app:cardCornerRadius="2000dp"
+                    app:cardElevation="2dp">
+
+                    <ImageView
+                        android:id="@+id/imgAvatar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="150dp"
+                        android:scaleType="centerCrop"
+                        android:src="@mipmap/ic_account_footer_red" />
+
+                    <ImageView
+                        android:id="@+id/btnChangeAvatar"
+                        android:clickable="true"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="bottom|right"
+                        android:layout_marginBottom="20dp"
+                        android:layout_marginRight="15dp"
+                        android:src="@mipmap/ic_edit" />
+                </androidx.cardview.widget.CardView>
+
+<!--                <ImageView-->
+<!--                    android:id="@+id/imgAvatar"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="150dp"-->
+<!--                    android:scaleType="centerCrop"-->
+<!--                    android:src="@mipmap/ic_account_footer_red" />-->
+
+
             </FrameLayout>
 
             <!-- Khung thông tin -->

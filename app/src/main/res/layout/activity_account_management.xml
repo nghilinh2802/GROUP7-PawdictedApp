@@ -25,25 +25,27 @@
             app:cardElevation="5dp">
 
             <ImageView
+                android:id="@+id/imgAvatar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@mipmap/ic_account_footer_white"
-                android:scaleType="centerCrop"
+                android:contentDescription="Profile"
                 android:onClick="open_profile"
-                android:contentDescription="Profile" />
+                android:scaleType="centerCrop"
+                android:src="@mipmap/ic_account_footer_white" />
 
         </androidx.cardview.widget.CardView>
 
         <TextView
+            android:id="@+id/txtUsername"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="User name"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="10dp"
-            android:gravity="center_vertical" />
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="Paw'dicted"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp" />
 
         <ImageView
             android:id="@+id/imgSetting"
