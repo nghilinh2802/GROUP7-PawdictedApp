@@ -1,87 +1,58 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@id/main"
+    android:id="@+id/main"
     android:orientation="vertical"
     android:background="#F9AFA6">
 
-    <!-- Thanh tìm kiếm và icon -->
+    <!--  Thanh tìm kiếm và icon  -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/main_color"
-        android:gravity="center_vertical"
+        android:background="#A01B1B"
         android:orientation="horizontal"
-        android:paddingVertical="12dp"
-        android:paddingLeft="8dp"
-        android:weightSum="10">
+        android:padding="8dp"
+        android:gravity="center_vertical">
 
         <ImageView
-            android:id="@+id/imgBack"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:contentDescription="Logo"
-            android:scaleType="centerCrop"
-            android:src="@mipmap/ic_leftarrow_white" />
+            android:id="@+id/icBack"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@mipmap/ic_back"
+            app:tint="#fff"/>
 
-
-        <LinearLayout
-            android:id="@+id/search_bar"
-            android:layout_width="250dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="18dp"
-            android:background="@drawable/red_rounded_background"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp">
-
-            <ImageView
-                android:id="@+id/imgSearch"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:contentDescription="Search icon"
-                android:src="@mipmap/ic_search"
-                app:tint="@android:color/darker_gray" />
-
-            <EditText
-                android:id="@+id/edtSearch"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@android:color/transparent"
-                android:fontFamily="@font/inter_semibold"
-                android:hint="@string/title_flash_deals"
-                android:inputType="text"
-                android:paddingStart="8dp"
-                android:textColor="@android:color/black"
-                android:textSize="20sp" />
-        </LinearLayout>
-
-
-        <ImageView
-            android:id="@+id/imgCartBackbar"
-            android:layout_width="36dp"
+        <EditText
+            android:layout_width="0dp"
             android:layout_height="36dp"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_weight="1"
-            android:contentDescription="Cart"
-            android:src="@mipmap/ic_cart" />
+            android:background="@drawable/rounded_rectangle"
+            android:drawableLeft="@mipmap/ic_searchsmall"
+            android:hint="@string/hint_flashdeals"
+            android:paddingLeft="12dp"
+            android:textColor="#fff"
+            android:textColorHint="#625858"/>
 
         <ImageView
-            android:id="@+id/imgChatBackbar"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginStart="12dp"
-            android:layout_weight="1"
-            android:contentDescription="Chat"
-            android:src="@mipmap/ic_chat_white" />
+            android:id="@+id/icCart"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="8dp"
+            android:src="@mipmap/ic_cart"
+            app:tint="#fff"/>
+
+        <ImageView
+            android:id="@+id/icAccount"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@mipmap/ic_account_footer_white"
+            app:tint="#fff"/>
+
     </LinearLayout>
 
-    <!-- Banner Flash Deals + Countdown -->
+    <!--  Banner Flash Deals + Countdown  -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -94,7 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:text="@string/hint_flashdeals"
+            android:text="@string/title_flash_deals"
             android:textColor="#fff"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -105,9 +76,9 @@
             android:layout_marginEnd="8dp"
             android:text="@string/title_end_in"
             android:textColor="#fff"
-            android:textSize="16sp" />
+            android:textSize="16sp"/>
 
-        <!-- Countdown -->
+        <!--  Countdown  -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -122,7 +93,7 @@
                 android:text="03"
                 android:textColor="#fff"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/txtMinute"
@@ -144,11 +115,12 @@
                 android:textColor="#fff"
                 android:textStyle="bold"
                 android:textSize="18sp"/>
+
         </LinearLayout>
+
     </LinearLayout>
 
-    <!-- Thanh trạng thái Ongoing/Upcoming -->
-    <!-- Thanh trạng thái Ongoing/Upcoming -->
+    <!--  Thanh trạng thái Ongoing/Upcoming  -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="70dp"
@@ -157,7 +129,7 @@
         android:orientation="horizontal"
         android:padding="8dp">
 
-        <!-- Ongoing -->
+        <!--  Ongoing  -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -168,12 +140,12 @@
             <TextView
                 android:id="@+id/txtOngoing"
                 android:layout_width="wrap_content"
-                android:layout_height="32dp"
+                android:layout_height="wrap_content"
                 android:text="@string/title_on_going"
                 android:textAlignment="center"
                 android:textColor="#A01B1B"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/txtOngoingTime"
@@ -183,10 +155,11 @@
                 android:text="12:00 - 20:00"
                 android:textColor="#A01B1B"
                 android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
+
         </LinearLayout>
 
-        <!-- Upcoming -->
+        <!--  Upcoming  -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -201,7 +174,7 @@
                 android:text="@string/title_upcoming"
                 android:textAlignment="center"
                 android:textColor="#B0B0B0"
-                android:textSize="16sp" />
+                android:textSize="16sp"/>
 
             <TextView
                 android:id="@+id/txtUpcomingTime"
@@ -210,12 +183,13 @@
                 android:gravity="center"
                 android:text="22:00 - 23:59"
                 android:textColor="#B0B0B0"
-                android:textSize="14sp" />
+                android:textSize="14sp"/>
+
         </LinearLayout>
+
     </LinearLayout>
 
-
-    <!-- Tabs danh mục -->
+    <!--  Tabs danh mục  -->
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -225,48 +199,51 @@
         android:scrollbars="none">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp">
 
             <Button
+                android:id="@+id/btnAll"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
                 android:layout_marginEnd="8dp"
-                android:backgroundTint="#FFFFFF"
+                android:backgroundTint="#A01B1B"
                 android:text="@string/title_all"
-                android:textColor="#A01B1B" />
+                android:textColor="#FFFFFF"/>
 
             <Button
+                android:id="@+id/btnToys"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
                 android:layout_marginEnd="8dp"
                 android:backgroundTint="#FFFFFF"
                 android:text="@string/title_toys"
-                android:textColor="#A01B1B" />
+                android:textColor="#A01B1B"/>
 
             <Button
+                android:id="@+id/btnFood"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
                 android:layout_marginEnd="8dp"
                 android:backgroundTint="#FFFFFF"
                 android:text="@string/title_food"
-                android:textColor="#A01B1B" />
+                android:textColor="#A01B1B"/>
 
             <Button
+                android:id="@+id/btnAccessories"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
-                android:layout_marginEnd="8dp"
-                android:layout_weight="1"
                 android:backgroundTint="#FFFFFF"
                 android:text="@string/title_accessories"
-                android:textColor="#A01B1B" />
+                android:textColor="#A01B1B"/>
 
-            <!-- Thêm các tab khác nếu cần -->
         </LinearLayout>
+
     </HorizontalScrollView>
 
-    <!-- Danh sách sản phẩm -->
+    <!--  Danh sách sản phẩm  -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvFlashDeal"
         android:layout_width="match_parent"
@@ -274,4 +251,5 @@
         android:layout_weight="1"
         android:padding="8dp"
         android:background="#F9AFA6"/>
+
 </LinearLayout>

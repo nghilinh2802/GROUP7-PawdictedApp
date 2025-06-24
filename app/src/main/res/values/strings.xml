@@ -16,7 +16,7 @@
     <string name="title_policies">Policies</string>
     <string name="hp_searchText_hint">Search...</string>
     <string name="title_homepage_category">Category</string>
-    <string name="title_homepage_flash_deals">Flash Deals</string>
+    <string name="title_homepage_flash_deals">⚡ FLASH DEALS</string>
     <string name="title_homepage_new_arrival">New Arrival</string>
     <string name="title_voucher_cap">VOUCHER</string>
     <string name="title_homepage_order">Order</string>
@@ -76,7 +76,7 @@
     <string name="title_child_care_rating">RATING</string>
     <string name="title_child_cate_price">PRICE</string>
     <string name="title_view_all">View all</string>
-    <string name="hint_flashdeals">FLASH DEALS</string>
+    <string name="hint_flashdeals">⚡ FLASH DEALS</string>
     <string name="title_order">Order</string>
     <string name="title_search">Search</string>
     <string name="title_back">Back</string>
@@ -91,7 +91,6 @@
 
     <string name="default_web_client_id" translatable="false">482980274516-iio3f0ajfgnk4le2u298irqjb49mmh8g.apps.googleusercontent.com</string>
     <string name="facebook_app_id">YOUR_FB_APP_ID</string>
-
 
 
     <string name="policy_content"><![CDATA[
@@ -153,7 +152,7 @@ If you have any questions or requests regarding our privacy and security policy,
     <string name="title_you_may">You May Also Like</string>
     <string name="title_description_cap">DESCRIPTION</string>
     <string name="title_description">Description</string>
-    <string name="title_flash_deals">Flash Deals</string>
+    <string name="title_flash_deals">⚡ FLASH DEALS</string>
     <string name="title_apply">Apply</string>
     <string name="title_cart_cap">CART</string>
     <string name="title_enter_code"><![CDATA[Select or enter code >]]></string>

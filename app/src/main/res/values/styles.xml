@@ -29,4 +29,14 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">12dp</item>
     </style>
+    <style name="CategoryTab">
+        <item name="android:layout_marginRight">8dp</item>
+        <item name="android:backgroundTint">#FFFFFF</item>
+        <item name="android:textColor">#A01B1B</item>
+        <item name="android:paddingHorizontal">16dp</item>
+        <item name="android:paddingVertical">6dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:minHeight">0dp</item>
+    </style>
+
 </resources>
