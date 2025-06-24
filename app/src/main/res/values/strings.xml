@@ -16,7 +16,7 @@
     <string name="title_policies">Policies</string>
     <string name="hp_searchText_hint">Search...</string>
     <string name="title_homepage_category">Category</string>
-    <string name="title_homepage_flash_deals">Flash Deals</string>
+    <string name="title_homepage_flash_deals">⚡ Flash Deals</string>
     <string name="title_homepage_new_arrival">New Arrival</string>
     <string name="title_voucher_cap">VOUCHER</string>
     <string name="title_homepage_order">Order</string>
@@ -76,7 +76,7 @@
     <string name="title_child_care_rating">RATING</string>
     <string name="title_child_cate_price">PRICE</string>
     <string name="title_view_all">View all</string>
-    <string name="hint_flashdeals">FLASH DEALS</string>
+    <string name="hint_flashdeals">⚡ Flash Deals</string>
     <string name="title_order">Order</string>
     <string name="title_search">Search</string>
     <string name="title_back">Back</string>
@@ -89,8 +89,9 @@
     <string name="title_send_image">Send image</string>
     <string name="title_enter_current_password">Enter current password</string>
 
-    <string name="default_web_client_id">482980274516-fvnrke3sovvrb8pbfrijh9c35kgpom6k.apps.googleusercontent.com</string>
+    <string name="default_web_client_id" translatable="false">482980274516-iio3f0ajfgnk4le2u298irqjb49mmh8g.apps.googleusercontent.com</string>
     <string name="facebook_app_id">YOUR_FB_APP_ID</string>
+
 
     <string name="policy_content"><![CDATA[
 <b>1. Purpose</b><br/>
@@ -141,6 +142,8 @@ This policy may be updated periodically. When changes occur, we will notify you 
 <b>10. Contact</b><br/>
 If you have any questions or requests regarding our privacy and security policy, please contact us via email or the support section in the application.
 ]]></string>
+    <string name="language_vietnamese">Vietnamese</string>
+    <string name="language_english">English</string>
 
     <string name="title_load_more">Load more</string>
     <string name="title_viewing_result">You\'re viewing %1$d of %2$d results</string>
@@ -149,7 +152,7 @@ If you have any questions or requests regarding our privacy and security policy,
     <string name="title_you_may">You May Also Like</string>
     <string name="title_description_cap">DESCRIPTION</string>
     <string name="title_description">Description</string>
-    <string name="title_flash_deals">Flash Deals</string>
+    <string name="title_flash_deals">FLASH DEALS</string>
     <string name="title_apply">Apply</string>
     <string name="title_cart_cap">CART</string>
     <string name="title_enter_code"><![CDATA[Select or enter code >]]></string>
@@ -168,4 +171,9 @@ If you have any questions or requests regarding our privacy and security policy,
     <string name="title_details">Details</string>
     <string name="title_selected_product">Selected product</string>
     <string name="title_new_address_cap">NEW ADDRESS</string>
+    <string name="title_FAQ">FAQs</string>
+    <string name="title_food_treat"><![CDATA[Foods & Treats]]></string>
+    <string name="title_pet_care">Pet Care</string>
+    <string name="title_furniture">Furniture</string>
+    <string name="title_carriers"><![CDATA[Carriers & Kennels]]></string>
 </resources>

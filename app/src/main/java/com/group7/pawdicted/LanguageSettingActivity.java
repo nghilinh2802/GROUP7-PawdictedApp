@@ -27,13 +27,14 @@ public class LanguageSettingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Lấy ngôn ngữ đã lưu (nếu có)
+        // Get current language stored in SharedPreferences, or default to "en" (English) if not set
         prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String lang = prefs.getString(KEY_LANG, Locale.getDefault().getLanguage());
-        setLocale(lang);
+        String lang = prefs.getString(KEY_LANG, "en");  // Default to "en" if no language is set
+        setLocale(lang);  // Apply the default language immediately when opening the settings screen
 
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_language_setting);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -50,28 +51,36 @@ public class LanguageSettingActivity extends AppCompatActivity {
         imgTickEnglish = findViewById(R.id.imgTickEnglish);
         imgTickVietnamese = findViewById(R.id.imgTickVietnamese);
 
-        // Áp tick theo ngôn ngữ hiện tại
+        // Set the tick based on the current language
         boolean isEnglish = lang.equals("en");
         updateTick(isEnglish);
 
+        // Change language to English
         layoutEnglish.setOnClickListener(v -> changeLanguage("en"));
+
+        // Change language to Vietnamese
         layoutVietnamese.setOnClickListener(v -> changeLanguage("vi"));
     }
 
     private void changeLanguage(String langCode) {
-        // Lưu ngôn ngữ
+        // Save the language preference
         prefs.edit().putString(KEY_LANG, langCode).apply();
-        // Áp locale mới
+
+        // Apply the new locale immediately
         setLocale(langCode);
-        // Khởi động lại chính Activity để áp dụng UI mới
-        Intent intent = getIntent();
-        finish();
-        startActivity(intent);
+
+        // Update the UI with the selected language and show the changes
+        updateTick(langCode.equals("en"));
+
+        // After language change, navigate back to the home screen
+        navigateToHome();
     }
 
     private void setLocale(String langCode) {
         Locale locale = new Locale(langCode);
         Locale.setDefault(locale);
+
+        // Set the configuration for the app with the new language
         getResources().getConfiguration().setLocale(locale);
         getResources().updateConfiguration(getResources().getConfiguration(), getResources().getDisplayMetrics());
     }
@@ -79,6 +88,12 @@ public class LanguageSettingActivity extends AppCompatActivity {
     private void updateTick(boolean isEnglish) {
         imgTickEnglish.setVisibility(isEnglish ? View.VISIBLE : View.GONE);
         imgTickVietnamese.setVisibility(isEnglish ? View.GONE : View.VISIBLE);
+    }
+
+    private void navigateToHome() {
+        Intent intent = new Intent(LanguageSettingActivity.this, HomepageActivity.class);  // Change to your home screen class
+        startActivity(intent);
+        finish();  // Close the current LanguageSettingActivity
     }
 
     public void go_back(View view) {

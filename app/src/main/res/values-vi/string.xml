@@ -84,7 +84,7 @@
     <string name="title_send_image">Gửi ảnh</string>
     <string name="title_enter_current_password">Nhập mật khẩu hiện tại</string>
 
-    <string name="default_web_client_id">482980274516-fvnrke3sovvrb8pbfrijh9c35kgpom6k.apps.googleusercontent.com</string>
+    <string name="default_web_client_id" translatable="false">482980274516-iio3f0ajfgnk4le2u298irqjb49mmh8g.apps.googleusercontent.com</string>
     <string name="facebook_app_id">YOUR_FB_APP_ID</string>
 
     <string name="policy_content"><![CDATA[
@@ -162,4 +162,13 @@ Nếu bạn có bất kỳ câu hỏi hoặc yêu cầu nào về chính sách q
     <string name="title_setting_cap">CÀI ĐẶT</string>
     <string name="title_details">Chi tiết</string>
     <string name="title_selected_product">Sản phẩm đã chọn</string>
+    <string name="language_vietnamese">Tiếng Việt</string>
+    <string name="language_english">Tiếng Anh</string>
+    <string name="title_new_address_cap">ĐỊA CHỈ MỚI</string>
+    <string name="title_FAQ">FAQs</string>
+    <string name="title_food_treat"><![CDATA[Thức ăn & Bánh thưởng]]></string>
+    <string name="title_pet_care">Chăm sóc</string>
+    <string name="title_furniture">Nội thất</string>
+    <string name="title_carriers"><![CDATA[Xách theo & Chuồng]]></string>
+
 </resources>

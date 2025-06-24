@@ -30,12 +30,6 @@ public class VoucherManagementActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voucher_management);
 
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//        toolbar.setTitle("Vouchers");
-//        toolbar.setTitleTextColor(Color.WHITE);
-//        toolbar.setNavigationIcon(androidx.appcompat.R.drawable.abc_ic_ab_back_material);
-
 
         ImageView imgBack = findViewById(R.id.imgBack);
         if (imgBack != null) {

@@ -57,8 +57,33 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ListView
-        android:id="@+id/lvBlog"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+        <!-- ListView -->
+        <ListView
+            android:id="@+id/lvBlog"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="16dp"
+            android:clipToPadding="false" />
+
+        <!-- ProgressBar xoay ở giữa màn hình -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:indeterminateTint="#A62332"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
 </LinearLayout>

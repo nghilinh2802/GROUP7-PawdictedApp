@@ -12,10 +12,17 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class AccountManagementActivity extends AppCompatActivity {
-    ImageView ToConfirm, ToPickUp, ToShip, EvaluateOrder, imgViewPurchaseHistory;
-    TextView txtToConfirm, txtToPickUp, txtToShip, txtEvaluateOrder, txtViewPurchaseHistory;
+import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Source;
 
+public class AccountManagementActivity extends AppCompatActivity {
+    ImageView ToConfirm, ToPickUp, ToShip, EvaluateOrder, imgViewPurchaseHistory, imgAvatar;
+    TextView txtToConfirm, txtToPickUp, txtToShip, txtEvaluateOrder, txtViewPurchaseHistory, txtUsername;
+    FirebaseAuth mAuth;
+    FirebaseFirestore db;
     FooterManager footerManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +36,13 @@ public class AccountManagementActivity extends AppCompatActivity {
         });
         addViews();
         addEvents();
+
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
+        // Gọi hàm load dữ liệu header
+        loadHeaderUserInfo();
+
         footerManager = new FooterManager(this);
     }
 
@@ -43,6 +57,9 @@ public class AccountManagementActivity extends AppCompatActivity {
         txtEvaluateOrder = findViewById(R.id.txtEvaluateOrder);
         txtViewPurchaseHistory = findViewById(R.id.txtViewPurchaseHistory);
         imgViewPurchaseHistory = findViewById(R.id.imgViewPurchaseHistory);
+
+        imgAvatar = findViewById(R.id.imgAvatar);
+        txtUsername = findViewById(R.id.txtUsername);
     }
 
     private void addEvents() {
@@ -100,5 +117,41 @@ public class AccountManagementActivity extends AppCompatActivity {
     public void open_cart_activity(View view) {
         Intent intent=new Intent(AccountManagementActivity.this,CartActivity.class);
         startActivity(intent);
+    }
+
+    private void loadHeaderUserInfo() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user == null) {
+            txtUsername.setText("Paw'dicted");
+            imgAvatar.setImageResource(R.mipmap.ic_logo);
+            return;
+        }
+
+        String uid = user.getUid();
+        db.collection("customers").document(uid)
+                .get(Source.SERVER)
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        String username = doc.getString("customer_username");
+                        String avatar = doc.getString("avatar_img");
+
+                        txtUsername.setText(username != null ? username : "Paw'dicted");
+                        if (avatar != null && !avatar.isEmpty()) {
+                            Glide.with(this).load(avatar)
+                                    .placeholder(R.mipmap.ic_logo)
+                                    .circleCrop()
+                                    .into(imgAvatar);
+                        } else {
+                            imgAvatar.setImageResource(R.mipmap.ic_logo);
+                        }
+                    } else {
+                        txtUsername.setText("Paw'dicted");
+                        imgAvatar.setImageResource(R.mipmap.ic_logo);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    txtUsername.setText("Paw'dicted");
+                    imgAvatar.setImageResource(R.mipmap.ic_logo);
+                });
     }
 }
