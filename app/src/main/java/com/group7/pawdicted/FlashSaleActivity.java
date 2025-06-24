@@ -12,6 +12,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +43,7 @@ public class FlashSaleActivity extends AppCompatActivity {
 
     private TextView txtHour, txtMinute, txtSecond;
     private LinearLayout tabContainer;
+    private ProgressBar progressBar;
     private Handler countdownHandler;
     private Runnable countdownRunnable;
 
@@ -79,6 +81,7 @@ public class FlashSaleActivity extends AppCompatActivity {
         txtSecond = findViewById(R.id.txtSecond);
         tabContainer = findViewById(R.id.tabContainer);
         rvFlashDeal = findViewById(R.id.rvFlashDeal);
+        progressBar = findViewById(R.id.progressBar);
 
         db = FirebaseFirestore.getInstance();
         flashSaleProductList = new ArrayList<>();
@@ -96,11 +99,24 @@ public class FlashSaleActivity extends AppCompatActivity {
     private void loadActiveFlashSales() {
         Log.d("FlashSale", "=== TẢI TẤT CẢ FLASH SALE ĐANG HOẠT ĐỘNG ===");
 
+        showLoading(true);
+
+        // Timeout handler
+        Handler timeoutHandler = new Handler();
+        Runnable timeoutRunnable = () -> {
+            showLoading(false);
+            Toast.makeText(this, "Timeout: Không thể tải dữ liệu", Toast.LENGTH_SHORT).show();
+        };
+        timeoutHandler.postDelayed(timeoutRunnable, 10000); // 10 giây timeout
+
         long now = System.currentTimeMillis();
 
         db.collection("flashsales")
                 .get()
                 .addOnCompleteListener(task -> {
+                    timeoutHandler.removeCallbacks(timeoutRunnable);
+                    showLoading(false);
+
                     if (task.isSuccessful()) {
                         activeFlashSales.clear();
 
@@ -130,6 +146,8 @@ public class FlashSaleActivity extends AppCompatActivity {
                         } else {
                             Toast.makeText(this, "Không có flash sale nào đang diễn ra", Toast.LENGTH_SHORT).show();
                         }
+                    } else {
+                        Toast.makeText(this, "Lỗi tải flash sale: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -168,7 +186,7 @@ public class FlashSaleActivity extends AppCompatActivity {
         // Tên flash sale
         TextView tvName = new TextView(this);
         tvName.setText(flashSale.getFlashSale_name());
-        tvName.setTextSize(14);
+        tvName.setTextSize(20);
         tvName.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         tvName.setGravity(Gravity.CENTER);
         tvName.setMaxLines(1);
@@ -263,6 +281,8 @@ public class FlashSaleActivity extends AppCompatActivity {
             return;
         }
 
+        showLoading(true);
+
         Log.d("FlashSale", "Flash sale hiện tại: " + currentFlashSale.getFlashSale_name());
         Log.d("FlashSale", "Số lượng sản phẩm trong flash sale: " + currentFlashSale.getProducts().size());
 
@@ -276,8 +296,17 @@ public class FlashSaleActivity extends AppCompatActivity {
 
         if (productIds.isEmpty()) {
             Log.w("FlashSale", "❌ Danh sách product IDs trống");
+            showLoading(false);
             return;
         }
+
+        // Timeout handler cho products
+        Handler timeoutHandler = new Handler();
+        Runnable timeoutRunnable = () -> {
+            showLoading(false);
+            Toast.makeText(this, "Timeout: Không thể tải sản phẩm", Toast.LENGTH_SHORT).show();
+        };
+        timeoutHandler.postDelayed(timeoutRunnable, 15000); // 15 giây timeout
 
         Log.d("FlashSale", "Bắt đầu truy vấn collection 'products' với " + productIds.size() + " IDs");
 
@@ -285,6 +314,9 @@ public class FlashSaleActivity extends AppCompatActivity {
                 .whereIn("product_id", productIds)
                 .get()
                 .addOnCompleteListener(task -> {
+                    timeoutHandler.removeCallbacks(timeoutRunnable);
+                    showLoading(false);
+
                     Log.d("FlashSale", "Hoàn thành truy vấn products");
 
                     if (task.isSuccessful()) {
@@ -346,9 +378,7 @@ public class FlashSaleActivity extends AppCompatActivity {
 
                     } else {
                         Log.e("FlashSale", "❌ Truy vấn products thất bại: " + task.getException().getMessage());
-                        if (task.getException() != null) {
-                            task.getException().printStackTrace();
-                        }
+                        Toast.makeText(this, "Lỗi tải sản phẩm: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -581,6 +611,20 @@ public class FlashSaleActivity extends AppCompatActivity {
         if (button != null) {
             button.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#A01B1B")));
             button.setTextColor(Color.WHITE);
+        }
+    }
+
+    private void showLoading(boolean isLoading) {
+        if (progressBar != null) {
+            progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        }
+
+        if (rvFlashDeal != null) {
+            rvFlashDeal.setVisibility(isLoading ? View.GONE : View.VISIBLE);
+        }
+
+        if (tabContainer != null) {
+            tabContainer.setVisibility(isLoading ? View.GONE : View.VISIBLE);
         }
     }
 

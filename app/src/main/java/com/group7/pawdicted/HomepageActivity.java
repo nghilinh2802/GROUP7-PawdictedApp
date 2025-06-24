@@ -55,4 +55,9 @@ public class HomepageActivity extends AppCompatActivity {
         Intent intent=new Intent(HomepageActivity.this,NewArrivalActivity.class);
         startActivity(intent);
     }
+
+    public void open_flashsale(View view) {
+        Intent intent=new Intent(HomepageActivity.this,FlashSaleActivity.class);
+        startActivity(intent);
+    }
 }
