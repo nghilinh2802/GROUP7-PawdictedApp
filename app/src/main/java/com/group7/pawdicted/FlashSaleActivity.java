@@ -1,10 +1,17 @@
 package com.group7.pawdicted;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -12,7 +19,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.group7.pawdicted.mobile.adapters.FlashSaleAdapter;
@@ -35,12 +41,14 @@ public class FlashSaleActivity extends AppCompatActivity {
     private FirebaseFirestore db;
 
     private TextView txtHour, txtMinute, txtSecond;
-    private TextView txtOngoing, txtOngoingTime, txtUpcoming, txtUpcomingTime;
+    private LinearLayout tabContainer;
     private Handler countdownHandler;
     private Runnable countdownRunnable;
 
     private String selectedCategory = "all";
+    private List<FlashSale> activeFlashSales;
     private FlashSale currentFlashSale;
+    private int selectedTabIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,24 +70,20 @@ public class FlashSaleActivity extends AppCompatActivity {
         setupClickListeners();
 
         Log.d("FlashSale", "Bắt đầu tải flash sale...");
-        loadCurrentFlashSale();
+        loadActiveFlashSales();
     }
 
     private void initViews() {
         txtHour = findViewById(R.id.txtHour);
         txtMinute = findViewById(R.id.txtMinute);
         txtSecond = findViewById(R.id.txtSecond);
-
-        txtOngoing = findViewById(R.id.txtOngoing);
-        txtOngoingTime = findViewById(R.id.txtOngoingTime);
-        txtUpcoming = findViewById(R.id.txtUpcoming);
-        txtUpcomingTime = findViewById(R.id.txtUpcomingTime);
-
+        tabContainer = findViewById(R.id.tabContainer);
         rvFlashDeal = findViewById(R.id.rvFlashDeal);
 
         db = FirebaseFirestore.getInstance();
         flashSaleProductList = new ArrayList<>();
         filteredProductList = new ArrayList<>();
+        activeFlashSales = new ArrayList<>();
         countdownHandler = new Handler();
     }
 
@@ -89,88 +93,161 @@ public class FlashSaleActivity extends AppCompatActivity {
         rvFlashDeal.setAdapter(adapter);
     }
 
-    private void loadCurrentFlashSale() {
-        Log.d("FlashSale", "=== BẮT ĐẦU TẢI FLASH SALE ===");
+    private void loadActiveFlashSales() {
+        Log.d("FlashSale", "=== TẢI TẤT CẢ FLASH SALE ĐANG HOẠT ĐỘNG ===");
 
         long now = System.currentTimeMillis();
-        Log.d("FlashSale", "Thời gian hiện tại: " + now);
 
         db.collection("flashsales")
                 .get()
                 .addOnCompleteListener(task -> {
-                    Log.d("FlashSale", "Hoàn thành truy vấn Firestore");
-
                     if (task.isSuccessful()) {
-                        Log.d("FlashSale", "✅ Truy vấn thành công");
-                        Log.d("FlashSale", "Số lượng documents: " + task.getResult().size());
-
-                        if (task.getResult().isEmpty()) {
-                            Log.w("FlashSale", "❌ Không có document nào trong collection flashsales");
-                            Toast.makeText(this, "Collection flashsales trống", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        FlashSale activeFlashSale = null;
-                        int documentIndex = 0;
+                        activeFlashSales.clear();
 
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            documentIndex++;
-                            Log.d("FlashSale", "--- KIỂM TRA DOCUMENT " + documentIndex + " ---");
-                            Log.d("FlashSale", "Document ID: " + document.getId());
-
                             try {
                                 FlashSale flashSale = document.toObject(FlashSale.class);
                                 flashSale.setFlashSale_id(document.getId());
 
-                                Log.d("FlashSale", "Tên flash sale: " + flashSale.getFlashSale_name());
-                                Log.d("FlashSale", "Thời gian bắt đầu: " + flashSale.getStartTime());
-                                Log.d("FlashSale", "Thời gian kết thúc: " + flashSale.getEndTime());
-                                Log.d("FlashSale", "Thời gian hiện tại: " + now);
-
                                 boolean isStarted = flashSale.getStartTime() <= now;
                                 boolean isNotEnded = flashSale.getEndTime() >= now;
 
-                                Log.d("FlashSale", "Đã bắt đầu? " + isStarted);
-                                Log.d("FlashSale", "Chưa kết thúc? " + isNotEnded);
-                                Log.d("FlashSale", "Đang hoạt động? " + (isStarted && isNotEnded));
-
-                                // Convert timestamp to readable date
-                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                                Log.d("FlashSale", "Ngày bắt đầu: " + sdf.format(new Date(flashSale.getStartTime())));
-                                Log.d("FlashSale", "Ngày kết thúc: " + sdf.format(new Date(flashSale.getEndTime())));
-                                Log.d("FlashSale", "Ngày hiện tại: " + sdf.format(new Date(now)));
-
                                 if (isStarted && isNotEnded) {
-                                    activeFlashSale = flashSale;
-                                    Log.d("FlashSale", "🎉 TÌM THẤY FLASH SALE ĐANG HOẠT ĐỘNG: " + flashSale.getFlashSale_name());
-                                    break;
-                                } else {
-                                    Log.d("FlashSale", "❌ Flash sale này không hoạt động");
+                                    activeFlashSales.add(flashSale);
+                                    Log.d("FlashSale", "✅ Flash sale hoạt động: " + flashSale.getFlashSale_name() + " - Discount: " + flashSale.getDiscountRate() + "%");
                                 }
-
                             } catch (Exception e) {
-                                Log.e("FlashSale", "❌ Lỗi khi parse document " + document.getId() + ": " + e.getMessage());
-                                e.printStackTrace();
+                                Log.e("FlashSale", "Lỗi parse flash sale: " + e.getMessage());
                             }
                         }
 
-                        if (activeFlashSale != null) {
-                            Log.d("FlashSale", "✅ SỬ DỤNG FLASH SALE: " + activeFlashSale.getFlashSale_name());
-                            currentFlashSale = activeFlashSale;
-                            loadFlashSaleProducts();
+                        if (!activeFlashSales.isEmpty()) {
+                            // Sắp xếp theo discount rate giảm dần
+                            activeFlashSales.sort((f1, f2) -> Integer.compare(f2.getDiscountRate(), f1.getDiscountRate()));
+
+                            createFlashSaleTabs();
+                            selectFlashSaleTab(0); // Chọn tab đầu tiên (discount cao nhất)
                         } else {
-                            Log.w("FlashSale", "❌ KHÔNG TÌM THẤY FLASH SALE NÀO ĐANG HOẠT ĐỘNG");
                             Toast.makeText(this, "Không có flash sale nào đang diễn ra", Toast.LENGTH_SHORT).show();
                         }
-
-                    } else {
-                        Log.e("FlashSale", "❌ Truy vấn thất bại: " + task.getException().getMessage());
-                        if (task.getException() != null) {
-                            task.getException().printStackTrace();
-                        }
-                        Toast.makeText(this, "Lỗi khi tải dữ liệu: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void createFlashSaleTabs() {
+        Log.d("FlashSale", "=== TẠO TABS CHO " + activeFlashSales.size() + " FLASH SALE ===");
+
+        tabContainer.removeAllViews();
+
+        for (int i = 0; i < activeFlashSales.size(); i++) {
+            FlashSale flashSale = activeFlashSales.get(i);
+            View tabView = createTabView(flashSale, i);
+            tabContainer.addView(tabView);
+
+            // Thêm divider nếu không phải tab cuối
+            if (i < activeFlashSales.size() - 1) {
+                View divider = new View(this);
+                LinearLayout.LayoutParams dividerParams = new LinearLayout.LayoutParams(2, LinearLayout.LayoutParams.MATCH_PARENT);
+                dividerParams.setMargins(8, 8, 8, 8);
+                divider.setLayoutParams(dividerParams);
+                divider.setBackgroundColor(Color.parseColor("#E0E0E0"));
+                tabContainer.addView(divider);
+            }
+        }
+    }
+
+    private View createTabView(FlashSale flashSale, int index) {
+        LinearLayout tabLayout = new LinearLayout(this);
+        tabLayout.setOrientation(LinearLayout.VERTICAL);
+        tabLayout.setGravity(Gravity.CENTER);
+        tabLayout.setPadding(16, 12, 16, 12);
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1.0f);
+        tabLayout.setLayoutParams(params);
+
+        // Tên flash sale
+        TextView tvName = new TextView(this);
+        tvName.setText(flashSale.getFlashSale_name());
+        tvName.setTextSize(14);
+        tvName.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        tvName.setGravity(Gravity.CENTER);
+        tvName.setMaxLines(1);
+        tvName.setEllipsize(TextUtils.TruncateAt.END);
+
+        // Discount rate
+        TextView tvDiscount = new TextView(this);
+        tvDiscount.setText("-" + flashSale.getDiscountRate() + "%");
+        tvDiscount.setTextSize(12);
+        tvDiscount.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        tvDiscount.setGravity(Gravity.CENTER);
+
+        tabLayout.addView(tvName);
+        tabLayout.addView(tvDiscount);
+
+        // Set style cho tab đầu tiên (selected)
+        if (index == 0) {
+            setTabSelected(tabLayout, tvName, tvDiscount);
+        } else {
+            setTabNormal(tabLayout, tvName, tvDiscount);
+        }
+
+        // Click listener
+        final int tabIndex = index;
+        tabLayout.setOnClickListener(v -> selectFlashSaleTab(tabIndex));
+
+        return tabLayout;
+    }
+
+    private void selectFlashSaleTab(int index) {
+        Log.d("FlashSale", "=== CHỌN TAB " + index + " ===");
+
+        selectedTabIndex = index;
+        currentFlashSale = activeFlashSales.get(index);
+
+        Log.d("FlashSale", "Flash sale được chọn: " + currentFlashSale.getFlashSale_name());
+
+        // Cập nhật style cho tất cả tabs
+        updateTabStyles();
+
+        // Load sản phẩm của flash sale được chọn
+        loadFlashSaleProducts();
+    }
+
+    private void updateTabStyles() {
+        for (int i = 0; i < tabContainer.getChildCount(); i++) {
+            View child = tabContainer.getChildAt(i);
+            if (child instanceof LinearLayout) {
+                LinearLayout tabLayout = (LinearLayout) child;
+                if (tabLayout.getChildCount() >= 2) {
+                    TextView tvName = (TextView) tabLayout.getChildAt(0);
+                    TextView tvDiscount = (TextView) tabLayout.getChildAt(1);
+
+                    int tabIndex = i / 2; // Chia 2 vì có divider
+
+                    if (tabIndex == selectedTabIndex) {
+                        setTabSelected(tabLayout, tvName, tvDiscount);
+                    } else {
+                        setTabNormal(tabLayout, tvName, tvDiscount);
+                    }
+                }
+            }
+        }
+    }
+
+    private void setTabSelected(LinearLayout tabLayout, TextView tvName, TextView tvDiscount) {
+        tabLayout.setBackgroundColor(Color.parseColor("#FFFFFF"));
+        tvName.setTextColor(Color.parseColor("#A01B1B"));
+        tvName.setTypeface(null, Typeface.BOLD);
+        tvDiscount.setTextColor(Color.parseColor("#A01B1B"));
+        tvDiscount.setTypeface(null, Typeface.BOLD);
+    }
+
+    private void setTabNormal(LinearLayout tabLayout, TextView tvName, TextView tvDiscount) {
+        tabLayout.setBackgroundColor(Color.parseColor("#F5F5F5"));
+        tvName.setTextColor(Color.parseColor("#B0B0B0"));
+        tvName.setTypeface(null, Typeface.NORMAL);
+        tvDiscount.setTextColor(Color.parseColor("#B0B0B0"));
+        tvDiscount.setTypeface(null, Typeface.NORMAL);
     }
 
     private void loadFlashSaleProducts() {
@@ -380,19 +457,18 @@ public class FlashSaleActivity extends AppCompatActivity {
         } else {
             for (FlashSaleProduct product : flashSaleProductList) {
                 if (product.getCategory_id() != null &&
-                        product.getCategory_id().toLowerCase().contains(category.toLowerCase())) {
+                        product.getCategory_id().startsWith(category)) {
                     filteredProductList.add(product);
                 }
             }
             Log.d("FlashSale", "Lọc theo '" + category + "': " + filteredProductList.size() + " sản phẩm");
         }
 
-        Log.d("FlashSale", "Cập nhật adapter với " + filteredProductList.size() + " sản phẩm");
         adapter.notifyDataSetChanged();
+        updateCategoryButtonStyles(category);
 
         if (filteredProductList.isEmpty()) {
-            Log.w("FlashSale", "❌ Không có sản phẩm nào sau khi lọc");
-            Toast.makeText(this, "Không có sản phẩm nào trong danh mục " + category, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Không có sản phẩm nào trong danh mục này", Toast.LENGTH_SHORT).show();
         } else {
             Log.d("FlashSale", "✅ Hiển thị thành công " + filteredProductList.size() + " sản phẩm");
         }
@@ -425,7 +501,8 @@ public class FlashSaleActivity extends AppCompatActivity {
                 txtHour.setText("00");
                 txtMinute.setText("00");
                 txtSecond.setText("00");
-                loadCurrentFlashSale();
+                // Flash sale hiện tại đã kết thúc, reload tất cả
+                loadActiveFlashSales();
             }
         }
     }
@@ -436,14 +513,75 @@ public class FlashSaleActivity extends AppCompatActivity {
 
     private void setupCategoryButtons() {
         Button btnAll = findViewById(R.id.btnAll);
+        Button btnFoodTreat = findViewById(R.id.btnFoodTreat);
+        Button btnPetCare = findViewById(R.id.btnPetCare);
+        Button btnFurniture = findViewById(R.id.btnFurniture);
         Button btnToys = findViewById(R.id.btnToys);
-        Button btnFood = findViewById(R.id.btnFood);
         Button btnAccessories = findViewById(R.id.btnAccessories);
+        Button btnCarriers = findViewById(R.id.btnCarriers);
 
         if (btnAll != null) btnAll.setOnClickListener(v -> filterByCategory("all"));
-        if (btnToys != null) btnToys.setOnClickListener(v -> filterByCategory("toys"));
-        if (btnFood != null) btnFood.setOnClickListener(v -> filterByCategory("food"));
-        if (btnAccessories != null) btnAccessories.setOnClickListener(v -> filterByCategory("accessories"));
+        if (btnFoodTreat != null) btnFoodTreat.setOnClickListener(v -> filterByCategory("FT"));
+        if (btnPetCare != null) btnPetCare.setOnClickListener(v -> filterByCategory("PC"));
+        if (btnFurniture != null) btnFurniture.setOnClickListener(v -> filterByCategory("FU"));
+        if (btnToys != null) btnToys.setOnClickListener(v -> filterByCategory("TO"));
+        if (btnAccessories != null) btnAccessories.setOnClickListener(v -> filterByCategory("AC"));
+        if (btnCarriers != null) btnCarriers.setOnClickListener(v -> filterByCategory("CK"));
+    }
+
+    private void updateCategoryButtonStyles(String selectedCategory) {
+        // Reset tất cả buttons về style normal
+        resetButtonStyle(findViewById(R.id.btnAll));
+        resetButtonStyle(findViewById(R.id.btnFoodTreat));
+        resetButtonStyle(findViewById(R.id.btnPetCare));
+        resetButtonStyle(findViewById(R.id.btnFurniture));
+        resetButtonStyle(findViewById(R.id.btnToys));
+        resetButtonStyle(findViewById(R.id.btnAccessories));
+        resetButtonStyle(findViewById(R.id.btnCarriers));
+
+        // Set style cho button được chọn
+        Button selectedButton = null;
+        switch (selectedCategory) {
+            case "all":
+                selectedButton = findViewById(R.id.btnAll);
+                break;
+            case "FT":
+                selectedButton = findViewById(R.id.btnFoodTreat);
+                break;
+            case "PC":
+                selectedButton = findViewById(R.id.btnPetCare);
+                break;
+            case "FU":
+                selectedButton = findViewById(R.id.btnFurniture);
+                break;
+            case "TO":
+                selectedButton = findViewById(R.id.btnToys);
+                break;
+            case "AC":
+                selectedButton = findViewById(R.id.btnAccessories);
+                break;
+            case "CK":
+                selectedButton = findViewById(R.id.btnCarriers);
+                break;
+        }
+
+        if (selectedButton != null) {
+            setButtonSelectedStyle(selectedButton);
+        }
+    }
+
+    private void resetButtonStyle(Button button) {
+        if (button != null) {
+            button.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
+            button.setTextColor(Color.parseColor("#A01B1B"));
+        }
+    }
+
+    private void setButtonSelectedStyle(Button button) {
+        if (button != null) {
+            button.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#A01B1B")));
+            button.setTextColor(Color.WHITE);
+        }
     }
 
     @Override

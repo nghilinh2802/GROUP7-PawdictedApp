@@ -120,8 +120,9 @@
 
     </LinearLayout>
 
-    <!--  Thanh trạng thái Ongoing/Upcoming  -->
+
     <LinearLayout
+        android:id="@+id/tabContainer"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:background="#fff"
@@ -129,63 +130,7 @@
         android:orientation="horizontal"
         android:padding="8dp">
 
-        <!--  Ongoing  -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-
-            <TextView
-                android:id="@+id/txtOngoing"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/title_on_going"
-                android:textAlignment="center"
-                android:textColor="#A01B1B"
-                android:textSize="16sp"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/txtOngoingTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="12:00 - 20:00"
-                android:textColor="#A01B1B"
-                android:textSize="14sp"
-                android:textStyle="bold"/>
-
-        </LinearLayout>
-
-        <!--  Upcoming  -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-
-            <TextView
-                android:id="@+id/txtUpcoming"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/title_upcoming"
-                android:textAlignment="center"
-                android:textColor="#B0B0B0"
-                android:textSize="16sp"/>
-
-            <TextView
-                android:id="@+id/txtUpcomingTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="22:00 - 23:59"
-                android:textColor="#B0B0B0"
-                android:textSize="14sp"/>
-
-        </LinearLayout>
+        <!-- Tabs sẽ được tạo động trong code -->
 
     </LinearLayout>
 
@@ -214,6 +159,33 @@
                 android:textColor="#FFFFFF"/>
 
             <Button
+                android:id="@+id/btnFoodTreat"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="#FFFFFF"
+                android:text="@string/title_food_treat"
+                android:textColor="#A01B1B"/>
+
+            <Button
+                android:id="@+id/btnPetCare"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="#FFFFFF"
+                android:text="@string/title_pet_care"
+                android:textColor="#A01B1B"/>
+
+            <Button
+                android:id="@+id/btnFurniture"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="#FFFFFF"
+                android:text="@string/title_furniture"
+                android:textColor="#A01B1B"/>
+
+            <Button
                 android:id="@+id/btnToys"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
@@ -223,25 +195,26 @@
                 android:textColor="#A01B1B"/>
 
             <Button
-                android:id="@+id/btnFood"
+                android:id="@+id/btnAccessories"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
                 android:layout_marginEnd="8dp"
                 android:backgroundTint="#FFFFFF"
-                android:text="@string/title_food"
+                android:text="@string/title_accessories"
                 android:textColor="#A01B1B"/>
 
             <Button
-                android:id="@+id/btnAccessories"
+                android:id="@+id/btnCarriers"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
                 android:backgroundTint="#FFFFFF"
-                android:text="@string/title_accessories"
+                android:text="@string/title_carriers"
                 android:textColor="#A01B1B"/>
 
         </LinearLayout>
 
     </HorizontalScrollView>
+
 
     <!--  Danh sách sản phẩm  -->
     <androidx.recyclerview.widget.RecyclerView

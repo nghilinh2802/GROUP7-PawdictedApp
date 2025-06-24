@@ -171,4 +171,8 @@ If you have any questions or requests regarding our privacy and security policy,
     <string name="title_details">Details</string>
     <string name="title_selected_product">Selected product</string>
     <string name="title_FAQ">FAQs</string>
+    <string name="title_food_treat"><![CDATA[Foods & Treats]]></string>
+    <string name="title_pet_care">Pet Care</string>
+    <string name="title_furniture">Furniture</string>
+    <string name="title_carriers"><![CDATA[Carriers & Kennels]]></string>
 </resources>
