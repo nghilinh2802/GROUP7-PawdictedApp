@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,10 +20,10 @@ import com.group7.pawdicted.R;
 import com.group7.pawdicted.mobile.models.FlashSaleProduct;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 public class FlashSaleAdapter extends RecyclerView.Adapter<FlashSaleAdapter.ViewHolder> {
+
     private List<FlashSaleProduct> productList;
     private Context context;
 
@@ -43,6 +43,9 @@ public class FlashSaleAdapter extends RecyclerView.Adapter<FlashSaleAdapter.View
     public void onBindViewHolder(ViewHolder holder, int position) {
         FlashSaleProduct product = productList.get(position);
 
+        Log.d("ProgressBar", "=== BINDING PRODUCT " + position + " ===");
+        Log.d("ProgressBar", "Product: " + product.getProduct_name());
+
         holder.tvProductName.setText(product.getProduct_name());
 
         // Sử dụng giá flash sale
@@ -58,15 +61,58 @@ public class FlashSaleAdapter extends RecyclerView.Adapter<FlashSaleAdapter.View
         holder.tvOriginalPrice.setPaintFlags(holder.tvOriginalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 
         holder.tvDiscount.setText("-" + product.getFlashSaleDiscountRate() + "%");
-        holder.tvUnitSold.setText(product.getFlashSaleUnitSold() + " đã bán");
 
-        // Progress bar cho flash sale
-        double soldPercentage = product.getFlashSaleSoldPercentage();
-        holder.progressBar.setProgress((int) soldPercentage);
+        // Lấy thông tin flash sale
+        int unitSold = product.getFlashSaleUnitSold();
+        int maxQuantity = product.getFlashSaleMaxQuantity();
+        int remaining = maxQuantity - unitSold;
 
-        // Hiển thị số lượng còn lại
-        int remaining = product.getFlashSaleRemainingQuantity();
-        holder.tvRemaining.setText("Còn " + remaining + " sản phẩm");
+        Log.d("ProgressBar", "Unit sold: " + unitSold);
+        Log.d("ProgressBar", "Max quantity: " + maxQuantity);
+        Log.d("ProgressBar", "Remaining: " + remaining);
+
+        // Kiểm tra ProgressBar có tồn tại không
+        if (holder.progressBar == null) {
+            Log.e("ProgressBar", "❌ ProgressBar is NULL!");
+        } else {
+            Log.d("ProgressBar", "✅ ProgressBar found");
+
+            // Cập nhật progress bar
+            if (maxQuantity > 0) {
+                int progressPercentage = (int) ((unitSold * 100.0) / maxQuantity);
+                Log.d("ProgressBar", "Setting progress: " + progressPercentage + "%");
+
+                // Set progress với log
+                holder.progressBar.setMax(100);
+                holder.progressBar.setProgress(progressPercentage);
+
+                // Force refresh
+                holder.progressBar.invalidate();
+
+                Log.d("ProgressBar", "Progress after set: " + holder.progressBar.getProgress());
+            } else {
+                Log.w("ProgressBar", "Max quantity is 0, setting progress to 0");
+                holder.progressBar.setProgress(0);
+            }
+
+            // Đảm bảo visible
+            holder.progressBar.setVisibility(View.VISIBLE);
+            Log.d("ProgressBar", "Visibility: " + holder.progressBar.getVisibility());
+        }
+
+        // Cập nhật text hiển thị
+        holder.tvUnitSold.setText(unitSold + " đã bán");
+        holder.tvRemaining.setText("Còn " + remaining);
+
+        // Thay đổi màu text dựa vào số lượng còn lại
+        if (remaining <= 0) {
+            holder.tvRemaining.setText("Hết hàng");
+            holder.tvRemaining.setTextColor(Color.RED);
+        } else if (remaining <= 10) {
+            holder.tvRemaining.setTextColor(Color.parseColor("#FF5722")); // Cam đỏ
+        } else {
+            holder.tvRemaining.setTextColor(Color.parseColor("#E53935")); // Đỏ bình thường
+        }
 
         // Load hình ảnh
         Glide.with(context)
@@ -80,7 +126,7 @@ public class FlashSaleAdapter extends RecyclerView.Adapter<FlashSaleAdapter.View
         holder.tvRatingCount.setText("(" + product.getRating_number() + ")");
 
         // Disable button nếu hết hàng
-        if (!product.isFlashSaleAvailable()) {
+        if (remaining <= 0) {
             holder.btnBuyNow.setText("Hết hàng");
             holder.btnBuyNow.setEnabled(false);
             holder.btnBuyNow.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY));
@@ -100,7 +146,7 @@ public class FlashSaleAdapter extends RecyclerView.Adapter<FlashSaleAdapter.View
         });
 
         holder.btnBuyNow.setOnClickListener(v -> {
-            if (product.isFlashSaleAvailable()) {
+            if (remaining > 0) {
                 addToCart(product);
             }
         });
@@ -138,6 +184,14 @@ public class FlashSaleAdapter extends RecyclerView.Adapter<FlashSaleAdapter.View
             tvRemaining = itemView.findViewById(R.id.tvRemaining);
             progressBar = itemView.findViewById(R.id.progressBar);
             btnBuyNow = itemView.findViewById(R.id.btnBuyNow);
+
+            // Debug log
+            if (progressBar == null) {
+                Log.e("ViewHolder", "❌ ProgressBar not found in layout!");
+            } else {
+                Log.d("ViewHolder", "✅ ProgressBar found successfully");
+                Log.d("ViewHolder", "ProgressBar class: " + progressBar.getClass().getSimpleName());
+            }
         }
     }
 }
