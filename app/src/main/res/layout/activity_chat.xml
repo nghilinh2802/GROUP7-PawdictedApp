@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F9F6F6"
+    android:orientation="vertical">
+
+    <!-- AppBar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toolbar"
+        android:title="Notification"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/main_color"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
+
+        <ImageView
+            android:id="@+id/imgBack"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:contentDescription="Back"
+            android:src="@mipmap/ic_back_icon_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Tiêu đề căn giữa toàn bộ layout -->
+        <TextView
+            android:id="@+id/txt_page_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="@font/inter_bold"
+            android:maxLines="1"
+            android:text="@string/title_chatting"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Danh sách tin nhắn -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_chat"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#F9F6F6"
+        android:padding="8dp"
+        android:clipToPadding="false" />
+
+    <!-- Thanh nhập tin nhắn -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:background="#FFFFFF"
+        android:padding="8dp"
+        android:gravity="center_vertical">
+
+        <EditText
+            android:id="@+id/edt_message"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="@drawable/gray_rounded_background"
+            android:hint="@string/hint_type_a_message"
+            android:textColor="#222"
+            android:textSize="15sp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:inputType="textMultiLine"
+            android:maxLines="4"
+            android:gravity="center_vertical"/>
+
+        <ImageButton
+            android:id="@+id/btn_send_image"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@mipmap/ic_image"
+            android:contentDescription="@string/title_send_image"
+            app:tint="#A62332" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:backgroundTint="@color/main_color"
+    android:orientation="vertical"
+    tools:context=".EditProfileActivity">
+
+    <!-- Thanh tiêu đề cố định -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/main_color"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
+
+        <ImageView
+            android:id="@+id/imgBack"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:contentDescription="Back"
+            android:src="@mipmap/ic_back_icon_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Tiêu đề căn giữa toàn bộ layout -->
+        <TextView
+            android:id="@+id/txt_page_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="@font/inter_bold"
+            android:maxLines="1"
+            android:text="@string/title_edit_cap"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#f8f1f1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="130dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="0dp">
+
+                <ImageView
+                    android:id="@+id/imgAvatar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@mipmap/ic_account_footer_red" />
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="bottom|right"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginBottom="15dp"
+                    android:src="@mipmap/ic_edit" />
+            </FrameLayout>
+
+            <!-- Khung thông tin -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:orientation="vertical"
+                android:padding="15dp">
+
+                <!-- Name Field -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Name"
+                    android:textColor="#9c162c"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/edtName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:background="@drawable/red_rounded_background"
+                    android:padding="12dp"
+                    android:text="Hân Nguyễn"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <!-- Gender Field -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Gender"
+                    android:textColor="#9c162c"
+                    android:textSize="16sp" />
+
+                <Spinner
+                    android:id="@+id/spinner_gender"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/red_rounded_background"
+                    android:entries="@array/gender_array"
+                    android:padding="12dp"
+                    android:popupBackground="@drawable/spinner_dropdown_background"
+                    android:spinnerMode="dropdown"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <!-- D.O.B Field -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="D.O.B"
+                    android:textColor="#9c162c"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/edtDob"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:background="@drawable/red_rounded_background"
+                    android:inputType="date"
+                    android:padding="12dp"
+                    android:text="20/05/2002"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <!-- Phone number Field -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Phone number"
+                    android:textColor="#9c162c"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/edtPhone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:background="@drawable/red_rounded_background"
+                    android:padding="12dp"
+                    android:text="0123456789"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="ⓘ To change information, please contact customer service department."
+                    android:textColor="#9c162c"
+                    android:textSize="11sp" />
+
+                <!-- Email Field -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Email"
+                    android:textColor="#9c162c"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/edtEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:background="@drawable/red_rounded_background"
+                    android:padding="12dp"
+                    android:text="hannguyen89@gmail.com"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="ⓘ To change information, please contact customer service department."
+                    android:textColor="#9c162c"
+                    android:textSize="11dp" />
+
+                <!-- Address Field -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Address"
+                    android:textColor="#9c162c"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/edtAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:background="@drawable/red_rounded_background"
+                    android:padding="12dp"
+                    android:text="1 Le Loi Street, Ward 10, Vung Tau city"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <!-- Nút CANCEL và SAVE -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnCancel"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="50dp"
+                    android:background="@drawable/rounded_cancel_button"
+                    android:backgroundTint="@color/main_color"
+                    android:onClick="go_back"
+                    android:padding="10dp"
+                    android:text="CANCEL"
+                    android:textColor="#9c162c"
+                    android:textSize="16dp"
+                    app:backgroundTint="#9c162c"/>
+
+                <Button
+                    android:id="@+id/btnSave"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/red_fill_rounded_background"
+                    android:padding="10dp"
+                    android:text="SAVE"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16dp"
+                    android:backgroundTint="@color/main_color"
+                    app:backgroundTint="#9c162c"/>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

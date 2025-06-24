@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#f8f1f1"
+    android:id="@+id/main"
+    tools:context=".SettingManagementActivity">
+
+    <!-- Thanh tiêu đề -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toolbar"
+        android:title="Setting"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/main_color"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
+
+        <ImageView
+            android:id="@+id/imgBack"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:contentDescription="Back"
+            android:src="@mipmap/ic_back_icon_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Tiêu đề căn giữa toàn bộ layout -->
+        <TextView
+            android:id="@+id/txt_page_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="@font/inter_bold"
+            android:maxLines="1"
+            android:text="@string/title_setting_cap"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Danh sách các mục -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="8dp">
+
+        <!-- Language -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            android:background="?attr/selectableItemBackground"
+            android:foreground="?attr/selectableItemBackground"
+            android:backgroundTint="#FFFFFF"
+            android:onClick="open_language_setting"
+            android:layout_marginBottom="4dp"
+            android:elevation="2dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@mipmap/ic_language"
+                android:contentDescription="Language Icon"
+                android:layout_marginEnd="16dp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Language"
+                android:textSize="16sp"
+                android:textColor="#9c162c"
+                android:layout_weight="1"
+                android:layout_marginEnd="16dp" />
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@mipmap/ic_next_icon_red"
+                android:contentDescription="Next Icon" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp" />
+
+
+
+        <!-- Change Password -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            android:onClick="open_change_password"
+            android:background="?attr/selectableItemBackground"
+            android:foreground="?attr/selectableItemBackground"
+            android:backgroundTint="#FFFFFF"
+            android:layout_marginBottom="4dp"
+            android:elevation="2dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@mipmap/ic_password_setting"
+                android:contentDescription="Password Icon"
+                android:tint="#9c162c"
+                android:layout_marginEnd="16dp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Change Password"
+                android:textSize="16sp"
+                android:textColor="#9c162c"
+                android:layout_weight="1"
+                android:layout_marginEnd="16dp" />
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@mipmap/ic_next_icon_red"
+                android:contentDescription="Next Icon" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp" />
+
+        <!-- Delete Account -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            android:background="?attr/selectableItemBackground"
+            android:foreground="?attr/selectableItemBackground"
+            android:backgroundTint="#FFFFFF"
+            android:layout_marginBottom="4dp"
+            android:elevation="2dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@mipmap/ic_trash"
+                android:contentDescription="Delete Icon"
+                android:layout_marginEnd="16dp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Delete Account"
+                android:textSize="16sp"
+                android:textColor="#9c162c"
+                android:layout_weight="1"
+                android:layout_marginEnd="16dp" />
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@mipmap/ic_next_icon_red"
+                android:contentDescription="Next Icon" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp" />
+
+        <!-- Notification -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:gravity="center_vertical"
+            android:background="?attr/selectableItemBackground"
+            android:foreground="?attr/selectableItemBackground"
+            android:backgroundTint="#FFFFFF"
+            android:layout_marginBottom="4dp"
+            android:elevation="2dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@mipmap/ic_notification_line"
+                android:contentDescription="Notification Icon"
+                android:layout_marginEnd="16dp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Notification"
+                android:textSize="16sp"
+                android:textColor="#9c162c"
+                android:layout_weight="1"
+                android:layout_marginEnd="16dp" />
+
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:thumbTint="#9c162c"
+                android:trackTint="#9c162c"
+                android:checked="true" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp" />
+
+        <!-- Log out -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:clickable="true"
+            android:onClick="logout"
+            android:gravity="center_vertical"
+            android:background="?attr/selectableItemBackground"
+            android:foreground="?attr/selectableItemBackground"
+            android:backgroundTint="#FFFFFF"
+            android:layout_marginBottom="4dp"
+            android:elevation="2dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@mipmap/ic_logout"
+                android:contentDescription="Logout Icon"
+                android:layout_marginEnd="16dp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Log out"
+                android:textSize="16sp"
+                android:textColor="#9c162c"
+                android:layout_weight="1"
+                android:layout_marginEnd="16dp" />
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@mipmap/ic_next_icon_red"
+                android:contentDescription="Next Icon" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
