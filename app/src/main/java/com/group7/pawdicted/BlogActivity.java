@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,15 +27,15 @@ public class BlogActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_blog);
 
+        ImageView imgBack = findViewById(R.id.imgBack);
+        if (imgBack != null) {
+            imgBack.setOnClickListener(v -> finish());
+        }
+
         // Khởi tạo views với đúng ID từ layout
-        ImageButton btnBack = findViewById(R.id.btn_back);
         ListView listView = findViewById(R.id.lvBlog);
         progressBar = findViewById(R.id.progressBar);
 
-        // Xử lý nút back
-        if (btnBack != null) {
-            btnBack.setOnClickListener(v -> finish());
-        }
 
         // Khởi tạo adapter
         adapter = new BlogAdapter(this, blogs);

@@ -395,4 +395,3 @@ public class ProductDetailsActivity extends AppCompatActivity {
         return true;
     }
 }
-

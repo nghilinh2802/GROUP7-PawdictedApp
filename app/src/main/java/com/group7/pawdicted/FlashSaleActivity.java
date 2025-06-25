@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -77,6 +78,11 @@ public class FlashSaleActivity extends AppCompatActivity {
 
         Log.d("FlashSale", "Bắt đầu tải flash sale...");
         loadActiveFlashSales();
+
+        ImageView imgBack = findViewById(R.id.imgBack);
+        if (imgBack != null) {
+            imgBack.setOnClickListener(v -> finish());
+        }
     }
 
     private void initViews() {

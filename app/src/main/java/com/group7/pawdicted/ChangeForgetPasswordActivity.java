@@ -3,6 +3,11 @@ package com.group7.pawdicted;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.*;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,6 +16,7 @@ import com.google.firebase.firestore.*;
 
 public class ChangeForgetPasswordActivity extends AppCompatActivity implements SuccessPasswordDialogFragment.OnLoginWithNewPasswordListener {
 
+    private ImageButton btnBack;
     private EditText edtNewPassword, edtNewPasswordAgain;
     private Button btnChangePassword;
     private String verifiedPhone;
@@ -22,6 +28,8 @@ public class ChangeForgetPasswordActivity extends AppCompatActivity implements S
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_forget_password);
 
+        // Ánh xạ các thành phần
+        btnBack = findViewById(R.id.btnBack);
         edtNewPassword = findViewById(R.id.edtNewPassword);
         edtNewPasswordAgain = findViewById(R.id.edtNewPasswordAgain);
         btnChangePassword = findViewById(R.id.btnChangePassword);

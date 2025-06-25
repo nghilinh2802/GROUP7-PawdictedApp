@@ -27,8 +27,12 @@ public class BlogDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_blog_details);
 
-        // Khởi tạo views
-        ImageButton btnBack = findViewById(R.id.btn_back);
+        ImageView imgBack = findViewById(R.id.imgBack);
+        if (imgBack != null) {
+            imgBack.setOnClickListener(v -> finish());
+        }
+
+        // Ánh xạ view đúng ID layout bạn gửi
         TextView txtTitle = findViewById(R.id.txtBlogDetailsTitle);
         TextView txtAuthorTime = findViewById(R.id.txtBlogDetailsAuthorTime);
         ImageView imgBlog = findViewById(R.id.imgBlogDetails);
@@ -36,11 +40,6 @@ public class BlogDetailsActivity extends AppCompatActivity {
         TextView txtContent = findViewById(R.id.txtBlogDetailsContent);
         progressBar = findViewById(R.id.progressBarDetails);
         contentContainer = findViewById(R.id.contentContainer);
-
-        // Xử lý nút back
-        if (btnBack != null) {
-            btnBack.setOnClickListener(v -> finish());
-        }
 
         // Hiển thị ProgressBar khi bắt đầu load
         showProgressBar();

@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -31,6 +32,7 @@ public class LanguageSettingActivity extends AppCompatActivity {
         String lang = prefs.getString(KEY_LANG, "en");  // Default to "en" if no language is set
         setLocale(lang);  // Apply the default language immediately when opening the settings screen
 
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_language_setting);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -38,6 +40,11 @@ public class LanguageSettingActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        ImageView imgBack = findViewById(R.id.imgBack);
+        if (imgBack != null) {
+            imgBack.setOnClickListener(v -> finish());
+        }
 
         layoutEnglish = findViewById(R.id.layoutEnglish);
         layoutVietnamese = findViewById(R.id.layoutVietnamese);
