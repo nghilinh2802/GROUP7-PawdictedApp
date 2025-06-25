@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.group7.pawdicted.mobile.adapters.CartAdapter;
 import com.group7.pawdicted.mobile.models.CartItem;
+import com.group7.pawdicted.mobile.models.CartManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,9 +49,10 @@ public class CartActivity extends AppCompatActivity {
 
         // Dummy data
         cartItemList = new ArrayList<>();
-        cartItemList.add(new CartItem("Nutri Plan Tuna", 50, R.mipmap.fofos, Collections.emptyList(), ""));
-        cartItemList.add(new CartItem("Steel Bowl", 60, R.mipmap.cat_toy,
-                Arrays.asList("Size M", "Size L", "Red", "Blue"), "Size M"));
+        cartItemList = CartManager.getCartItems();
+        cartAdapter = new CartAdapter(this, cartItemList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(cartAdapter);
 
         cartAdapter = new CartAdapter(this, cartItemList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -92,4 +94,10 @@ public class CartActivity extends AppCompatActivity {
         totalText.setText(total + ".000đ");
         checkoutBtn.setText("Check Out (" + selectedCount + ")");
     }
+
+    public void open_voucher_activity(View view) {
+        Intent intent = new Intent(CartActivity.this, VoucherManagementActivity.class);
+        startActivity(intent);
+    }
 }
+

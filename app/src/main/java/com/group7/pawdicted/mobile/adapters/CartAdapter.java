@@ -7,6 +7,7 @@ import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.group7.pawdicted.R;
 import com.group7.pawdicted.mobile.models.CartItem;
 
@@ -44,7 +45,15 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
         public void bind(final CartItem item) {
             checkbox.setChecked(item.isSelected);
-            image.setImageResource(item.imageResId);
+            if (item.imageUrl != null && !item.imageUrl.isEmpty()) {
+                Glide.with(context)
+                        .load(item.imageUrl)
+                        .placeholder(R.mipmap.ic_ascend_arrows)
+                        .error(R.mipmap.ic_ascend_arrows)
+                        .into(image);
+            } else {
+                image.setImageResource(R.mipmap.ic_ascend_arrows);
+            }
             name.setText(item.name);
             price.setText(item.price + ".000đ");
             quantityText.setText(String.valueOf(item.quantity));
@@ -59,17 +68,23 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
                 if (selectedIndex >= 0) {
                     spinner.setSelection(selectedIndex);
                 }
-
                 spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         item.selectedOption = item.options.get(position);
+                        if (item.optionPrices != null && item.optionPrices.containsKey(item.selectedOption)) {
+                            item.price = item.optionPrices.get(item.selectedOption);
+                            price.setText(item.price + ".000đ"); // Cập nhật giá hiển thị
+                        }
                     }
 
                     @Override
                     public void onNothingSelected(AdapterView<?> parent) {}
                 });
-            } else {
+
+            }
+            else
+            {
                 spinner.setVisibility(View.GONE);
             }
 

@@ -46,7 +46,6 @@
                     android:id="@+id/addressPhone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="(+84) 967 663 867"
                     android:textColor="@color/black"
                     android:textSize="14sp" />
 
@@ -54,7 +53,6 @@
                     android:id="@+id/addressDetail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="2 Đống Khôi, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh"
                     android:textColor="@color/black"
                     android:textSize="14sp" />
 
