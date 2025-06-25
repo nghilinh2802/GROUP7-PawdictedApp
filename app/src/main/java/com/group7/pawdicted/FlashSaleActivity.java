@@ -52,6 +52,10 @@ public class FlashSaleActivity extends AppCompatActivity {
     private List<FlashSale> activeFlashSales;
     private FlashSale currentFlashSale;
     private int selectedTabIndex = 0;
+    private boolean isFlashsale = false;
+    private int flashsaleDiscountRate = 0;
+    private double flashsalePrice = 0;
+    private String flashsaleId = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -632,6 +636,23 @@ public class FlashSaleActivity extends AppCompatActivity {
         if (tabContainer != null) {
             tabContainer.setVisibility(isLoading ? View.GONE : View.VISIBLE);
         }
+    }
+    // Thêm method này vào cuối class FlashSaleActivity
+    public void navigateToProductDetails(String productId, FlashSale.FlashSaleProductInfo flashSaleInfo) {
+        Log.d("FlashSale", "=== CHUYỂN SANG PRODUCT DETAILS ===");
+        Log.d("FlashSale", "Product ID: " + productId);
+        Log.d("FlashSale", "Flashsale ID: " + currentFlashSale.getFlashSale_id());
+        Log.d("FlashSale", "Discount Rate: " + flashSaleInfo.getDiscountRate() + "%");
+
+        Intent intent = new Intent(FlashSaleActivity.this, ProductDetailsActivity.class);
+        intent.putExtra("product_id", productId);
+        intent.putExtra("IS_FLASHSALE", true);
+        intent.putExtra("FLASHSALE_DISCOUNT_RATE", flashSaleInfo.getDiscountRate());
+        intent.putExtra("FLASHSALE_ID", currentFlashSale.getFlashSale_id());
+        intent.putExtra("FLASHSALE_NAME", currentFlashSale.getFlashSale_name());
+        intent.putExtra("FLASHSALE_END_TIME", currentFlashSale.getEndTime());
+
+        startActivity(intent);
     }
 
     @Override

@@ -145,11 +145,21 @@ public class FlashSaleAdapter extends RecyclerView.Adapter<FlashSaleAdapter.View
             context.startActivity(intent);
         });
 
+        // CHỈ SỬA PHẦN btnBuyNow - KHÔNG ĐỘNG VÀO GÌ KHÁC
         holder.btnBuyNow.setOnClickListener(v -> {
             if (remaining > 0) {
-                addToCart(product);
+                // Chuyển sang ProductDetails với thông tin flashsale
+                Intent intent = new Intent(context, ProductDetailsActivity.class);
+                intent.putExtra("product_id", product.getProduct_id());
+                intent.putExtra("IS_FLASHSALE", true);
+                intent.putExtra("FLASHSALE_DISCOUNT_RATE", product.getFlashSaleDiscountRate());
+                intent.putExtra("FLASHSALE_ID", product.getFlashSaleId());
+                intent.putExtra("FLASHSALE_NAME", "Flash Sale");
+                intent.putExtra("FLASHSALE_END_TIME", System.currentTimeMillis() + 3600000);
+                context.startActivity(intent);
             }
         });
+        ;
     }
 
     private void addToCart(FlashSaleProduct product) {

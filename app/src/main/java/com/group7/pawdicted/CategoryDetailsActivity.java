@@ -356,3 +356,4 @@ public class CategoryDetailsActivity extends AppCompatActivity {
         return true;
     }
 }
+
