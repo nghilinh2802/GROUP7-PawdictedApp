@@ -60,4 +60,9 @@ public class HomepageActivity extends AppCompatActivity {
         Intent intent=new Intent(HomepageActivity.this,FlashSaleActivity.class);
         startActivity(intent);
     }
+
+    public void open_chat(View view) {
+        Intent intent=new Intent(HomepageActivity.this,ChatActivity.class);
+        startActivity(intent);
+    }
 }

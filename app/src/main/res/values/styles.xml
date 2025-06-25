@@ -14,6 +14,29 @@
         <item name="android:singleLine">false</item>
         <item name="android:textStyle">bold</item>
     </style>
+    <style name="SendButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">#A62332</item>
+        <item name="cornerRadius">20dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="rippleColor">#8B1E2A</item>
+    </style>
+    <style name="RedRoundButton" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">#A62332</item>
+        <item name="cornerRadius">20dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="rippleColor">#8B1E2A</item>
+    </style>
+
 
     <!-- Style cho TextView cột phải và hàng 1 ô (không in đậm) -->
     <style name="TableTextViewNormal">
