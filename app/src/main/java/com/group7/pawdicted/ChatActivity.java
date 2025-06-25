@@ -2,6 +2,8 @@ package com.group7.pawdicted;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -88,10 +90,17 @@ public class ChatActivity extends AppCompatActivity {
         btnSend.setOnClickListener(v -> sendMessage());
 
         edtMessage.setOnEditorActionListener((v, actionId, event) -> {
-            sendMessage();
-            return true;
+            // Kiểm tra action ID để chỉ xử lý Enter key
+            if (actionId == EditorInfo.IME_ACTION_SEND ||
+                    (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER &&
+                            event.getAction() == KeyEvent.ACTION_DOWN)) {
+                sendMessage();
+                return true; // Consume event để ngăn chặn xử lý tiếp
+            }
+            return false;
         });
     }
+
 
     private void setupBackButton() {
         if (imgBack != null) {
