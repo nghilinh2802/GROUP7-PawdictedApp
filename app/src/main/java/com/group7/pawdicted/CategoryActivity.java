@@ -425,3 +425,4 @@ public class CategoryActivity extends AppCompatActivity {
         iconView.setImageResource(isActive ? iconSelectedResId : iconUnselectedResId);
     }
 }
+

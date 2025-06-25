@@ -19,12 +19,13 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.group7.pawdicted.mobile.models.ListProduct;
-import com.group7.pawdicted.mobile.models.ListVariant;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.group7.pawdicted.mobile.models.Product;
 import com.group7.pawdicted.mobile.models.Variant;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProductDetailsActivity extends AppCompatActivity {
@@ -36,13 +37,18 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private android.widget.RatingBar productRatingBar, productRatingBar2;
     private ImageButton btnChat;
     private Button btnAddToCart, btnBuyNow;
-    private LinearLayout lvVariation, viewAllDescription;
-    private LinearLayout viewAllRating;
-
-    private ListProduct listProduct;
-    private ListVariant listVariant;
+    private LinearLayout lvVariation, viewAllDescription, viewAllRating;
     private String selectedVariantId;
     private String defaultProductImage;
+    private Product currentProduct;
+    private FirebaseFirestore db;
+    private boolean isFlashsale = false;
+    private int flashsaleDiscountRate = 0;
+    private double flashsalePrice = 0;
+    private String flashsaleId = "";
+    private String flashsaleName = "";
+    private long flashsaleEndTime = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,16 +62,15 @@ public class ProductDetailsActivity extends AppCompatActivity {
             return insets;
         });
 
+        db = FirebaseFirestore.getInstance();
+
         ImageView imgBack = findViewById(R.id.imgBack);
         if (imgBack != null) {
             imgBack.setOnClickListener(v -> finish());
         }
 
-        // Clear Glide cache for debugging
-        Glide.get(this).clearMemory();
-        new Thread(() -> Glide.get(this).clearDiskCache()).start();
-
         initViews();
+        receiveFlashsaleData();
         loadProductDetails();
     }
 
@@ -90,25 +95,26 @@ public class ProductDetailsActivity extends AppCompatActivity {
         viewAllRating = findViewById(R.id.view_all_rating);
         viewAllDescription = findViewById(R.id.view_all_description);
 
-        // Thiết lập click cho view_all_description
         viewAllDescription.setOnClickListener(v -> {
             String productId = getIntent().getStringExtra("product_id");
-            Product product = null;
-            for (Product p : listProduct.getProducts()) {
-                if (p.getProduct_id().equals(productId)) {
-                    product = p;
-                    break;
-                }
-            }
-            if (product != null) {
-                Intent intent = new Intent(ProductDetailsActivity.this, ProductDescriptionActivity.class);
-                intent.putExtra("product_id", productId);
-                intent.putExtra("product_name", product.getProduct_name());
-                intent.putExtra("description", product.getDescription());
-                intent.putExtra("details", product.getDetails());
-                startActivity(intent);
-            } else {
-                Log.e("ProductDetailsActivity", "Không tìm thấy sản phẩm với ID: " + productId);
+            if (productId != null) {
+                db.collection("products").document(productId).get()
+                        .addOnSuccessListener(documentSnapshot -> {
+                            if (documentSnapshot.exists()) {
+                                Product product = documentSnapshot.toObject(Product.class);
+                                if (product != null) {
+                                    Intent intent = new Intent(ProductDetailsActivity.this, ProductDescriptionActivity.class);
+                                    intent.putExtra("product_id", productId);
+                                    intent.putExtra("product_name", product.getProduct_name());
+                                    intent.putExtra("description", product.getDescription());
+                                    intent.putExtra("details", product.getDetails());
+                                    startActivity(intent);
+                                }
+                            } else {
+                                Log.e("ProductDetailsActivity", "Product not found for ID: " + productId);
+                            }
+                        })
+                        .addOnFailureListener(e -> Log.e("ProductDetailsActivity", "Error fetching product data: " + e.getMessage()));
             }
         });
 
@@ -118,67 +124,87 @@ public class ProductDetailsActivity extends AppCompatActivity {
             intent.putExtra("product_id", productId);
             startActivity(intent);
         });
-
-        listProduct = new ListProduct();
-        listProduct.generate_sample_dataset();
-        listVariant = new ListVariant();
-        listVariant.generate_sample_dataset();
     }
 
     private void loadProductDetails() {
         String productId = getIntent().getStringExtra("product_id");
-        Log.d("ProductDetailsActivity", "Received product_id: " + (productId != null ? productId : "null"));
         if (productId == null) {
             Log.e("ProductDetailsActivity", "No product_id received");
             finish();
             return;
         }
 
-        Product product = null;
-        for (Product p : listProduct.getProducts()) {
-            if (p.getProduct_id().equals(productId)) {
-                product = p;
-                break;
-            }
-        }
-
-        if (product == null) {
-            Log.e("ProductDetailsActivity", "Product not found for ID: " + productId);
-            finish();
-            return;
-        }
-
-        Log.d("ProductDetailsActivity", "Product: " + product.getProduct_name() + ", Image URL: " + product.getProduct_image());
-        defaultProductImage = product.getProduct_image();
-
-        loadImage(defaultProductImage, product);
-
-        DecimalFormat formatter = new DecimalFormat("#,###đ");
-        double discountPrice = product.getPrice() * (1 - product.getDiscount() / 100.0);
-        txtDiscountPrice.setText(formatter.format(discountPrice));
-        txtProductPrice.setText(formatter.format(product.getPrice()));
-        // Thêm gạch ngang nếu có giảm giá
-        if (product.getDiscount() > 0) {
-            txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-        } else {
-            txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-        }
-        txtSoldQuantity.setText(product.getSold_quantity() + " sold  ");
-        txtDiscountRate.setText(" -" + (int)product.getDiscount() + "% ");
-        txtProductName.setText(product.getProduct_name());
-        productRatingBar.setRating((float) product.getAverage_rating());
-        productRatingBar2.setRating((float) product.getAverage_rating());
-        txtProductRatingCount.setText(product.getRating_number() + " Đánh giá");
-        txtAverageRating.setText(String.format("%.1f", product.getAverage_rating()));
-        txtRatingCount.setText("(" + product.getRating_number() + " Đánh giá)");
-        txtProductDescription.setText(product.getDescription());
-
-        List<String> variantIds = product.getVariant_id();
-        Log.d("ProductDetailsActivity", "Variant IDs from product: " + (variantIds != null ? variantIds.toString() : "null"));
-        loadVariations(variantIds, productId);
+        db.collection("products").document(productId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Product product = documentSnapshot.toObject(Product.class);
+                        if (product != null) {
+                            currentProduct = product;
+                            displayProductDetails(product, null);
+                            loadVariations(product.getVariant_id(), productId);
+                        } else {
+                            Log.e("ProductDetailsActivity", "Failed to convert product data for ID: " + productId);
+                            finish();
+                        }
+                    } else {
+                        Log.e("ProductDetailsActivity", "Product not found for ID: " + productId);
+                        finish();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("ProductDetailsActivity", "Error fetching product data: " + e.getMessage());
+                    finish();
+                });
     }
 
-    private void loadImage(String imageUrl, Product product) {
+    private void displayProductDetails(Product product, Variant variant) {
+        DecimalFormat formatter = new DecimalFormat("#,###đ");
+
+        if (variant != null) {
+            // Display variant-specific details
+            double discountPrice = variant.getVariant_price() * (1 - variant.getVariant_discount() / 100.0);
+            txtDiscountPrice.setText(formatter.format(discountPrice));
+            txtProductPrice.setText(formatter.format(variant.getVariant_price()));
+            txtDiscountRate.setText(variant.getVariant_discount() > 0 ? "-" + variant.getVariant_discount() + "%" : "");
+            txtSoldQuantity.setText(variant.getVariant_sold_quantity() + " sold");
+            productRatingBar.setRating((float) variant.getVariant_rating());
+            productRatingBar2.setRating((float) variant.getVariant_rating());
+            txtAverageRating.setText(String.format("%.1f", variant.getVariant_rating()));
+            txtRatingCount.setText("(" + variant.getVariant_rating_number() + " Reviews)");
+            txtProductRatingCount.setText(variant.getVariant_rating_number() + " Reviews");
+            loadImage(variant.getVariant_image() != null ? variant.getVariant_image() : defaultProductImage);
+        } else {
+            // Display default product details
+            defaultProductImage = product.getProduct_image();
+            double discountPrice = product.getPrice() * (1 - product.getDiscount() / 100.0);
+            txtDiscountPrice.setText(formatter.format(discountPrice));
+            txtProductPrice.setText(formatter.format(product.getPrice()));
+            txtDiscountRate.setText(product.getDiscount() > 0 ? "-" + product.getDiscount() + "%" : "");
+            txtSoldQuantity.setText(product.getSold_quantity() + " sold");
+            productRatingBar.setRating((float) product.getAverage_rating());
+            productRatingBar2.setRating((float) product.getAverage_rating());
+            txtAverageRating.setText(String.format("%.1f", product.getAverage_rating()));
+            txtRatingCount.setText("(" + product.getRating_number() + " Reviews)");
+            txtProductRatingCount.setText(product.getRating_number() + " Reviews");
+            loadImage(defaultProductImage);
+        }
+
+        txtProductPrice.setPaintFlags(product.getDiscount() > 0 ? txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG : txtProductPrice.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+        txtProductName.setText(product.getProduct_name());
+        txtProductDescription.setText(product.getDescription());
+
+        // THÊM XỬ LÝ FLASHSALE VÀO CUỐI
+        if (isFlashsale) {
+            if (variant != null) {
+                displayFlashsalePrice(variant.getVariant_price());
+            } else {
+                displayFlashsalePrice(product.getPrice());
+            }
+        }
+    }
+
+
+    private void loadImage(String imageUrl) {
         Glide.with(this)
                 .load(imageUrl)
                 .placeholder(R.mipmap.ic_ascend_arrows)
@@ -194,86 +220,76 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private void loadVariations(List<String> variantIds, String productId) {
         lvVariation.removeAllViews();
 
-        if (productId == null) {
-            Log.e("ProductDetailsActivity", "productId is null, cannot load variations");
-            txtNoVariants.setVisibility(View.VISIBLE);
-            return;
-        }
         if (variantIds == null || variantIds.isEmpty()) {
-            Log.w("ProductDetailsActivity", "No variants for product ID: " + productId);
             txtNoVariants.setVisibility(View.VISIBLE);
             return;
         }
 
-        List<Variant> variants = listVariant.getVariantsByProductId(productId);
-        Log.d("ProductDetailsActivity", "Variants found for productId " + productId + ": " + (variants != null ? variants.size() : 0));
-        if (variants == null || variants.isEmpty()) {
-            Log.w("ProductDetailsActivity", "No variants found for product ID: " + productId);
-            txtNoVariants.setVisibility(View.VISIBLE);
-            return;
-        }
+        db.collection("variants").whereEqualTo("product_id", productId).get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Variant> variants = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        Variant variant = document.toObject(Variant.class);
+                        if (variant != null && variantIds.contains(variant.getVariant_id())) {
+                            variants.add(variant);
+                        }
+                    }
 
-        txtNoVariants.setVisibility(View.GONE);
-        selectedVariantId = variantIds.get(0);
-        Variant firstVariant = null;
-        for (Variant v : variants) {
-            if (v != null && v.getVariant_id() != null && v.getVariant_id().equals(selectedVariantId)) {
-                firstVariant = v;
-                break;
-            }
-        }
+                    if (variants.isEmpty()) {
+                        txtNoVariants.setVisibility(View.VISIBLE);
+                        return;
+                    }
 
-        for (Variant variant : variants) {
-            if (variant == null || variant.getVariant_id() == null) {
-                Log.w("ProductDetailsActivity", "Skipping null variant or variant_id");
-                continue;
-            }
-            Log.d("ProductDetailsActivity", "Processing variant: " + variant.getVariant_id() + ", name: " + variant.getVariant_name());
-            if (!variantIds.contains(variant.getVariant_id())) {
-                Log.w("ProductDetailsActivity", "Variant " + variant.getVariant_id() + " not in variantIds, skipping");
-                continue;
-            }
+                    txtNoVariants.setVisibility(View.GONE);
+                    selectedVariantId = variantIds.get(0);
+                    Variant firstVariant = variants.stream()
+                            .filter(v -> v.getVariant_id().equals(selectedVariantId))
+                            .findFirst()
+                            .orElse(null);
 
-            TextView variationTextView = new TextView(this);
-            variationTextView.setText(variant.getVariant_name());
-            variationTextView.setTextSize(14);
-            variationTextView.setGravity(android.view.Gravity.CENTER);
+                    for (Variant variant : variants) {
+                        if (variant == null || variant.getVariant_id() == null) {
+                            continue;
+                        }
+                        TextView variationTextView = new TextView(this);
+                        variationTextView.setText(variant.getVariant_name());
+                        variationTextView.setTextSize(14);
+                        variationTextView.setGravity(android.view.Gravity.CENTER);
 
-            int paddingHorizontal = dpToPx(20);
-            int paddingVertical = dpToPx(4);
-            variationTextView.setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
+                        int paddingHorizontal = dpToPx(20);
+                        int paddingVertical = dpToPx(4);
+                        variationTextView.setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
 
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            );
-            int margin = dpToPx(10);
-            params.setMargins(0, dpToPx(5), margin, dpToPx(5));
-            variationTextView.setLayoutParams(params);
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.WRAP_CONTENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                        );
+                        int margin = dpToPx(10);
+                        params.setMargins(0, dpToPx(5), margin, dpToPx(5));
+                        variationTextView.setLayoutParams(params);
 
-            updateVariationStyle(variationTextView, variant.getVariant_id().equals(selectedVariantId));
+                        updateVariationStyle(variationTextView, variant.getVariant_id().equals(selectedVariantId));
 
-            variationTextView.setOnClickListener(v -> {
-                selectedVariantId = variant.getVariant_id();
-                Log.d("ProductDetailsActivity", "Selected variant: " + variant.getVariant_name() + " (" + selectedVariantId + ")");
-                loadImage(variant.getVariant_image() != null ? variant.getVariant_image() : defaultProductImage, null);
-                for (int j = 0; j < lvVariation.getChildCount(); j++) {
-                    TextView tv = (TextView) lvVariation.getChildAt(j);
-                    updateVariationStyle(tv, tv.getText().toString().equals(variant.getVariant_name()));
-                }
-            });
+                        variationTextView.setOnClickListener(v -> {
+                            selectedVariantId = variant.getVariant_id();
+                            displayProductDetails(currentProduct, variant);
+                            for (int j = 0; j < lvVariation.getChildCount(); j++) {
+                                TextView tv = (TextView) lvVariation.getChildAt(j);
+                                updateVariationStyle(tv, tv.getText().toString().equals(variant.getVariant_name()));
+                            }
+                        });
 
-            lvVariation.addView(variationTextView);
-            Log.d("ProductDetailsActivity", "Added variant: " + variant.getVariant_name());
-        }
+                        lvVariation.addView(variationTextView);
+                    }
 
-        if (firstVariant != null) {
-            loadImage(firstVariant.getVariant_image() != null ? firstVariant.getVariant_image() : defaultProductImage, null);
-        } else if (defaultProductImage != null) {
-            loadImage(defaultProductImage, null);
-        } else {
-            Log.w("ProductDetailsActivity", "No image to load for default or first variant");
-        }
+                    if (firstVariant != null) {
+                        displayProductDetails(currentProduct, firstVariant);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("ProductDetailsActivity", "Error fetching variants: " + e.getMessage());
+                    txtNoVariants.setVisibility(View.VISIBLE);
+                });
     }
 
     private void updateVariationStyle(TextView textView, boolean isSelected) {
@@ -285,6 +301,52 @@ public class ProductDetailsActivity extends AppCompatActivity {
             textView.setTextColor(getColor(R.color.black));
         }
     }
+    private void receiveFlashsaleData() {
+        Intent intent = getIntent();
+        if (intent != null) {
+            isFlashsale = intent.getBooleanExtra("IS_FLASHSALE", false);
+            flashsaleDiscountRate = intent.getIntExtra("FLASHSALE_DISCOUNT_RATE", 0);
+            flashsaleId = intent.getStringExtra("FLASHSALE_ID");
+            flashsaleName = intent.getStringExtra("FLASHSALE_NAME");
+            flashsaleEndTime = intent.getLongExtra("FLASHSALE_END_TIME", 0);
+
+            if (isFlashsale) {
+                Log.d("ProductDetailsActivity", "=== FLASHSALE MODE ACTIVATED ===");
+                Log.d("ProductDetailsActivity", "Flashsale: " + flashsaleName);
+                Log.d("ProductDetailsActivity", "Discount: " + flashsaleDiscountRate + "%");
+            }
+        }
+    }
+    // Thêm method này vào cuối class ProductDetailsActivity
+    private void calculateFlashsalePrice(double originalPrice) {
+        if (isFlashsale && flashsaleDiscountRate > 0) {
+            flashsalePrice = originalPrice * (1 - flashsaleDiscountRate / 100.0);
+            Log.d("ProductDetailsActivity", "Original price: " + originalPrice);
+            Log.d("ProductDetailsActivity", "Flashsale price: " + flashsalePrice);
+        }
+    }
+    // Thêm method này vào cuối class ProductDetailsActivity
+    private void displayFlashsalePrice(double originalPrice) {
+        DecimalFormat formatter = new DecimalFormat("#,###đ");
+
+        if (isFlashsale) {
+            calculateFlashsalePrice(originalPrice);
+
+            // Hiển thị giá flashsale
+            txtDiscountPrice.setText(formatter.format(flashsalePrice));
+            txtProductPrice.setText(formatter.format(originalPrice));
+            txtDiscountRate.setText("-" + flashsaleDiscountRate + "%");
+
+            // Gạch ngang giá gốc
+            txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+
+            // Đổi màu giá flashsale
+            txtDiscountPrice.setTextColor(getColor(R.color.main_color));
+
+            Log.d("ProductDetailsActivity", "✅ Displaying flashsale price: " + flashsalePrice);
+        }
+    }
+
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -292,3 +354,4 @@ public class ProductDetailsActivity extends AppCompatActivity {
         return true;
     }
 }
+

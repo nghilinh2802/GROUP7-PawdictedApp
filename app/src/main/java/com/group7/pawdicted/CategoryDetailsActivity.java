@@ -1,7 +1,5 @@
 package com.group7.pawdicted;
 
-import static android.icu.util.ULocale.getDisplayName;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,13 +18,14 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.group7.pawdicted.mobile.adapters.ChildCategoryAdapter;
 import com.group7.pawdicted.mobile.adapters.ProductFilteredAdapter;
 import com.group7.pawdicted.mobile.models.Category;
 import com.group7.pawdicted.mobile.models.ChildCategory;
 import com.group7.pawdicted.mobile.models.ListCategory;
 import com.group7.pawdicted.mobile.models.ListChildCategory;
-import com.group7.pawdicted.mobile.models.ListProduct;
 import com.group7.pawdicted.mobile.models.Product;
 
 import java.util.ArrayList;
@@ -44,12 +43,12 @@ public class CategoryDetailsActivity extends AppCompatActivity {
     private ProductFilteredAdapter productAdapter;
     private ListChildCategory listChildCategory;
     private ListCategory listCategory;
-    private ListProduct listProduct;
+    private FirebaseFirestore db;
     private String categoryId;
     private String childCategoryId;
-    private int animalClass = -2; // Lưu animal_class từ Intent
+    private int animalClassId = -2; // -2: none, -1: all, 0: cat, 1: dog
     private List<Product> filteredProducts;
-    private boolean isPriceAscending = true; // Default to ascending for first price click
+    private boolean isPriceAscending = true;
     private String selectedFilter = "none";
 
     @Override
@@ -64,6 +63,8 @@ public class CategoryDetailsActivity extends AppCompatActivity {
             return insets;
         });
 
+        db = FirebaseFirestore.getInstance();
+
         ImageView imgBack = findViewById(R.id.imgBack);
         if (imgBack != null) {
             imgBack.setOnClickListener(v -> finish());
@@ -72,37 +73,29 @@ public class CategoryDetailsActivity extends AppCompatActivity {
         Intent intent = getIntent();
         categoryId = intent.getStringExtra("category_id");
         childCategoryId = intent.getStringExtra("child_category_id");
-        animalClass = intent.getIntExtra("animal_class", -2);
-        Log.d("CategoryDetailsActivity", "Received: category_id=" + categoryId + ", child_category_id=" + childCategoryId + ", animal_class=" + animalClass);
+        animalClassId = intent.getIntExtra("animal_class_id", -2);
+        Log.d("CategoryDetailsActivity", "Received: category_id=" + categoryId + ", child_category_id=" + childCategoryId + ", animal_class_id=" + animalClassId);
 
         listCategory = new ListCategory();
         try {
             listCategory.generate_sample_dataset();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e("CategoryDetailsActivity", "Error generating sample category data", e);
         }
 
         listChildCategory = new ListChildCategory();
         try {
             listChildCategory.generate_sample_dataset();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e("CategoryDetailsActivity", "Error generating sample child category data", e);
         }
 
-        listProduct = new ListProduct();
-        try {
-            listProduct.generate_sample_dataset();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        TextView txtPageTitle=findViewById(R.id.txt_page_title);
-
+        TextView txtPageTitle = findViewById(R.id.txt_page_title);
         String displayName = getDisplayName(categoryId, childCategoryId);
         if (displayName != null && txtPageTitle != null) {
             txtPageTitle.setText(displayName);
         } else {
-            txtPageTitle.setText(R.string.title_blogs); // Fallback
+            txtPageTitle.setText("Category");
         }
 
         childCategoryRecyclerView = findViewById(R.id.child_category_container);
@@ -121,11 +114,10 @@ public class CategoryDetailsActivity extends AppCompatActivity {
         childCategoryRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         updateChildCategories();
 
-        filteredProducts = getProductsByChildCategoryId(childCategoryId);
+        filteredProducts = new ArrayList<>();
         productAdapter = new ProductFilteredAdapter(this, filteredProducts);
         updateFilterUI();
-        updateProductContainer();
-
+        fetchProductsFromFirestore();
 
         bestSellerLayout.setOnClickListener(v -> {
             if (!selectedFilter.equals("best_seller")) {
@@ -136,8 +128,7 @@ public class CategoryDetailsActivity extends AppCompatActivity {
             } else {
                 selectedFilter = "none";
                 updateFilterUI();
-                filteredProducts = getProductsByChildCategoryId(childCategoryId);
-                updateProductContainer();
+                fetchProductsFromFirestore();
             }
         });
 
@@ -150,8 +141,7 @@ public class CategoryDetailsActivity extends AppCompatActivity {
             } else {
                 selectedFilter = "none";
                 updateFilterUI();
-                filteredProducts = getProductsByChildCategoryId(childCategoryId);
-                updateProductContainer();
+                fetchProductsFromFirestore();
             }
         });
 
@@ -164,17 +154,16 @@ public class CategoryDetailsActivity extends AppCompatActivity {
             } else {
                 selectedFilter = "none";
                 updateFilterUI();
-                filteredProducts = getProductsByChildCategoryId(childCategoryId);
-                updateProductContainer();
+                fetchProductsFromFirestore();
             }
         });
 
         priceLayout.setOnClickListener(v -> {
             if (!selectedFilter.equals("price")) {
                 selectedFilter = "price";
-                isPriceAscending = true; // First click: Low-to-high
+                isPriceAscending = true;
             } else {
-                isPriceAscending = !isPriceAscending; // Toggle between low-to-high and high-to-low
+                isPriceAscending = !isPriceAscending;
             }
             updateFilterUI();
             sortProductsByPrice();
@@ -183,50 +172,34 @@ public class CategoryDetailsActivity extends AppCompatActivity {
     }
 
     private String getDisplayName(String categoryId, String childCategoryId) {
-        // Prefer childCategory_name if childCategoryId is provided
         if (childCategoryId != null) {
             for (ChildCategory childCategory : listChildCategory.getChildCategories()) {
                 if (childCategory.getChildCategory_id().equals(childCategoryId)) {
-                    return childCategory.getChildCategory_name(); // Return child category name (e.g., "Food")
+                    return childCategory.getChildCategory_name();
                 }
             }
         }
-        // Fallback to category_name if childCategoryId is null or not found
         if (categoryId != null) {
             for (Category category : listCategory.getCategories()) {
                 if (category.getCategory_id().equals(categoryId)) {
-                    return category.getCategory_name(); // Return category name (e.g., "Food & Treats")
+                    return category.getCategory_name();
                 }
             }
         }
-        return null; // Return null if neither is found
+        return null;
     }
 
     private void updateChildCategories() {
         List<ChildCategory> relatedChildCategories = getRelatedChildCategories();
         childCategoryAdapter = new ChildCategoryAdapter(this, relatedChildCategories, childCategoryId -> {
-            // Handle child category click
-            Log.d("CategoryDetailsActivity", "Child category clicked: " + childCategoryId);
             this.childCategoryId = childCategoryId;
-            filteredProducts = getProductsByChildCategoryId(childCategoryId);
-            // Reapply current filter if any
-            switch (selectedFilter) {
-                case "best_seller":
-                    sortProductsByBestSeller();
-                    break;
-                case "newest":
-                    sortProductsByNewest();
-                    break;
-                case "rating":
-                    sortProductsByRating();
-                    break;
-                case "price":
-                    sortProductsByPrice();
-                    break;
+            fetchProductsFromFirestore();
+            TextView txtPageTitle = findViewById(R.id.txt_page_title);
+            String displayName = getDisplayName(categoryId, childCategoryId);
+            if (displayName != null && txtPageTitle != null) {
+                txtPageTitle.setText(displayName);
             }
-            updateChildCategories(); // Refresh child categories
-            productAdapter = new ProductFilteredAdapter(this, filteredProducts); // Update adapter with new products
-            updateProductContainer(); // Refresh products
+            updateChildCategories();
         });
         childCategoryRecyclerView.setAdapter(childCategoryAdapter);
     }
@@ -245,21 +218,49 @@ public class CategoryDetailsActivity extends AppCompatActivity {
         return childCategories;
     }
 
-    private List<Product> getProductsByChildCategoryId(String childCategoryId) {
-        List<Product> products = new ArrayList<>();
-        List<Product> allProducts = listProduct.getProducts();
-        if (allProducts != null) {
-            for (Product product : allProducts) {
-                boolean matchesChildCategory = product.getChild_category_id() != null &&
-                        product.getChild_category_id().equals(childCategoryId);
-                boolean matchesAnimal = animalClass == -2 || product.getAnimal_class_id() == animalClass;
-                if (matchesChildCategory && matchesAnimal) {
-                    products.add(product);
-                }
-            }
+    private void fetchProductsFromFirestore() {
+        if (childCategoryId == null) {
+            Log.e("CategoryDetailsActivity", "childCategoryId is null");
+            filteredProducts.clear();
+            updateProductContainer();
+            return;
         }
-        Log.d("CategoryDetailsActivity", "Products found for child_category_id=" + childCategoryId + ": " + products.size());
-        return products;
+
+        db.collection("products")
+                .whereEqualTo("child_category_id", childCategoryId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    filteredProducts.clear();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        Product product = document.toObject(Product.class);
+                        if (animalClassId == -2 || animalClassId == -1 || product.getAnimal_class_id() == animalClassId) {
+                            filteredProducts.add(product);
+                        }
+                    }
+                    Log.d("CategoryDetailsActivity", "Products found: " + filteredProducts.size());
+
+                    switch (selectedFilter) {
+                        case "best_seller":
+                            sortProductsByBestSeller();
+                            break;
+                        case "newest":
+                            sortProductsByNewest();
+                            break;
+                        case "rating":
+                            sortProductsByRating();
+                            break;
+                        case "price":
+                            sortProductsByPrice();
+                            break;
+                    }
+                    productAdapter.notifyDataSetChanged();
+                    updateProductContainer();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("CategoryDetailsActivity", "Error fetching products: " + e.getMessage());
+                    filteredProducts.clear();
+                    updateProductContainer();
+                });
     }
 
     private void updateFilterUI() {
@@ -355,3 +356,4 @@ public class CategoryDetailsActivity extends AppCompatActivity {
         return true;
     }
 }
+
