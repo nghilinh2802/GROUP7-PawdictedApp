@@ -48,6 +48,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private String flashsaleId = "";
     private String flashsaleName = "";
     private long flashsaleEndTime = 0;
+    private double finalPrice = 0;
 
 
     @Override
@@ -188,6 +189,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
             if (isFlashsale) {
                 Log.d("ProductDetailsActivity", "🔥 Flashsale mode active - calling displayFlashsalePrice with variant price: " + variant.getVariant_price());
                 displayFlashsalePrice(variant.getVariant_price());
+                finalPrice = flashsalePrice;
             }
 
         } else {
@@ -210,11 +212,12 @@ public class ProductDetailsActivity extends AppCompatActivity {
             txtRatingCount.setText("(" + product.getRating_number() + " Reviews)");
             txtProductRatingCount.setText(product.getRating_number() + " Reviews");
             loadImage(defaultProductImage);
-
+            finalPrice = discountPrice;
             // XỬ LÝ FLASHSALE CHO PRODUCT
             if (isFlashsale) {
                 Log.d("ProductDetailsActivity", "🔥 Flashsale mode active - calling displayFlashsalePrice with product price: " + product.getPrice());
                 displayFlashsalePrice(product.getPrice());
+                finalPrice = flashsalePrice;
             }
         }
 
@@ -228,7 +231,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
         txtProductName.setText(product.getProduct_name());
         txtProductDescription.setText(product.getDescription());
-
+        Log.d("ProductDetailsActivity", "💰 Final price set to: " + finalPrice);
         Log.d("ProductDetailsActivity", "=== displayProductDetails completed ===");
     }
 
