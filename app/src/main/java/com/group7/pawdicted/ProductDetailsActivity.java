@@ -189,7 +189,11 @@ public class ProductDetailsActivity extends AppCompatActivity {
             if (isFlashsale) {
                 Log.d("ProductDetailsActivity", "🔥 Flashsale mode active - calling displayFlashsalePrice with variant price: " + variant.getVariant_price());
                 displayFlashsalePrice(variant.getVariant_price());
+                // GÁN FINAL PRICE CHO FLASHSALE
                 finalPrice = flashsalePrice;
+            } else {
+                // GÁN FINAL PRICE CHO VARIANT BÌNH THƯỜNG
+                finalPrice = discountPrice;
             }
 
         } else {
@@ -212,14 +216,21 @@ public class ProductDetailsActivity extends AppCompatActivity {
             txtRatingCount.setText("(" + product.getRating_number() + " Reviews)");
             txtProductRatingCount.setText(product.getRating_number() + " Reviews");
             loadImage(defaultProductImage);
-            finalPrice = discountPrice;
+
             // XỬ LÝ FLASHSALE CHO PRODUCT
             if (isFlashsale) {
                 Log.d("ProductDetailsActivity", "🔥 Flashsale mode active - calling displayFlashsalePrice with product price: " + product.getPrice());
                 displayFlashsalePrice(product.getPrice());
+                // GÁN FINAL PRICE CHO FLASHSALE
                 finalPrice = flashsalePrice;
+            } else {
+                // GÁN FINAL PRICE CHO PRODUCT BÌNH THƯỜNG
+                finalPrice = discountPrice;
             }
         }
+
+        // Log final price
+        Log.d("ProductDetailsActivity", "💰 Final price set to: " + finalPrice);
 
         // Chỉ set paint flags khi không phải flashsale
         if (!isFlashsale) {
@@ -234,6 +245,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
         Log.d("ProductDetailsActivity", "💰 Final price set to: " + finalPrice);
         Log.d("ProductDetailsActivity", "=== displayProductDetails completed ===");
     }
+
 
 
 
