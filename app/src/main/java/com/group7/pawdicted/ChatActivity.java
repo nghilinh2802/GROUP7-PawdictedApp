@@ -1,22 +1,20 @@
 package com.group7.pawdicted;
 
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.group7.pawdicted.mobile.adapters.ChatAdapter;
@@ -29,7 +27,7 @@ import java.util.List;
 
 public class ChatActivity extends AppCompatActivity {
     private EditText edtMessage;
-    private Button btnSend;
+    private MaterialButton btnSend;
     private RecyclerView recyclerChat;
     private ImageView imgBack;
     private ChatAdapter chatAdapter;
@@ -39,17 +37,13 @@ public class ChatActivity extends AppCompatActivity {
     private String customerId;
     private CustomerManager customerManager;
 
+    private boolean isKeyboardVisible = false;
+    private boolean isSending = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_chat);
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
 
         initViews();
         setupCustomerManager();
@@ -57,8 +51,45 @@ public class ChatActivity extends AppCompatActivity {
         setupRecyclerView();
         setupSendButton();
         setupBackButton();
+        setupKeyboardListener();
         loadMessages();
         displayCustomerInfo();
+    }
+
+    private void setupKeyboardListener() {
+        View rootView = findViewById(R.id.main);
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            Rect r = new Rect();
+            rootView.getWindowVisibleDisplayFrame(r);
+            int screenHeight = rootView.getRootView().getHeight();
+            int keypadHeight = screenHeight - r.bottom;
+
+            if (keypadHeight > screenHeight * 0.15) { // Keyboard visible
+                if (!isKeyboardVisible) {
+                    isKeyboardVisible = true;
+                    onKeyboardShown();
+                }
+            } else { // Keyboard hidden
+                if (isKeyboardVisible) {
+                    isKeyboardVisible = false;
+                    onKeyboardHidden();
+                }
+            }
+        });
+    }
+
+    private void onKeyboardShown() {
+        // Scroll to bottom khi keyboard hiện
+        if (messageList != null && messageList.size() > 0) {
+            recyclerChat.post(() -> {
+                recyclerChat.scrollToPosition(messageList.size() - 1);
+            });
+        }
+    }
+
+    private void onKeyboardHidden() {
+        // Optional: Handle keyboard hidden
+        Log.d("ChatActivity", "Keyboard hidden");
     }
 
     private void initViews() {
@@ -101,7 +132,6 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-
     private void setupBackButton() {
         if (imgBack != null) {
             imgBack.setOnClickListener(v -> {
@@ -111,6 +141,11 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void sendMessage() {
+        // Kiểm tra nếu đang gửi thì return
+        if (isSending) {
+            return;
+        }
+
         String messageContent = edtMessage.getText().toString().trim();
 
         if (messageContent.isEmpty()) {
@@ -118,14 +153,17 @@ public class ChatActivity extends AppCompatActivity {
             return;
         }
 
+        // Set flag và disable UI
+        isSending = true;
         btnSend.setEnabled(false);
-        btnSend.setText("Đang gửi...");
+        btnSend.setText("...");
 
         chatService.sendCustomerMessage(messageContent, new ChatService.OnMessageSentListener() {
             @Override
             public void onSuccess() {
                 runOnUiThread(() -> {
                     edtMessage.setText("");
+                    isSending = false; // Reset flag
                     btnSend.setEnabled(true);
                     btnSend.setText("➤");
                     Toast.makeText(ChatActivity.this, "Tin nhắn đã được gửi", Toast.LENGTH_SHORT).show();
@@ -135,6 +173,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onFailure(String error) {
                 runOnUiThread(() -> {
+                    isSending = false; // Reset flag
                     btnSend.setEnabled(true);
                     btnSend.setText("➤");
                     Toast.makeText(ChatActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
@@ -196,12 +235,6 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    private void showLoginPrompt() {
-        if (!customerManager.isLoggedIn()) {
-            Toast.makeText(this, "Đăng nhập để có trải nghiệm chat tốt hơn!", Toast.LENGTH_LONG).show();
-        }
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -213,14 +246,12 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Refresh customer info khi quay lại activity (có thể user vừa login)
         if (customerManager != null) {
             String newCustomerId = customerManager.getCustomerId();
             if (!newCustomerId.equals(customerId)) {
-                // Customer ID đã thay đổi (có thể vừa login/logout)
                 customerId = newCustomerId;
                 chatService = new ChatService(customerId);
-                loadMessages(); // Reload tin nhắn với customer ID mới
+                loadMessages();
             }
         }
     }

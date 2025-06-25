@@ -424,5 +424,10 @@ public class CategoryActivity extends AppCompatActivity {
         redBar.setVisibility(isActive ? View.VISIBLE : View.GONE);
         iconView.setImageResource(isActive ? iconSelectedResId : iconUnselectedResId);
     }
+
+    public void open_chat(View view) {
+        Intent intent=new Intent(CategoryActivity.this,ChatActivity.class);
+        startActivity(intent);
+    }
 }
 
