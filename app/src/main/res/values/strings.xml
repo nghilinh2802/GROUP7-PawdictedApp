@@ -16,7 +16,7 @@
     <string name="title_policies">Policies</string>
     <string name="hp_searchText_hint">Search...</string>
     <string name="title_homepage_category">Category</string>
-    <string name="title_homepage_flash_deals">⚡ Flash Deals</string>
+    <string name="title_homepage_flash_deals">Flash Deals</string>
     <string name="title_homepage_new_arrival">New Arrival</string>
     <string name="title_voucher_cap">VOUCHER</string>
     <string name="title_homepage_order">Order</string>
@@ -76,7 +76,7 @@
     <string name="title_child_care_rating">RATING</string>
     <string name="title_child_cate_price">PRICE</string>
     <string name="title_view_all">View all</string>
-    <string name="hint_flashdeals">⚡ Flash Deals</string>
+    <string name="hint_flashdeals">Flash Deals</string>
     <string name="title_order">Order</string>
     <string name="title_search">Search</string>
     <string name="title_back">Back</string>
@@ -193,6 +193,5 @@ If you have any questions or requests regarding our privacy and security policy,
     <string name="title_furniture">Furniture</string>
     <string name="title_carriers"><![CDATA[Carriers & Kennels]]></string>
     <string name="title_chat">Chat</string>
-    <string name="title_sendbtn"><![CDATA[>]]></string>
     <string name="hint_type">Type a message...</string>
 </resources>
