@@ -228,6 +228,9 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
         DecimalFormat formatter = new DecimalFormat("#,###đ");
 
+        // Xóa cờ gạch ngang trước để đảm bảo trạng thái sạch
+        txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+
         if (variant != null) {
             // Display variant-specific details
             double discountPrice = variant.getVariant_price() * (1 - variant.getVariant_discount() / 100.0);
@@ -271,14 +274,19 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
             txtDiscountPrice.setText(formatter.format(discountPrice));
             txtProductPrice.setText(formatter.format(variant.getVariant_price()));
-            txtDiscountRate.setText(variant.getVariant_discount() > 0 ? "-" + variant.getVariant_discount() + "%" : "");
-            txtSoldQuantity.setText(variant.getVariant_sold_quantity() + " sold");
+            txtDiscountRate.setText(variant.getVariant_discount() > 0 ? "  -" + variant.getVariant_discount() + "%  " : "");
+            txtSoldQuantity.setText(variant.getVariant_sold_quantity() + " sold  ");
             productRatingBar.setRating((float) variant.getVariant_rating());
             productRatingBar2.setRating((float) variant.getVariant_rating());
             txtAverageRating.setText(String.format("%.1f", variant.getVariant_rating()));
             txtRatingCount.setText("(" + variant.getVariant_rating_number() + " Reviews)");
             txtProductRatingCount.setText(variant.getVariant_rating_number() + " Reviews");
             loadImage(variant.getVariant_image() != null ? variant.getVariant_image() : defaultProductImage);
+
+            // Áp dụng gạch ngang nếu có giảm giá từ variant
+            if (variant.getVariant_discount() > 0) {
+                txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            }
 
             // XỬ LÝ FLASHSALE CHO VARIANT
             if (isFlashsale) {
@@ -298,8 +306,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
             txtDiscountPrice.setText(formatter.format(discountPrice));
             txtProductPrice.setText(formatter.format(product.getPrice()));
-            txtDiscountRate.setText(product.getDiscount() > 0 ? "-" + product.getDiscount() + "%" : "");
-            txtSoldQuantity.setText(product.getSold_quantity() + " sold");
+            txtDiscountRate.setText(product.getDiscount() > 0 ? "  -" + product.getDiscount() + "%  " : "");
+            txtSoldQuantity.setText(product.getSold_quantity() + " sold  ");
             productRatingBar.setRating((float) product.getAverage_rating());
             productRatingBar2.setRating((float) product.getAverage_rating());
             txtAverageRating.setText(String.format("%.1f", product.getAverage_rating()));
@@ -307,19 +315,16 @@ public class ProductDetailsActivity extends AppCompatActivity {
             txtProductRatingCount.setText(product.getRating_number() + " Reviews");
             loadImage(defaultProductImage);
 
+            // Áp dụng gạch ngang nếu có giảm giá từ product
+            if (product.getDiscount() > 0) {
+                txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            }
+
             // XỬ LÝ FLASHSALE CHO PRODUCT
             if (isFlashsale) {
                 Log.d("ProductDetailsActivity", "🔥 Flashsale mode active - calling displayFlashsalePrice with product price: " + product.getPrice());
                 displayFlashsalePrice(product.getPrice());
             }
-        }
-
-        // Chỉ set paint flags khi không phải flashsale
-        if (!isFlashsale) {
-            txtProductPrice.setPaintFlags(product.getDiscount() > 0 ? txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG : txtProductPrice.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-            Log.d("ProductDetailsActivity", "Set paint flags for normal discount");
-        } else {
-            Log.d("ProductDetailsActivity", "Skipping paint flags - flashsale will handle it");
         }
 
         txtProductName.setText(product.getProduct_name());

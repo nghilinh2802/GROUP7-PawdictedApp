@@ -88,54 +88,68 @@
     <string name="facebook_app_id">YOUR_FB_APP_ID</string>
 
     <string name="policy_content"><![CDATA[
-<b>1. Mục đích</b><br/>
-Chúng tôi cam kết bảo vệ thông tin cá nhân và giao dịch của người dùng khi sử dụng ứng dụng mua bán đồ dùng cho thú cưng. Chính sách này nhằm minh bạch cách chúng tôi thu thập, sử dụng, chia sẻ và bảo vệ thông tin của bạn.<br/><br/>
+<font color="#9C162C"><b>🎯 1. Mục đích</b></font><br/>
+Chúng tôi cam kết bảo vệ thông tin cá nhân và giao dịch của người dùng khi sử dụng ứng dụng mua bán đồ dùng thú cưng. Chính sách này nhằm minh bạch về cách chúng tôi thu thập, sử dụng, chia sẻ và bảo vệ thông tin của bạn.<br/><br/>
 
-<b>2. Phạm vi áp dụng</b><br/>
-Chính sách này áp dụng cho tất cả người dùng bao gồm khách hàng, nhà cung cấp và đối tác khi truy cập hoặc sử dụng ứng dụng.<br/><br/>
+<font color="#9C162C"><b>📋 2. Phạm vi áp dụng</b></font><br/>
+Chính sách này áp dụng cho tất cả người dùng, bao gồm khách hàng, nhà cung cấp và đối tác, khi truy cập hoặc sử dụng ứng dụng của chúng tôi.<br/><br/>
 
-<b>3. Thông tin thu thập</b><br/>
-Chúng tôi có thể thu thập các thông tin sau:<br/><br/>
+<font color="#9C162C"><b>📊 3. Thông tin thu thập</b></font><br/>
+Chúng tôi có thể thu thập các thông tin sau:<br/>
 
-- Thông tin đăng ký tài khoản: Họ tên, email, số điện thoại, địa chỉ, tên đăng nhập, mật khẩu.<br/>
-- Thông tin giao dịch: Lịch sử mua hàng, phương thức thanh toán, thông tin thẻ tín dụng/ghi nợ, địa chỉ giao hàng.<br/>
-- Thông tin liên hệ: Nội dung trao đổi qua email, trò chuyện, phản hồi và hỗ trợ khách hàng.<br/>
-- Hình ảnh: Ảnh tải lên ứng dụng cho đánh giá sản phẩm hoặc hỗ trợ khách hàng.<br/>
-- Thông tin thú cưng (nếu có): Tên, tuổi, giống, tình trạng sức khỏe, tiêm phòng (nếu ứng dụng hỗ trợ quản lý thú cưng).<br/><br/>
+<font color="#9C162C">👤</font> <b>Thông tin đăng ký tài khoản:</b><br/>
+Họ tên đầy đủ, email, số điện thoại, địa chỉ, tên đăng nhập, mật khẩu.<br/>
+<font color="#9C162C">💳</font> <b>Thông tin giao dịch:</b><br/>
+Lịch sử mua hàng, phương thức thanh toán, thông tin thẻ tín dụng/ghi nợ, địa chỉ giao hàng.<br/>
+<font color="#9C162C">💬</font> <b>Thông tin liên lạc:</b><br/>
+Nội dung trao đổi qua email, chat, phản hồi và hỗ trợ khách hàng.<br/>
+<font color="#9C162C">📸</font> <b>Thông tin hình ảnh:</b><br/>
+Ảnh được tải lên ứng dụng cho mục đích đánh giá sản phẩm hoặc hỗ trợ khách hàng.<br/>
+<font color="#9C162C">🐕</font> <b>Thông tin thú cưng (nếu có):</b><br/>
+Tên, tuổi, giống, tình trạng sức khỏe, thông tin tiêm chủng (nếu ứng dụng hỗ trợ quản lý thú cưng).<br/><br/>
 
-<b>4. Mục đích sử dụng thông tin</b><br/>
-Thông tin thu thập được sử dụng để:<br/><br/>
+<font color="#9C162C"><b>🎯 4. Mục đích sử dụng thông tin</b></font><br/>
+Thông tin thu thập được sử dụng để:<br/>
 
-- Cung cấp và quản lý dịch vụ: Đăng ký, xác thực, hỗ trợ khách hàng, xử lý giao dịch.<br/>
-- Cải thiện trải nghiệm người dùng: Phân tích hành vi, cá nhân hóa trải nghiệm, phát triển tính năng mới.<br/>
-- Bảo mật và phòng chống gian lận: Phát hiện và ngăn chặn hành vi gian lận hoặc vi phạm chính sách.<br/>
-- Tuân thủ pháp luật: Đáp ứng yêu cầu pháp lý, kiểm toán và báo cáo.<br/><br/>
+<font color="#9C162C">🔧</font> <b>Cung cấp và quản lý dịch vụ:</b><br/>
+Đăng ký, xác thực, hỗ trợ khách hàng, xử lý giao dịch.<br/>
+<font color="#9C162C">✨</font> <b>Cải thiện trải nghiệm người dùng:</b><br/>
+Phân tích hành vi, cá nhân hóa trải nghiệm, phát triển tính năng mới.<br/>
+<font color="#9C162C">🛡️</font> <b>Bảo mật và ngăn chặn gian lận:</b><br/>
+Phát hiện và ngăn chặn các hoạt động gian lận hoặc vi phạm chính sách.<br/>
+<font color="#9C162C">⚖️</font> <b>Tuân thủ pháp luật:</b><br/>
+Đáp ứng các yêu cầu pháp lý, kiểm toán và báo cáo.<br/><br/>
 
-<b>5. Bảo mật thông tin</b><br/>
-- Mã hóa dữ liệu: Thông tin giao dịch được mã hóa bằng công nghệ SSL 256-bit để đảm bảo an toàn.<br/>
-- Thanh toán an toàn: Chúng tôi sử dụng các cổng thanh toán uy tín (như Stripe, Authorize.Net) và không lưu trữ thông tin thẻ trên hệ thống.<br/>
-- Giới hạn truy cập: Chỉ nhân viên được ủy quyền mới có quyền truy cập thông tin cá nhân.<br/>
-- Bảo vệ vật lý và kỹ thuật: Hệ thống được bảo vệ bởi tường lửa, phần mềm diệt virus và các biện pháp kỹ thuật khác.<br/><br/>
+<font color="#9C162C"><b>🔐 5. Bảo mật thông tin</b></font><br/>
+<font color="#9C162C">🔒</font> <b>Mã hóa dữ liệu:</b><br/>
+Thông tin giao dịch được mã hóa bằng công nghệ SSL 256-bit để đảm bảo an toàn.<br/>
+<font color="#9C162C">💳</font> <b>Thanh toán an toàn:</b><br/>
+Chúng tôi sử dụng các cổng thanh toán uy tín (ví dụ: Stripe, Authorize.Net) để xử lý giao dịch và không lưu trữ thông tin thẻ tín dụng/ghi nợ trên hệ thống của chúng tôi.<br/>
+<font color="#9C162C">👥</font> <b>Hạn chế quyền truy cập:</b><br/>
+Chỉ nhân viên được ủy quyền mới có thể truy cập thông tin cá nhân của bạn.<br/>
+<font color="#9C162C">🛡️</font> <b>Bảo vệ vật lý và kỹ thuật:</b><br/>
+Hệ thống được bảo vệ bởi tường lửa, phần mềm chống virus và các biện pháp kỹ thuật khác để ngăn chặn truy cập trái phép.<br/><br/>
 
-<b>6. Chia sẻ thông tin</b><br/>
-Chúng tôi không bán hoặc tiết lộ thông tin cá nhân của bạn cho bên thứ ba mà không có sự đồng ý, trừ khi pháp luật yêu cầu.<br/><br/>
+<font color="#9C162C"><b>🤝 6. Chia sẻ thông tin</b></font><br/>
+Chúng tôi không bán hoặc tiết lộ thông tin cá nhân của bạn cho bên thứ ba mà không có sự đồng ý của bạn, trừ khi pháp luật yêu cầu.<br/><br/>
 
-<b>7. Cookie và công nghệ theo dõi</b><br/>
-Chúng tôi sử dụng cookie và công nghệ tương tự để cải thiện trải nghiệm người dùng, phân tích lượt truy cập và cung cấp quảng cáo phù hợp.<br/><br/>
+<font color="#9C162C"><b>🍪 7. Cookies và công nghệ theo dõi</b></font><br/>
+Chúng tôi sử dụng cookies và các công nghệ tương tự để cải thiện trải nghiệm người dùng, phân tích lượt truy cập và cung cấp quảng cáo phù hợp.<br/><br/>
 
-<b>8. Quyền của người dùng</b><br/>
-Bạn có quyền:<br/><br/>
+<font color="#9C162C"><b>👤 8. Quyền của người dùng</b></font><br/>
+Bạn có quyền:<br/>
 
-- Truy cập, chỉnh sửa hoặc xóa thông tin cá nhân.<br/>
-- Từ chối nhận quảng cáo hoặc thông báo.<br/>
-- Yêu cầu tạm ngưng hoặc xóa tài khoản.<br/><br/>
+<font color="#9C162C">✏️</font> Truy cập, chỉnh sửa hoặc xóa thông tin cá nhân của bạn.<br/>
+<font color="#9C162C">🔕</font> Từ chối nhận quảng cáo hoặc thông báo.<br/>
+<font color="#9C162C">❌</font> Yêu cầu tạm ngừng hoặc xóa tài khoản của bạn.<br/><br/>
 
-<b>9. Cập nhật chính sách</b><br/>
-Chính sách này có thể được cập nhật định kỳ. Khi có thay đổi, chúng tôi sẽ thông báo qua ứng dụng hoặc email.<br/><br/>
+<font color="#9C162C"><b>🔄 9. Cập nhật chính sách</b></font><br/>
+Chính sách này có thể được cập nhật định kỳ. Khi có thay đổi, chúng tôi sẽ thông báo cho bạn qua ứng dụng hoặc email.<br/><br/>
 
-<b>10. Liên hệ</b><br/>
-Nếu bạn có bất kỳ câu hỏi hoặc yêu cầu nào về chính sách quyền riêng tư và bảo mật, vui lòng liên hệ qua email hoặc mục hỗ trợ trong ứng dụng.
+<font color="#9C162C"><b>📞 10. Liên hệ</b></font><br/>
+Nếu bạn có bất kỳ câu hỏi hoặc yêu cầu nào về chính sách bảo mật và an toàn của chúng tôi, vui lòng liên hệ với chúng tôi qua email hoặc phần hỗ trợ trong ứng dụng.
 ]]></string>
+
 
     <string name="title_load_more">Xem thêm</string>
     <string name="title_viewing_result">Bạn đang xem %1$d trong tổng số %2$d kết quả</string>
@@ -170,5 +184,6 @@ Nếu bạn có bất kỳ câu hỏi hoặc yêu cầu nào về chính sách q
     <string name="title_pet_care">Chăm sóc</string>
     <string name="title_furniture">Nội thất</string>
     <string name="title_carriers"><![CDATA[Xách theo & Chuồng]]></string>
-
+    <string name="title_chat">Liên hệ với chúng tôi</string>
+    <string name="hint_type">Nhập tin nhắn...</string>
 </resources>

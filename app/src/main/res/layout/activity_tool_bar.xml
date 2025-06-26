@@ -91,6 +91,7 @@
             <ImageView
                 android:id="@+id/imgChatBackbar"
                 android:layout_width="32dp"
+                android:onClick="open_chat"
                 android:layout_height="32dp"
                 android:layout_marginStart="4dp"
                 android:layout_weight="1"

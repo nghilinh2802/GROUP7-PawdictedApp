@@ -15,6 +15,7 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -22,13 +23,13 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.group7.pawdicted.mobile.connectors.ProductConnector;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.group7.pawdicted.mobile.models.Product;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -45,6 +46,7 @@ public class NewArrivalActivity extends AppCompatActivity {
     private int currentPage = 1;
     private int totalProducts;
     private static final String TAG = "NewArrivalActivity";
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,45 +59,58 @@ public class NewArrivalActivity extends AppCompatActivity {
             return insets;
         });
 
+        // Initialize Firestore
+        db = FirebaseFirestore.getInstance();
+
+        // Initialize views
         ImageView imgBack = findViewById(R.id.imgBack);
         if (imgBack != null) {
             imgBack.setOnClickListener(v -> finish());
         }
 
-        // Initialize views
         recyclerView = findViewById(R.id.recycler_view_new_arrivals);
         txtStatus = findViewById(R.id.txt_status);
         txtLoadMore = findViewById(R.id.txt_load_more);
         dividerLayout = findViewById(R.id.divider_layout);
 
         // Initialize data
-        ProductConnector connector = new ProductConnector();
-        allProducts = connector.get_all_products();
+        allProducts = new ArrayList<>();
         displayedProducts = new ArrayList<>();
-
-        // Log product count
-        Log.d(TAG, "Total products fetched: " + allProducts.size());
-
-        // Sort products by date_listed (newest to oldest)
-        Collections.sort(allProducts, new Comparator<Product>() {
-            @Override
-            public int compare(Product p1, Product p2) {
-                return p2.getDate_listed().compareTo(p1.getDate_listed());
-            }
-        });
-
-        totalProducts = allProducts.size();
 
         // Setup RecyclerView
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         adapter = new NewArrivalAdapter(displayedProducts);
         recyclerView.setAdapter(adapter);
 
-        // Load initial products
-        loadMoreProducts();
+        // Fetch products from Firestore
+        fetchProducts();
 
         // Set Load More click listener
         txtLoadMore.setOnClickListener(v -> loadMoreProducts());
+    }
+
+    private void fetchProducts() {
+        db.collection("products")
+                .orderBy("date_listed", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    allProducts.clear();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        Product product = document.toObject(Product.class);
+                        allProducts.add(product);
+                    }
+                    totalProducts = allProducts.size();
+                    Log.d(TAG, "Total products fetched from Firestore: " + totalProducts);
+
+                    // Load initial products
+                    loadMoreProducts();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error fetching products: " + e.getMessage());
+                    txtStatus.setText("Error loading products");
+                    txtLoadMore.setVisibility(View.GONE);
+                    dividerLayout.setVisibility(View.GONE);
+                });
     }
 
     private void loadMoreProducts() {
@@ -153,6 +168,11 @@ public class NewArrivalActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
             Product product = products.get(position);
 
+            // Set background for item_product_container
+            if (holder.productContainer != null) {
+                holder.productContainer.setBackground(ContextCompat.getDrawable(NewArrivalActivity.this, R.drawable.gray_rounded_background));
+            }
+
             // Bind data to views
             Glide.with(NewArrivalActivity.this)
                     .load(product.getProduct_image())
@@ -197,6 +217,7 @@ public class NewArrivalActivity extends AppCompatActivity {
         }
 
         class ProductViewHolder extends RecyclerView.ViewHolder {
+            LinearLayout productContainer;
             ImageView imgProduct;
             TextView txtProductName;
             RatingBar ratingBar;
@@ -208,6 +229,7 @@ public class NewArrivalActivity extends AppCompatActivity {
 
             public ProductViewHolder(@NonNull View itemView) {
                 super(itemView);
+                productContainer = itemView.findViewById(R.id.item_product_container);
                 imgProduct = itemView.findViewById(R.id.img_child_cate_product);
                 txtProductName = itemView.findViewById(R.id.txt_child_cate_product_name);
                 ratingBar = itemView.findViewById(R.id.rating_bar);
