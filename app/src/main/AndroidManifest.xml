@@ -2,30 +2,52 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-
     <application
-
-        android:networkSecurityConfig="@xml/network_security_config"
-
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_logo"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.Pawdicted"
         tools:targetApi="31">
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
-        <activity android:name="com.facebook.FacebookActivity"
+
+        <activity
+            android:name=".ProductDescriptionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BackBarActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RatingActivity"
+            android:exported="true" />
+        <activity
+            android:name=".FlashSaleActivity"
+            android:exported="true" />
+
+        <activity android:name=".NewArrivalActivity"
+            android:exported="true"/>
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+
+        <activity
+            android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:label="@string/app_name"/>
+            android:label="@string/app_name" />
         <activity
             android:name=".RefundReturnRequestActivity"
             android:exported="false" />
@@ -34,16 +56,19 @@
             android:exported="false" />
         <activity
             android:name=".EvaluateActivity"
-            android:exported="false" />
+            android:exported="true" />
+
         <activity
             android:name=".NotificationActivity"
             android:exported="true" />
         <activity
             android:name=".CheckoutActivity"
-            android:exported="false" />
+            android:exported="true" />
+
         <activity
             android:name=".CartActivity"
-            android:exported="false" />
+            android:exported="true" />
+
         <activity
             android:name=".VoucherManagementActivity"
             android:exported="false" />
@@ -56,37 +81,49 @@
 
         <activity
             android:name=".CancellationDetailActivity"
-            android:exported="false" />
+            android:exported="true" />
+
+        <activity android:name=".NewAddressActivity"
+            android:exported="true"/>
+
+
         <activity
             android:name=".OrderDetailActivity"
-            android:exported="false" />
+            android:exported="true" />
+
+
         <activity
             android:name=".PurchaseOrderActivity"
             android:exported="false" />
         <activity
             android:name=".ChangePasswordSettingActivity"
-            android:exported="false" />
+            android:exported="true" />
+
         <activity
             android:name=".LanguageSettingActivity"
-            android:exported="false" />
+            android:exported="true" />
+
         <activity
             android:name=".ChatActivity"
             android:exported="true" />
+
         <activity
             android:name=".PolicynSecurityActivity"
             android:exported="true" />
         <activity
             android:name=".FAQActivity"
             android:exported="true" />
+
+
         <activity
             android:name=".SettingManagementActivity"
             android:exported="false" />
-        <activity
-            android:name=".FlashSaleActivity"
-            android:exported="true" />
+
         <activity
             android:name=".EditProfileActivity"
-            android:exported="false" />
+            android:exported="true" />
+
+
         <activity
             android:name=".ProfileManagementActivity"
             android:exported="false" />
@@ -95,7 +132,8 @@
             android:exported="true" />
         <activity
             android:name=".BlogActivity"
-            android:exported="true" /> <!-- LoginActivity will be the launcher activity -->
+            android:exported="true" />
+
         <activity
             android:name=".LoginActivity"
             android:exported="true">
@@ -105,17 +143,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".CategoryActivity"
-            android:exported="false"/>
+            android:exported="true" />
 
-        <activity android:name=".CategoryDetailsActivity"
-            android:exported="false" />
+        <activity
+            android:name=".CategoryDetailsActivity"
+            android:exported="true" />
+
         <activity
             android:name=".ProductDetailsActivity"
             android:exported="false" />
-
         <activity
             android:name=".FooterActivity"
             android:exported="false" />
@@ -127,7 +165,17 @@
             android:exported="false" />
         <activity
             android:name=".HomepageActivity"
-            android:exported="false" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".AddressSelectionActivity"
+            android:exported="true"/>
+
         <activity
             android:name=".ChangeForgetPasswordActivity"
             android:exported="false" />

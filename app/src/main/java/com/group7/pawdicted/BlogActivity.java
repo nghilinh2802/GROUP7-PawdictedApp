@@ -2,50 +2,69 @@ package com.group7.pawdicted;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.group7.pawdicted.mobile.adapters.BlogAdapter;
 import com.group7.pawdicted.mobile.models.Blog;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class BlogActivity extends AppCompatActivity {
     private List<Blog> blogs = new ArrayList<>();
     private BlogAdapter adapter;
+    private ProgressBar progressBar;
+    private Handler handler = new Handler();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_blog); // XML của bạn
+        setContentView(R.layout.activity_blog);
 
         ImageView imgBack = findViewById(R.id.imgBack);
         if (imgBack != null) {
             imgBack.setOnClickListener(v -> finish());
         }
 
+        // Khởi tạo views với đúng ID từ layout
         ListView listView = findViewById(R.id.lvBlog);
+        progressBar = findViewById(R.id.progressBar);
+
+
+        // Khởi tạo adapter
         adapter = new BlogAdapter(this, blogs);
         listView.setAdapter(adapter);
 
+        // Hiển thị ProgressBar khi bắt đầu load dữ liệu
+        showProgressBar();
+
         // Lấy dữ liệu từ Firestore
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("blogs") // Tên collection trong Firestore
+        db.collection("blogs")
                 .get()
                 .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        blogs.clear();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            Blog blog = document.toObject(Blog.class);
-                            blogs.add(blog);
+                    // Sử dụng Handler để ẩn ProgressBar và cập nhật UI
+                    handler.postDelayed(() -> {
+                        hideProgressBar();
+
+                        if (task.isSuccessful()) {
+                            blogs.clear();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Blog blog = document.toObject(Blog.class);
+                                blogs.add(blog);
+                            }
+                            adapter.notifyDataSetChanged();
+                        } else {
+                            // Xử lý lỗi nếu cần
                         }
-                        adapter.notifyDataSetChanged();
-                    } else {
-                        // Xử lý lỗi nếu cần
-                    }});
+                    }, 1000); // Delay 1 giây để thấy được progress
+                });
 
         // Xử lý click vào item
         listView.setOnItemClickListener((parent, view, position, id) -> {
@@ -60,5 +79,17 @@ public class BlogActivity extends AppCompatActivity {
             intent.putExtra("updatedAt", blog.getUpdatedAt());
             startActivity(intent);
         });
+    }
+
+    private void showProgressBar() {
+        if (progressBar != null) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void hideProgressBar() {
+        if (progressBar != null) {
+            progressBar.setVisibility(View.GONE);
+        }
     }
 }

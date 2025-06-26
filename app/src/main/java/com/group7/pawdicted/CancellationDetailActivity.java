@@ -57,7 +57,7 @@ public class CancellationDetailActivity extends AppCompatActivity {
     }
 
     private void addEvents() {
-        btn_back.setOnClickListener(v -> onBackPressed());
+        btn_back.setOnClickListener(v -> finish());
         btn_buy_again.setOnClickListener(v -> {
             // TODO: Thêm logic cho nút "Mua lại"
             // Ví dụ: điều hướng đến trang chủ hoặc trang sản phẩm

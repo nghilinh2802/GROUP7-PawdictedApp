@@ -57,6 +57,11 @@ public class NewArrivalActivity extends AppCompatActivity {
             return insets;
         });
 
+        ImageView imgBack = findViewById(R.id.imgBack);
+        if (imgBack != null) {
+            imgBack.setOnClickListener(v -> finish());
+        }
+
         // Initialize views
         recyclerView = findViewById(R.id.recycler_view_new_arrivals);
         txtStatus = findViewById(R.id.txt_status);

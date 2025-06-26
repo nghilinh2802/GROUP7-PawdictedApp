@@ -1,6 +1,7 @@
 package com.group7.pawdicted;
 
 import android.os.Bundle;
+import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,5 +21,11 @@ public class ChatActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        ImageView imgBack = findViewById(R.id.imgBack);
+        if (imgBack != null) {
+            imgBack.setOnClickListener(v -> finish());
+        }
     }
+
 }

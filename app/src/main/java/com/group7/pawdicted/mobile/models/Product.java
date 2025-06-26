@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-public class Product {
+public class    Product {
 
     private String product_id;
     private String product_name;

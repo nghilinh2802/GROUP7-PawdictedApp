@@ -122,7 +122,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     }
 
     private void addEvents() {
-        btn_back.setOnClickListener(v -> onBackPressed());
+        btn_back.setOnClickListener(v -> finish());
     }
 
     private void loadOrderStatus(String orderId) {

@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -61,6 +62,11 @@ public class NewAddressActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_address);
+
+        ImageView imgBack = findViewById(R.id.imgBack);
+        if (imgBack != null) {
+            imgBack.setOnClickListener(v -> finish());
+        }
 
         // Initialize views
         fullNameEditText = findViewById(R.id.fullNameEditText);

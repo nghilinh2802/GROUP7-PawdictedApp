@@ -674,6 +674,11 @@ public class EditProfileActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_edit_profile);
 
+        ImageView imgBack = findViewById(R.id.imgBack);
+        if (imgBack != null) {
+            imgBack.setOnClickListener(v -> finish());
+        }
+
         // Khởi tạo Cloudinary
         Map<String, String> config = new HashMap<>();
         config.put("cloud_name", "dukssof4h"); // Cloud name

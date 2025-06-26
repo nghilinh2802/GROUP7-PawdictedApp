@@ -3,6 +3,7 @@ package com.group7.pawdicted;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
@@ -27,6 +28,11 @@ public class SettingManagementActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        ImageView imgBack = findViewById(R.id.imgBack);
+        if (imgBack != null) {
+            imgBack.setOnClickListener(v -> finish());
+        }
 
         // Khởi tạo FirebaseAuth
         mAuth = FirebaseAuth.getInstance();

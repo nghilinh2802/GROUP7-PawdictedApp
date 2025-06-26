@@ -16,7 +16,7 @@
     <string name="title_policies">Policies</string>
     <string name="hp_searchText_hint">Search...</string>
     <string name="title_homepage_category">Category</string>
-    <string name="title_homepage_flash_deals">Flash Deals</string>
+    <string name="title_homepage_flash_deals">⚡ Flash Deals</string>
     <string name="title_homepage_new_arrival">New Arrival</string>
     <string name="title_voucher_cap">VOUCHER</string>
     <string name="title_homepage_order">Order</string>
@@ -76,7 +76,7 @@
     <string name="title_child_care_rating">RATING</string>
     <string name="title_child_cate_price">PRICE</string>
     <string name="title_view_all">View all</string>
-    <string name="hint_flashdeals">FLASH DEALS</string>
+    <string name="hint_flashdeals">⚡ Flash Deals</string>
     <string name="title_order">Order</string>
     <string name="title_search">Search</string>
     <string name="title_back">Back</string>
@@ -93,56 +93,71 @@
     <string name="facebook_app_id">YOUR_FB_APP_ID</string>
 
 
-
     <string name="policy_content"><![CDATA[
-<b>1. Purpose</b><br/>
+<font color="#9C162C"><b>🎯 1. Purpose</b></font><br/>
 We are committed to protecting the personal information and transactions of users when using the pet supplies buying and selling application. This policy aims to be transparent about how we collect, use, share, and protect your information.<br/><br/>
 
-<b>2. Scope</b><br/>
+<font color="#9C162C"><b>📋 2. Scope</b></font><br/>
 This policy applies to all users, including customers, suppliers, and partners, when accessing or using our application.<br/><br/>
 
-<b>3. Information Collected</b><br/>
-We may collect the following information:<br/><br/>
+<font color="#9C162C"><b>📊 3. Information Collected</b></font><br/>
+We may collect the following information:<br/>
 
-- Account registration information: Full name, email, phone number, address, username, password.<br/>
-- Transaction information: Purchase history, payment method, credit/debit card information, shipping address.<br/>
-- Contact information: Content of communications via email, chat, feedback, and customer support.<br/>
-- Image information: Photos uploaded to the application for product reviews or customer support purposes.<br/>
-- Pet information (if applicable): Name, age, breed, health status, vaccination information (if the application supports pet management).<br/><br/>
+<font color="#9C162C">👤</font> <b>Account registration information:</b><br/>
+Full name, email, phone number, address, username, password.<br/>
+<font color="#9C162C">💳</font> <b>Transaction information:</b><br/>
+Purchase history, payment method, credit/debit card information, shipping address.<br/>
+<font color="#9C162C">💬</font> <b>Contact information:</b><br/>
+Content of communications via email, chat, feedback, and customer support.<br/>
+<font color="#9C162C">📸</font> <b>Image information:</b><br/>
+Photos uploaded to the application for product reviews or customer support purposes.<br/>
+<font color="#9C162C">🐕</font> <b>Pet information (if applicable):</b><br/>
+Name, age, breed, health status, vaccination information (if the application supports pet management).<br/><br/>
 
-<b>4. Purpose of Information Use</b><br/>
-The information collected is used for:<br/><br/>
+<font color="#9C162C"><b>🎯 4. Purpose of Information Use</b></font><br/>
+The information collected is used for:<br/>
 
-- Providing and managing services: Registration, authentication, customer support, transaction processing.<br/>
-- Improving user experience: Analyzing behavior, personalizing experiences, developing new features.<br/>
-- Security and fraud prevention: Detecting and preventing fraudulent activities or policy violations.<br/>
-- Legal compliance: Meeting legal requirements, audits, and reporting.<br/><br/>
+<font color="#9C162C">🔧</font> <b>Providing and managing services:</b><br/>
+Registration, authentication, customer support, transaction processing.<br/>
+<font color="#9C162C">✨</font> <b>Improving user experience:</b><br/>
+Analyzing behavior, personalizing experiences, developing new features.<br/>
+<font color="#9C162C">🛡️</font> <b>Security and fraud prevention:</b><br/>
+Detecting and preventing fraudulent activities or policy violations.<br/>
+<font color="#9C162C">⚖️</font> <b>Legal compliance:</b><br/>
+Meeting legal requirements, audits, and reporting.<br/><br/>
 
-<b>5. Information Security</b><br/>
-- Data encryption: Transaction information is encrypted using 256-bit SSL technology to ensure security.<br/>
-- Secure payments: We use reputable payment gateways (e.g., Stripe, Authorize.Net) to process transactions and do not store credit/debit card information on our system.<br/>
-- Restricted access: Only authorized personnel can access your personal information.<br/>
-- Physical and technical protection: The system is protected by firewalls, antivirus software, and other technical measures to prevent unauthorized access.<br/><br/>
+<font color="#9C162C"><b>🔐 5. Information Security</b></font><br/>
+<font color="#9C162C">🔒</font> <b>Data encryption:</b><br/>
+Transaction information is encrypted using 256-bit SSL technology to ensure security.<br/>
+<font color="#9C162C">💳</font> <b>Secure payments:</b><br/>
+We use reputable payment gateways (e.g., Stripe, Authorize.Net) to process transactions and do not store credit/debit card information on our system.<br/>
+<font color="#9C162C">👥</font> <b>Restricted access:</b><br/>
+Only authorized personnel can access your personal information.<br/>
+<font color="#9C162C">🛡️</font> <b>Physical and technical protection:</b><br/>
+The system is protected by firewalls, antivirus software, and other technical measures to prevent unauthorized access.<br/><br/>
 
-<b>6. Information Sharing</b><br/>
+<font color="#9C162C"><b>🤝 6. Information Sharing</b></font><br/>
 We do not sell or disclose your personal information to third parties without your consent, unless required by law.<br/><br/>
 
-<b>7. Cookies and Tracking Technologies</b><br/>
+<font color="#9C162C"><b>🍪 7. Cookies and Tracking Technologies</b></font><br/>
 We use cookies and similar technologies to improve user experience, analyze access, and provide relevant advertising.<br/><br/>
 
-<b>8. User Rights</b><br/>
-You have the right to:<br/><br/>
+<font color="#9C162C"><b>👤 8. User Rights</b></font><br/>
+You have the right to:<br/>
 
-- Access, edit, or delete your personal information.<br/>
-- Opt out of receiving advertisements or notifications.<br/>
-- Request the suspension or deletion of your account.<br/><br/>
+<font color="#9C162C">✏️</font> Access, edit, or delete your personal information.<br/>
+<font color="#9C162C">🔕</font> Opt out of receiving advertisements or notifications.<br/>
+<font color="#9C162C">❌</font> Request the suspension or deletion of your account.<br/><br/>
 
-<b>9. Policy Updates</b><br/>
+<font color="#9C162C"><b>🔄 9. Policy Updates</b></font><br/>
 This policy may be updated periodically. When changes occur, we will notify you via the application or email.<br/><br/>
 
-<b>10. Contact</b><br/>
+<font color="#9C162C"><b>📞 10. Contact</b></font><br/>
 If you have any questions or requests regarding our privacy and security policy, please contact us via email or the support section in the application.
 ]]></string>
+
+
+
     <string name="language_vietnamese">Vietnamese</string>
     <string name="language_english">English</string>
 
@@ -153,7 +168,7 @@ If you have any questions or requests regarding our privacy and security policy,
     <string name="title_you_may">You May Also Like</string>
     <string name="title_description_cap">DESCRIPTION</string>
     <string name="title_description">Description</string>
-    <string name="title_flash_deals">Flash Deals</string>
+    <string name="title_flash_deals">FLASH DEALS</string>
     <string name="title_apply">Apply</string>
     <string name="title_cart_cap">CART</string>
     <string name="title_enter_code"><![CDATA[Select or enter code >]]></string>
@@ -171,5 +186,10 @@ If you have any questions or requests regarding our privacy and security policy,
     <string name="title_setting_cap">SETTING</string>
     <string name="title_details">Details</string>
     <string name="title_selected_product">Selected product</string>
+    <string name="title_new_address_cap">NEW ADDRESS</string>
     <string name="title_FAQ">FAQs</string>
+    <string name="title_food_treat"><![CDATA[Foods & Treats]]></string>
+    <string name="title_pet_care">Pet Care</string>
+    <string name="title_furniture">Furniture</string>
+    <string name="title_carriers"><![CDATA[Carriers & Kennels]]></string>
 </resources>

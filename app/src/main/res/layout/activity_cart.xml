@@ -6,11 +6,11 @@
     android:layout_height="match_parent"
     android:background="#FFF5F5">
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolbar_checkout"
         android:layout_width="0dp"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="86dp"
+        android:paddingTop="30dp"
         android:background="@color/main_color"
         android:title="Cart"
         android:paddingStart="8dp"
@@ -21,9 +21,10 @@
 
         <ImageView
             android:id="@+id/imgBack"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:contentDescription="Back"
+            android:layout_marginStart="10dp"
             android:src="@mipmap/ic_back_icon_white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -46,7 +47,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
     <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
@@ -161,7 +161,6 @@
                 app:backgroundTint="@null"
                 android:padding="8dp" />
         </LinearLayout>
-
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

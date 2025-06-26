@@ -24,6 +24,11 @@ public class EvaluateActivity extends AppCompatActivity {
         });
         addViews();
         addEvents();
+
+        ImageView imgBack = findViewById(R.id.imgBack);
+        if (imgBack != null) {
+            imgBack.setOnClickListener(v -> finish());
+        }
     }
 
     private void addEvents() {btn_back.setOnClickListener(v -> onBackPressed());}

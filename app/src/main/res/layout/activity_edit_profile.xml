@@ -9,30 +9,42 @@
     tools:context=".EditProfileActivity">
 
     <!-- Thanh tiêu đề cố định -->
-    <LinearLayout
+    <!-- Thanh tiêu đề cố định -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#9c162c"
-        android:padding="16dp"
-        android:gravity="center_vertical">
+        android:layout_height="56dp"
+        android:background="@color/main_color"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
 
-        <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="33dp"
-            android:onClick="go_back"
+        <ImageView
+            android:id="@+id/imgBack"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:contentDescription="Back"
             android:src="@mipmap/ic_back_icon_white"
-            android:background="?android:attr/selectableItemBackground"
-            android:contentDescription="Back" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
+        <!-- Tiêu đề căn giữa toàn bộ layout -->
         <TextView
+            android:id="@+id/txt_page_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text="EDIT"
+            android:ellipsize="end"
+            android:fontFamily="@font/inter_bold"
+            android:maxLines="1"
+            android:text="@string/title_edit_cap"
             android:textColor="#FFFFFF"
-            android:textSize="20dp"
-            android:textStyle="bold" />
-    </LinearLayout>
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ScrollView
         android:layout_width="match_parent"

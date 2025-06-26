@@ -10,10 +10,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="58dp"
+        android:layout_height="56dp"
         android:background="@color/main_color"
         android:paddingStart="8dp"
-        android:paddingTop="8dp"
         android:paddingEnd="10dp">
 
         <ImageView
@@ -182,13 +181,16 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/light_background">
 
         <LinearLayout
             android:id="@+id/product_filtered_category"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
+            android:background="@color/light_background"
+
             android:orientation="vertical">
 
         </LinearLayout>
