@@ -2,6 +2,7 @@ package com.group7.pawdicted.mobile.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -103,11 +105,12 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             ProductViewHolder productHolder = (ProductViewHolder) holder;
             DecimalFormat formatter = new DecimalFormat("#,###đ");
 
-            // Set background cho item_product_container
+            // Set background for item_product_container
             if (productHolder.productContainer != null) {
-                productHolder.productContainer.setBackground(context.getResources().getDrawable(R.drawable.gray_rounded_background));
+                productHolder.productContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.gray_rounded_background));
             }
 
+            // Load product image
             if (productHolder.imgChildCateProduct != null) {
                 Glide.with(context)
                         .load(product.getProduct_image())
@@ -115,29 +118,42 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         .error(R.mipmap.ic_ascend_arrows)
                         .into(productHolder.imgChildCateProduct);
             }
+
+            // Set product name
             if (productHolder.txtChildCateProductName != null) {
                 productHolder.txtChildCateProductName.setText(product.getProduct_name());
             }
+
+            // Set rating
             if (productHolder.ratingBar != null) {
                 productHolder.ratingBar.setRating((float) product.getAverage_rating());
             }
             if (productHolder.txtRating != null) {
                 productHolder.txtRating.setText(String.format("%.1f", product.getAverage_rating()));
             }
+
+            // Set price and discount
             double discountedPrice = product.getPrice() * (1 - product.getDiscount() / 100.0);
             if (productHolder.txtChildCateProductPrice != null) {
                 productHolder.txtChildCateProductPrice.setText(formatter.format(discountedPrice));
             }
             if (productHolder.txtChildCateProductDiscount != null) {
-                productHolder.txtChildCateProductDiscount.setText("-" + product.getDiscount() + "%");
+                productHolder.txtChildCateProductDiscount.setText(product.getDiscount() > 0 ? "-" + product.getDiscount() + "%" : "");
+                productHolder.txtChildCateProductDiscount.setVisibility(product.getDiscount() > 0 ? View.VISIBLE : View.GONE);
             }
             if (productHolder.txtChildCateOriginalPrice != null) {
                 productHolder.txtChildCateOriginalPrice.setText(formatter.format(product.getPrice()));
+                if (product.getDiscount() > 0) {
+                    productHolder.txtChildCateOriginalPrice.setPaintFlags(productHolder.txtChildCateOriginalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                } else {
+                    productHolder.txtChildCateOriginalPrice.setPaintFlags(productHolder.txtChildCateOriginalPrice.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                }
             }
             if (productHolder.txtChildCateSold != null) {
                 productHolder.txtChildCateSold.setText(product.getSold_quantity() + " sold");
             }
 
+            // Set click listener to open ProductDetailsActivity
             productHolder.itemView.setOnClickListener(v -> {
                 Intent intent = new Intent(context, ProductDetailsActivity.class);
                 intent.putExtra("product_id", product.getProduct_id());

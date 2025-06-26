@@ -48,7 +48,6 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private String flashsaleId = "";
     private String flashsaleName = "";
     private long flashsaleEndTime = 0;
-    private double finalPrice = 0;
 
 
     @Override
@@ -165,6 +164,9 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
         DecimalFormat formatter = new DecimalFormat("#,###đ");
 
+        // Xóa cờ gạch ngang trước để đảm bảo trạng thái sạch
+        txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+
         if (variant != null) {
             Log.d("ProductDetailsActivity", "Variant detected: " + variant.getVariant_id());
             Log.d("ProductDetailsActivity", "Original variant price: " + variant.getVariant_price());
@@ -176,8 +178,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
             txtDiscountPrice.setText(formatter.format(discountPrice));
             txtProductPrice.setText(formatter.format(variant.getVariant_price()));
-            txtDiscountRate.setText(variant.getVariant_discount() > 0 ? "-" + variant.getVariant_discount() + "%" : "");
-            txtSoldQuantity.setText(variant.getVariant_sold_quantity() + " sold");
+            txtDiscountRate.setText(variant.getVariant_discount() > 0 ? "  -" + variant.getVariant_discount() + "%  " : "");
+            txtSoldQuantity.setText(variant.getVariant_sold_quantity() + " sold  ");
             productRatingBar.setRating((float) variant.getVariant_rating());
             productRatingBar2.setRating((float) variant.getVariant_rating());
             txtAverageRating.setText(String.format("%.1f", variant.getVariant_rating()));
@@ -185,15 +187,15 @@ public class ProductDetailsActivity extends AppCompatActivity {
             txtProductRatingCount.setText(variant.getVariant_rating_number() + " Reviews");
             loadImage(variant.getVariant_image() != null ? variant.getVariant_image() : defaultProductImage);
 
+            // Áp dụng gạch ngang nếu có giảm giá từ variant
+            if (variant.getVariant_discount() > 0) {
+                txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            }
+
             // XỬ LÝ FLASHSALE CHO VARIANT
             if (isFlashsale) {
                 Log.d("ProductDetailsActivity", "🔥 Flashsale mode active - calling displayFlashsalePrice with variant price: " + variant.getVariant_price());
                 displayFlashsalePrice(variant.getVariant_price());
-                // GÁN FINAL PRICE CHO FLASHSALE
-                finalPrice = flashsalePrice;
-            } else {
-                // GÁN FINAL PRICE CHO VARIANT BÌNH THƯỜNG
-                finalPrice = discountPrice;
             }
 
         } else {
@@ -208,8 +210,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
             txtDiscountPrice.setText(formatter.format(discountPrice));
             txtProductPrice.setText(formatter.format(product.getPrice()));
-            txtDiscountRate.setText(product.getDiscount() > 0 ? "-" + product.getDiscount() + "%" : "");
-            txtSoldQuantity.setText(product.getSold_quantity() + " sold");
+            txtDiscountRate.setText(product.getDiscount() > 0 ? "  -" + product.getDiscount() + "%  " : "");
+            txtSoldQuantity.setText(product.getSold_quantity() + " sold  ");
             productRatingBar.setRating((float) product.getAverage_rating());
             productRatingBar2.setRating((float) product.getAverage_rating());
             txtAverageRating.setText(String.format("%.1f", product.getAverage_rating()));
@@ -217,35 +219,23 @@ public class ProductDetailsActivity extends AppCompatActivity {
             txtProductRatingCount.setText(product.getRating_number() + " Reviews");
             loadImage(defaultProductImage);
 
+            // Áp dụng gạch ngang nếu có giảm giá từ product
+            if (product.getDiscount() > 0) {
+                txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            }
+
             // XỬ LÝ FLASHSALE CHO PRODUCT
             if (isFlashsale) {
                 Log.d("ProductDetailsActivity", "🔥 Flashsale mode active - calling displayFlashsalePrice with product price: " + product.getPrice());
                 displayFlashsalePrice(product.getPrice());
-                // GÁN FINAL PRICE CHO FLASHSALE
-                finalPrice = flashsalePrice;
-            } else {
-                // GÁN FINAL PRICE CHO PRODUCT BÌNH THƯỜNG
-                finalPrice = discountPrice;
             }
-        }
-
-        // Log final price
-        Log.d("ProductDetailsActivity", "💰 Final price set to: " + finalPrice);
-
-        // Chỉ set paint flags khi không phải flashsale
-        if (!isFlashsale) {
-            txtProductPrice.setPaintFlags(product.getDiscount() > 0 ? txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG : txtProductPrice.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-            Log.d("ProductDetailsActivity", "Set paint flags for normal discount");
-        } else {
-            Log.d("ProductDetailsActivity", "Skipping paint flags - flashsale will handle it");
         }
 
         txtProductName.setText(product.getProduct_name());
         txtProductDescription.setText(product.getDescription());
-        Log.d("ProductDetailsActivity", "💰 Final price set to: " + finalPrice);
+
         Log.d("ProductDetailsActivity", "=== displayProductDetails completed ===");
     }
-
 
 
 
