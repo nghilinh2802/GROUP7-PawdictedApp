@@ -192,4 +192,7 @@ If you have any questions or requests regarding our privacy and security policy,
     <string name="title_pet_care">Pet Care</string>
     <string name="title_furniture">Furniture</string>
     <string name="title_carriers"><![CDATA[Carriers & Kennels]]></string>
+    <string name="title_chat">Chat</string>
+    <string name="title_sendbtn"><![CDATA[>]]></string>
+    <string name="hint_type">Type a message...</string>
 </resources>
