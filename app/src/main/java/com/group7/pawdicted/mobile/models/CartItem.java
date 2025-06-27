@@ -13,6 +13,7 @@ public class CartItem {
     public int quantity;
     public boolean isSelected;
     public Map<String, Integer> optionPrices;
+    public Map<String, String> optionImageUrls;
 
     public CartItem(String productId, String name, int price, String imageUrl, List<String> options, String selectedOption) {
         this.productId = productId;
@@ -24,6 +25,7 @@ public class CartItem {
         this.quantity = 1;
         this.isSelected = false;
         this.optionPrices = new HashMap<>();
+        this.optionImageUrls = new HashMap<>();
     }
 
     public CartItem() {}

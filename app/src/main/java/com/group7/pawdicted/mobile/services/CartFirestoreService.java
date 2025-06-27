@@ -1,13 +1,10 @@
 package com.group7.pawdicted.mobile.services;
 
-import android.content.Context;
 import android.util.Log;
-
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.group7.pawdicted.mobile.models.CartItem;
-import com.group7.pawdicted.mobile.models.CartManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,21 +18,21 @@ public class CartFirestoreService {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference itemsRef = db.collection("carts").document(customerId).collection("items");
 
-        // Bước 1: Lấy danh sách các document IDs hiện có trên Firestore
+        // Lấy danh sách document IDs hiện có trên Firestore
         itemsRef.get().addOnSuccessListener(querySnapshot -> {
             List<String> existingDocIds = new ArrayList<>();
             for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
                 existingDocIds.add(doc.getId());
             }
 
-            // Bước 2: Tạo danh sách document IDs từ cartItems hiện tại
+            // Tạo danh sách document IDs từ cartItems
             List<String> currentDocIds = new ArrayList<>();
             for (CartItem item : cartItems) {
                 String docId = item.productId + "_" + item.selectedOption;
                 currentDocIds.add(docId);
             }
 
-            // Bước 3: Xóa các document không còn trong cartItems
+            // Xóa các document không còn trong cartItems
             for (String docId : existingDocIds) {
                 if (!currentDocIds.contains(docId)) {
                     itemsRef.document(docId).delete()
@@ -44,7 +41,7 @@ public class CartFirestoreService {
                 }
             }
 
-            // Bước 4: Ghi đè các item hiện tại trong cartItems
+            // Ghi đè các item hiện tại
             for (CartItem item : cartItems) {
                 String docId = item.productId + "_" + item.selectedOption;
                 Map<String, Object> itemMap = new HashMap<>();
@@ -57,6 +54,7 @@ public class CartFirestoreService {
                 itemMap.put("quantity", item.quantity);
                 itemMap.put("isSelected", item.isSelected);
                 itemMap.put("optionPrices", item.optionPrices);
+                itemMap.put("optionImageUrls", item.optionImageUrls);
 
                 itemsRef.document(docId).set(itemMap)
                         .addOnSuccessListener(unused -> Log.d(TAG, "Đã lưu item: " + item.name))
@@ -65,34 +63,5 @@ public class CartFirestoreService {
         }).addOnFailureListener(e -> {
             Log.e(TAG, "Lỗi khi lấy danh sách item hiện có trên Firestore", e);
         });
-    }
-
-    public static void fetchCartFromFirestore(Context context, String customerId, Runnable onComplete) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        db.collection("carts")
-                .document(customerId)
-                .collection("items")
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    List<CartItem> cartItems = new ArrayList<>();
-                    for (var doc : querySnapshot.getDocuments()) {
-                        CartItem item = doc.toObject(CartItem.class);
-                        if (item != null) cartItems.add(item);
-                    }
-
-                    // ✅ sửa lỗi gọi static sai: dùng getInstance()
-                    CartManager.getInstance().setCartItems(cartItems);
-                    CartManager.getInstance().setCustomerId(customerId);
-
-                    // ✅ sửa lỗi thiếu customerId khi lưu local
-                    CartStorageHelper.saveCart(context, customerId, cartItems);
-
-                    if (onComplete != null) onComplete.run();
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("CartLoad", "Failed to fetch cart", e);
-                    if (onComplete != null) onComplete.run();
-                });
     }
 }

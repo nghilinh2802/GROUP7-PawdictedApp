@@ -142,24 +142,29 @@ public class ProductDetailsActivity extends AppCompatActivity {
                     .addOnSuccessListener(querySnapshot -> {
                         List<String> variantNames = new ArrayList<>();
                         Map<String, Integer> variantPriceMap = new HashMap<>();
+                        Map<String, String> variantImageMap = new HashMap<>(); // Map để lưu variant_image
                         String selectedVariantName = "Default";
                         String imageUrl = currentProduct.getProduct_image();
                         double selectedPrice = currentProduct.getPrice() * (1 - currentProduct.getDiscount() / 100.0);
 
+                        // Lấy dữ liệu từ Firestore
                         for (QueryDocumentSnapshot doc : querySnapshot) {
                             Variant var = doc.toObject(Variant.class);
                             variantNames.add(var.getVariant_name());
                             int variantPrice = (int) (var.getVariant_price() * (1 - var.getVariant_discount() / 100.0));
                             variantPriceMap.put(var.getVariant_name(), variantPrice);
+                            // Lưu variant_image vào map, nếu không có thì dùng product_image
+                            variantImageMap.put(var.getVariant_name(),
+                                    var.getVariant_image() != null ? var.getVariant_image() : currentProduct.getProduct_image());
 
                             if (var.getVariant_id().equals(selectedVariantId)) {
                                 selectedVariantName = var.getVariant_name();
-                                imageUrl = (var.getVariant_image() != null) ? var.getVariant_image() : imageUrl;
+                                imageUrl = var.getVariant_image() != null ? var.getVariant_image() : imageUrl;
                                 selectedPrice = variantPrice;
                             }
                         }
 
-                        List<CartItem> cartItems = CartManager.getInstance().getCartItems(); // ✅ dùng getInstance
+                        List<CartItem> cartItems = CartManager.getInstance().getCartItems();
                         boolean alreadyExists = false;
                         for (CartItem item : cartItems) {
                             if (item.productId.equals(currentProduct.getProduct_id()) &&
@@ -180,11 +185,11 @@ public class ProductDetailsActivity extends AppCompatActivity {
                                     selectedVariantName
                             );
                             newItem.optionPrices = variantPriceMap;
+                            newItem.optionImageUrls = variantImageMap; // Thiết lập optionImageUrls
                             CartManager.getInstance().addToCart(newItem);
                         }
 
-                        // Lưu theo customer_id nếu cần
-                        String customerId = CartManager.getInstance().getCustomerId(); // đảm bảo đã set khi login
+                        String customerId = CartManager.getInstance().getCustomerId();
                         if (customerId != null && !customerId.isEmpty()) {
                             CartStorageHelper.saveCart(this, customerId, CartManager.getInstance().getCartItems());
                         }
@@ -192,7 +197,6 @@ public class ProductDetailsActivity extends AppCompatActivity {
                         Toast.makeText(this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
                     });
         });
-
     }
 
     private void loadProductDetails() {
