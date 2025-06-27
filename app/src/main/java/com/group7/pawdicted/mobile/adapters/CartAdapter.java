@@ -15,6 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.group7.pawdicted.R;
 import com.group7.pawdicted.mobile.models.CartItem;
+import com.group7.pawdicted.mobile.models.CartManager;
+import com.group7.pawdicted.mobile.services.CartFirestoreService;
+import com.group7.pawdicted.mobile.services.CartStorageHelper;
 
 
 import java.text.DecimalFormat;
@@ -145,12 +148,23 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
                 }
             });
 
-
             clearBtn.setOnClickListener(v -> {
                 int pos = getAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION) {
+                    CartItem removedItem = itemList.get(pos);
+
+                    // Xóa khỏi danh sách hiển thị
                     itemList.remove(pos);
                     notifyItemRemoved(pos);
+
+                    // Xóa khỏi CartManager
+                    CartManager.getInstance().removeItem(removedItem);
+
+                    // Cập nhật local & Firestore
+                    String customerId = CartManager.getInstance().getCustomerId();
+                    CartStorageHelper.saveCart(context, customerId, itemList);
+                    CartFirestoreService.syncCartToFirestore(customerId, itemList);
+
                     if (changeListener != null) changeListener.onCartChanged();
                 }
             });

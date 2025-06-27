@@ -27,6 +27,7 @@ import com.group7.pawdicted.mobile.models.CartItem;
 import com.group7.pawdicted.mobile.models.CartManager;
 import com.group7.pawdicted.mobile.models.Product;
 import com.group7.pawdicted.mobile.models.Variant;
+import com.group7.pawdicted.mobile.services.CartStorageHelper;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -151,10 +152,10 @@ public class ProductDetailsActivity extends AppCompatActivity {
                             }
                         }
 
-                        List<CartItem> cartItems = CartManager.getCartItems();
+                        List<CartItem> cartItems = CartManager.getInstance().getCartItems(); // ✅ dùng getInstance
                         boolean alreadyExists = false;
                         for (CartItem item : cartItems) {
-                            if (item.name.equals(currentProduct.getProduct_name()) &&
+                            if (item.productId.equals(currentProduct.getProduct_id()) &&
                                     item.selectedOption.equals(selectedVariantName)) {
                                 item.quantity += 1;
                                 alreadyExists = true;
@@ -164,6 +165,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
                         if (!alreadyExists) {
                             CartItem newItem = new CartItem(
+                                    currentProduct.getProduct_id(),
                                     currentProduct.getProduct_name(),
                                     (int) selectedPrice,
                                     imageUrl,
@@ -171,12 +173,19 @@ public class ProductDetailsActivity extends AppCompatActivity {
                                     selectedVariantName
                             );
                             newItem.optionPrices = variantPriceMap;
-                            CartManager.addToCart(newItem);
+                            CartManager.getInstance().addToCart(newItem);
                         }
 
-                        Toast.makeText(this, "Added to cart", Toast.LENGTH_SHORT).show();
+                        // Lưu theo customer_id nếu cần
+                        String customerId = CartManager.getInstance().getCustomerId(); // đảm bảo đã set khi login
+                        if (customerId != null && !customerId.isEmpty()) {
+                            CartStorageHelper.saveCart(this, customerId, CartManager.getInstance().getCartItems());
+                        }
+
+                        Toast.makeText(this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
                     });
         });
+
     }
 
     private void loadProductDetails() {

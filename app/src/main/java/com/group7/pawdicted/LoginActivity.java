@@ -23,7 +23,10 @@ import com.google.android.gms.auth.api.signin.*;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.*;
-import com.google.firebase.firestore.*;
+        import com.google.firebase.firestore.*;
+
+        import com.group7.pawdicted.mobile.models.CartManager;
+import com.group7.pawdicted.mobile.services.CartStorageHelper;
 
 import java.util.*;
 
@@ -126,6 +129,41 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
+    private void navigateToHome() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user == null) {
+            startActivity(new Intent(this, HomepageActivity.class));
+            return;
+        }
+
+        db.collection("customers")
+                .whereEqualTo("customer_email", user.getEmail())
+                .limit(1)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (!snapshot.isEmpty()) {
+                        String customerId = snapshot.getDocuments().get(0).getId();
+                        Log.d(TAG, "Đã lấy được customer_id: " + customerId);
+
+                        // Xóa cart cũ local trước khi tải cart mới
+                        CartStorageHelper.clearCart(this, customerId);
+                        CartManager.getInstance().loadCartFromFirestore(this, customerId, () -> {
+                            startActivity(new Intent(this, HomepageActivity.class));
+                            finish();
+                        });
+                    } else {
+                        Toast.makeText(this, "Không tìm thấy customer_id", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(this, HomepageActivity.class));
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Lỗi khi lấy customer_id: ", e);
+                    startActivity(new Intent(this, HomepageActivity.class));
+                });
+    }
+
+    // setupGoogle(), setupFacebook(), facebookAuth(), googleAuth(), checkIfUserExistsAndProceed(), open_signup(), open_forgot_password()
+    // ... giữ nguyên như cũ
     private void setupGoogle() {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -143,9 +181,19 @@ public class LoginActivity extends AppCompatActivity {
         fbCallbackManager = CallbackManager.Factory.create();
         ((ImageButton) findViewById(R.id.imgFacebook)).setOnClickListener(v -> {
             LoginManager.getInstance().registerCallback(fbCallbackManager, new FacebookCallback<>() {
-                @Override public void onSuccess(LoginResult res) { facebookAuth(res.getAccessToken()); }
-                @Override public void onCancel() {}
-                @Override public void onError(FacebookException e) { Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show(); }
+                @Override
+                public void onSuccess(LoginResult res) {
+                    facebookAuth(res.getAccessToken());
+                }
+
+                @Override
+                public void onCancel() {
+                }
+
+                @Override
+                public void onError(FacebookException e) {
+                    Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
             });
             LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email", "public_profile"));
         });
@@ -211,16 +259,9 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void navigateToHome() {
-        startActivity(new Intent(this, HomepageActivity.class));
-        finish();
-    }
-
     public void open_signup(View v) {
         startActivity(new Intent(this, SignupActivity.class));
     }
 
-    public void open_forgot_password(View view) {
-        startActivity(new Intent(this, ForgotPasswordActivity.class));
-    }
+    public void open_forgot_password(View view) {startActivity(new Intent(this, ForgotPasswordActivity.class));}
 }
