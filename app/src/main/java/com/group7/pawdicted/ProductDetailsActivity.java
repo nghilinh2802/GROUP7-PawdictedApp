@@ -31,6 +31,7 @@ import com.group7.pawdicted.mobile.models.CartItem;
 import com.group7.pawdicted.mobile.models.CartManager;
 import com.group7.pawdicted.mobile.models.Product;
 import com.group7.pawdicted.mobile.models.Variant;
+import com.group7.pawdicted.mobile.services.CartStorageHelper;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -141,27 +142,32 @@ public class ProductDetailsActivity extends AppCompatActivity {
                     .addOnSuccessListener(querySnapshot -> {
                         List<String> variantNames = new ArrayList<>();
                         Map<String, Integer> variantPriceMap = new HashMap<>();
+                        Map<String, String> variantImageMap = new HashMap<>(); // Map để lưu variant_image
                         String selectedVariantName = "Default";
                         String imageUrl = currentProduct.getProduct_image();
                         double selectedPrice = currentProduct.getPrice() * (1 - currentProduct.getDiscount() / 100.0);
 
+                        // Lấy dữ liệu từ Firestore
                         for (QueryDocumentSnapshot doc : querySnapshot) {
                             Variant var = doc.toObject(Variant.class);
                             variantNames.add(var.getVariant_name());
                             int variantPrice = (int) (var.getVariant_price() * (1 - var.getVariant_discount() / 100.0));
                             variantPriceMap.put(var.getVariant_name(), variantPrice);
+                            // Lưu variant_image vào map, nếu không có thì dùng product_image
+                            variantImageMap.put(var.getVariant_name(),
+                                    var.getVariant_image() != null ? var.getVariant_image() : currentProduct.getProduct_image());
 
                             if (var.getVariant_id().equals(selectedVariantId)) {
                                 selectedVariantName = var.getVariant_name();
-                                imageUrl = (var.getVariant_image() != null) ? var.getVariant_image() : imageUrl;
+                                imageUrl = var.getVariant_image() != null ? var.getVariant_image() : imageUrl;
                                 selectedPrice = variantPrice;
                             }
                         }
 
-                        List<CartItem> cartItems = CartManager.getCartItems();
+                        List<CartItem> cartItems = CartManager.getInstance().getCartItems();
                         boolean alreadyExists = false;
                         for (CartItem item : cartItems) {
-                            if (item.name.equals(currentProduct.getProduct_name()) &&
+                            if (item.productId.equals(currentProduct.getProduct_id()) &&
                                     item.selectedOption.equals(selectedVariantName)) {
                                 item.quantity += 1;
                                 alreadyExists = true;
@@ -171,6 +177,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
                         if (!alreadyExists) {
                             CartItem newItem = new CartItem(
+                                    currentProduct.getProduct_id(),
                                     currentProduct.getProduct_name(),
                                     (int) selectedPrice,
                                     imageUrl,
@@ -178,10 +185,16 @@ public class ProductDetailsActivity extends AppCompatActivity {
                                     selectedVariantName
                             );
                             newItem.optionPrices = variantPriceMap;
-                            CartManager.addToCart(newItem);
+                            newItem.optionImageUrls = variantImageMap; // Thiết lập optionImageUrls
+                            CartManager.getInstance().addToCart(newItem);
                         }
 
-                        Toast.makeText(this, "Added to cart", Toast.LENGTH_SHORT).show();
+                        String customerId = CartManager.getInstance().getCustomerId();
+                        if (customerId != null && !customerId.isEmpty()) {
+                            CartStorageHelper.saveCart(this, customerId, CartManager.getInstance().getCartItems());
+                        }
+
+                        Toast.makeText(this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
                     });
         });
     }

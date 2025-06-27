@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CartItem {
+    public String productId;
     public String name;
     public int price;
     public String imageUrl;
@@ -12,8 +13,10 @@ public class CartItem {
     public int quantity;
     public boolean isSelected;
     public Map<String, Integer> optionPrices;
+    public Map<String, String> optionImageUrls;
 
-    public CartItem(String name, int price, String imageUrl, List<String> options, String selectedOption) {
+    public CartItem(String productId, String name, int price, String imageUrl, List<String> options, String selectedOption) {
+        this.productId = productId;
         this.name = name;
         this.price = price;
         this.imageUrl = imageUrl;
@@ -22,7 +25,10 @@ public class CartItem {
         this.quantity = 1;
         this.isSelected = false;
         this.optionPrices = new HashMap<>();
+        this.optionImageUrls = new HashMap<>();
     }
+
+    public CartItem() {}
 }
 
 
