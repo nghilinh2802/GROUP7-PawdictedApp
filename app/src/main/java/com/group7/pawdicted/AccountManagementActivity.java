@@ -81,11 +81,11 @@ public class AccountManagementActivity extends AppCompatActivity {
         });
         ToShip.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {openPurchaseOrderActivity("Out for Delivery");}
+            public void onClick(View view) {openPurchaseOrderActivity("Delivered");}
         });
         txtToShip.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {openPurchaseOrderActivity("Out for Delivery");}
+            public void onClick(View view) {openPurchaseOrderActivity("Delivered");}
         });
         imgViewPurchaseHistory.setOnClickListener(new View.OnClickListener() {
             @Override
