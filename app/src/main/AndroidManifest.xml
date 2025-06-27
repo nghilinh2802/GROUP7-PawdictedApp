@@ -83,9 +83,6 @@
             android:name=".CancellationDetailActivity"
             android:exported="true" />
 
-        <activity android:name=".NewAddressActivity"
-            android:exported="true"/>
-
 
         <activity
             android:name=".OrderDetailActivity"
@@ -167,10 +164,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name=".AddressSelectionActivity"
-            android:exported="true"/>
+        
 
         <activity
             android:name=".ChangeForgetPasswordActivity"
