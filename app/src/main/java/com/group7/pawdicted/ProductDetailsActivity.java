@@ -21,6 +21,10 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.group7.pawdicted.mobile.models.CartItem;
@@ -30,9 +34,11 @@ import com.group7.pawdicted.mobile.models.Variant;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class ProductDetailsActivity extends AppCompatActivity {
 
@@ -48,6 +54,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private String defaultProductImage;
     private Product currentProduct;
     private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
     private boolean isFlashsale = false;
     private int flashsaleDiscountRate = 0;
     private double flashsalePrice = 0;
@@ -68,7 +75,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
         });
 
         db = FirebaseFirestore.getInstance();
-
+        mAuth = FirebaseAuth.getInstance();
         ImageView imgBack = findViewById(R.id.imgBack);
         if (imgBack != null) {
             imgBack.setOnClickListener(v -> finish());
@@ -201,6 +208,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
                     }
                 });
     }
+
 
     private void displayProductDetails(Product product, Variant variant) {
         DecimalFormat formatter = new DecimalFormat("#,###đ");
