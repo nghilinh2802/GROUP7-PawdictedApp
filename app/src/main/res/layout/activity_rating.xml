@@ -141,24 +141,18 @@
                         android:id="@+id/horizontalScrollView_related"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="20dp"
+                        android:layout_marginRight="10dp"
                         android:nestedScrollingEnabled="false">
 
                         <LinearLayout
                             android:id="@+id/lv_related_product"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
                             android:orientation="horizontal" />
                     </HorizontalScrollView>
 
-                    <ImageView
-                        android:id="@+id/img_scroll_related_products"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="5dp"
-                        app:srcCompat="@mipmap/ic_arrow_right_grey" />
+
                 </RelativeLayout>
             </LinearLayout>
 
