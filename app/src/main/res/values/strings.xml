@@ -194,4 +194,6 @@ If you have any questions or requests regarding our privacy and security policy,
     <string name="title_carriers"><![CDATA[Carriers & Kennels]]></string>
     <string name="title_chat">Chat</string>
     <string name="hint_type">Type a message...</string>
+    <string name="title_suggest">Today\'s Picks</string>
+    <string name="title_recommend">Recommended for You</string>
 </resources>
