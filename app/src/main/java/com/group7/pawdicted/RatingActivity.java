@@ -76,13 +76,12 @@ public class RatingActivity extends AppCompatActivity {
         txtRatingCount = findViewById(R.id.txt_rating_count);
         rvReview = findViewById(R.id.rv_review);
         relatedProductContainer = findViewById(R.id.lv_related_product);
-        imgScrollRelated = findViewById(R.id.img_scroll_related_products);
+//        imgScrollRelated = findViewById(R.id.img_scroll_related_products);
         horizontalScrollView = findViewById(R.id.horizontalScrollView_related);
         rvYouMay = findViewById(R.id.rv_you_may);
 
-        // Initialize review data (still using mock data for reviews)
+        // Initialize review data (not used for Firestore fetching)
         listReview = new ListReview();
-        listReview.generate_sample_dataset();
 
         // Get product ID from intent
         productId = getIntent().getStringExtra("product_id");
@@ -94,11 +93,11 @@ public class RatingActivity extends AppCompatActivity {
 
         // Fetch product details from Firestore
         fetchProductDetails();
-
-        // Scroll button listener
-        if (horizontalScrollView != null && imgScrollRelated != null) {
-            imgScrollRelated.setOnClickListener(v -> horizontalScrollView.smoothScrollBy(150, 0));
-        }
+//
+//        // Scroll button listener
+//        if (horizontalScrollView != null && imgScrollRelated != null) {
+//            imgScrollRelated.setOnClickListener(v -> horizontalScrollView.smoothScrollBy(150, 0));
+//        }
     }
 
     private void fetchProductDetails() {
@@ -139,17 +138,37 @@ public class RatingActivity extends AppCompatActivity {
     }
 
     private void loadReviews() {
-        List<Review> productReviews = new ArrayList<>();
-        for (Review review : listReview.getReviews()) {
-            if (review.getProduct_id().equals(productId)) {
-                productReviews.add(review);
-            }
-        }
-        if (rvReview != null) {
-            rvReview.setLayoutManager(new LinearLayoutManager(this));
-            rvReview.setAdapter(new ReviewAdapter(this, productReviews));
-            rvReview.addItemDecoration(new DividerItemDecoration(this, 1, android.R.color.darker_gray, 16));
-        }
+        db.collection("reviews")
+                .whereEqualTo("product_id", productId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Review> productReviews = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        String reviewId = document.getString("review_id");
+                        String customerId = document.getString("customer_id");
+                        Long ratingLong = document.getLong("rating");
+                        int rating = ratingLong != null ? ratingLong.intValue() : 0;
+                        String productId = document.getString("product_id");
+                        String productVariation = document.getString("product_variation");
+                        String comment = document.getString("comment");
+                        Long timestamp = document.getLong("timestamp");
+
+                        Review review = new Review(reviewId, customerId, rating, productId, productVariation, comment, timestamp);
+                        productReviews.add(review);
+                    }
+
+                    if (rvReview != null) {
+                        rvReview.setLayoutManager(new LinearLayoutManager(this));
+                        rvReview.setAdapter(new ReviewAdapter(this, productReviews));
+                        rvReview.addItemDecoration(new DividerItemDecoration(this, 1, android.R.color.darker_gray, 16));
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("RatingActivity", "Error fetching reviews: " + e.getMessage());
+                    if (rvReview != null) {
+                        rvReview.setAdapter(new ReviewAdapter(this, new ArrayList<>()));
+                    }
+                });
     }
 
     private void loadRelatedProducts(String categoryId) {
@@ -170,10 +189,10 @@ public class RatingActivity extends AppCompatActivity {
                         }
                     }
 
-                    // Toggle visibility of img_scroll_related_products based on relatedProducts size
-                    if (imgScrollRelated != null) {
-                        imgScrollRelated.setVisibility(relatedProducts.size() > 2 ? View.VISIBLE : View.GONE);
-                    }
+//                    // Toggle visibility of img_scroll_related_products based on relatedProducts size
+//                    if (imgScrollRelated != null) {
+//                        imgScrollRelated.setVisibility(relatedProducts.size() > 2 ? View.VISIBLE : View.GONE);
+//                    }
 
                     relatedProductContainer.removeAllViews();
                     LayoutInflater inflater = LayoutInflater.from(this);
@@ -239,9 +258,9 @@ public class RatingActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
                     Log.e("RatingActivity", "Error fetching related products: " + e.getMessage());
                     relatedProductContainer.removeAllViews();
-                    if (imgScrollRelated != null) {
-                        imgScrollRelated.setVisibility(View.GONE);
-                    }
+//                    if (imgScrollRelated != null) {
+//                        imgScrollRelated.setVisibility(View.GONE);
+//                    }
                 });
     }
 

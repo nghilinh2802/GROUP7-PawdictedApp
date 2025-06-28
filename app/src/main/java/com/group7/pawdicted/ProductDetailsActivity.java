@@ -21,18 +21,25 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.group7.pawdicted.mobile.models.CartItem;
 import com.group7.pawdicted.mobile.models.CartManager;
 import com.group7.pawdicted.mobile.models.Product;
 import com.group7.pawdicted.mobile.models.Variant;
+import com.group7.pawdicted.mobile.services.CartStorageHelper;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class ProductDetailsActivity extends AppCompatActivity {
 
@@ -48,12 +55,14 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private String defaultProductImage;
     private Product currentProduct;
     private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
     private boolean isFlashsale = false;
     private int flashsaleDiscountRate = 0;
     private double flashsalePrice = 0;
     private String flashsaleId = "";
     private String flashsaleName = "";
     private long flashsaleEndTime = 0;
+    private double finalPrice = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +77,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
         });
 
         db = FirebaseFirestore.getInstance();
-
+        mAuth = FirebaseAuth.getInstance();
         ImageView imgBack = findViewById(R.id.imgBack);
         if (imgBack != null) {
             imgBack.setOnClickListener(v -> finish());
@@ -134,27 +143,44 @@ public class ProductDetailsActivity extends AppCompatActivity {
                     .addOnSuccessListener(querySnapshot -> {
                         List<String> variantNames = new ArrayList<>();
                         Map<String, Integer> variantPriceMap = new HashMap<>();
+                        Map<String, String> variantImageMap = new HashMap<>(); // Map để lưu variant_image
                         String selectedVariantName = "Default";
                         String imageUrl = currentProduct.getProduct_image();
-                        double selectedPrice = currentProduct.getPrice() * (1 - currentProduct.getDiscount() / 100.0);
 
+                        // SỬ DỤNG finalPrice THAY VÌ TÍNH LẠI
+                        double selectedPrice = finalPrice;
+                        Log.d("Cart", "Using finalPrice: " + finalPrice + " (isFlashsale: " + isFlashsale + ")");
+
+                        // Lấy dữ liệu từ Firestore
                         for (QueryDocumentSnapshot doc : querySnapshot) {
                             Variant var = doc.toObject(Variant.class);
                             variantNames.add(var.getVariant_name());
-                            int variantPrice = (int) (var.getVariant_price() * (1 - var.getVariant_discount() / 100.0));
+
+                            // Tính giá cho variant options
+                            int variantPrice;
+                            if (isFlashsale) {
+                                variantPrice = (int) (var.getVariant_price() * (1 - flashsaleDiscountRate / 100.0));
+                            } else {
+                                variantPrice = (int) (var.getVariant_price() * (1 - var.getVariant_discount() / 100.0));
+                            }
                             variantPriceMap.put(var.getVariant_name(), variantPrice);
+
+                            // Lưu variant_image vào map, nếu không có thì dùng product_image
+                            variantImageMap.put(var.getVariant_name(),
+                                    var.getVariant_image() != null ? var.getVariant_image() : currentProduct.getProduct_image());
 
                             if (var.getVariant_id().equals(selectedVariantId)) {
                                 selectedVariantName = var.getVariant_name();
-                                imageUrl = (var.getVariant_image() != null) ? var.getVariant_image() : imageUrl;
+                                imageUrl = var.getVariant_image() != null ? var.getVariant_image() : imageUrl;
+                                // CẬP NHẬT selectedPrice CHO VARIANT ĐƯỢC CHỌN
                                 selectedPrice = variantPrice;
                             }
                         }
 
-                        List<CartItem> cartItems = CartManager.getCartItems();
+                        List<CartItem> cartItems = CartManager.getInstance().getCartItems();
                         boolean alreadyExists = false;
                         for (CartItem item : cartItems) {
-                            if (item.name.equals(currentProduct.getProduct_name()) &&
+                            if (item.productId.equals(currentProduct.getProduct_id()) &&
                                     item.selectedOption.equals(selectedVariantName)) {
                                 item.quantity += 1;
                                 alreadyExists = true;
@@ -164,6 +190,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
                         if (!alreadyExists) {
                             CartItem newItem = new CartItem(
+                                    currentProduct.getProduct_id(),
                                     currentProduct.getProduct_name(),
                                     (int) selectedPrice,
                                     imageUrl,
@@ -171,12 +198,23 @@ public class ProductDetailsActivity extends AppCompatActivity {
                                     selectedVariantName
                             );
                             newItem.optionPrices = variantPriceMap;
-                            CartManager.addToCart(newItem);
+                            newItem.optionImageUrls = variantImageMap; // Thiết lập optionImageUrls
+                            CartManager.getInstance().addToCart(newItem);
                         }
 
-                        Toast.makeText(this, "Added to cart", Toast.LENGTH_SHORT).show();
+                        String customerId = CartManager.getInstance().getCustomerId();
+                        if (customerId != null && !customerId.isEmpty()) {
+                            CartStorageHelper.saveCart(this, customerId, CartManager.getInstance().getCartItems());
+                        }
+
+                        // Toast thông báo khác nhau cho flashsale
+                        String toastMessage = isFlashsale ?
+                                "Đã thêm vào giỏ hàng với giá flashsale!" :
+                                "Đã thêm vào giỏ hàng";
+                        Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show();
                     });
         });
+
     }
 
     private void loadProductDetails() {
@@ -202,6 +240,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
                 });
     }
 
+
     private void displayProductDetails(Product product, Variant variant) {
         DecimalFormat formatter = new DecimalFormat("#,###đ");
         txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
@@ -210,7 +249,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
             double discountPrice = variant.getVariant_price() * (1 - variant.getVariant_discount() / 100.0);
             txtDiscountPrice.setText(formatter.format(discountPrice));
             txtProductPrice.setText(formatter.format(variant.getVariant_price()));
-            txtDiscountRate.setText(variant.getVariant_discount() > 0 ? "-" + variant.getVariant_discount() + "%" : "");
+            txtDiscountRate.setText(variant.getVariant_discount() > 0 ? "  -" + variant.getVariant_discount() + "%  " : "");
             txtSoldQuantity.setText(variant.getVariant_sold_quantity() + " sold");
             productRatingBar.setRating((float) variant.getVariant_rating());
             productRatingBar2.setRating((float) variant.getVariant_rating());
@@ -223,6 +262,9 @@ public class ProductDetailsActivity extends AppCompatActivity {
             }
             if (isFlashsale) {
                 displayFlashsalePrice(variant.getVariant_price());
+                finalPrice = flashsalePrice;
+            } else {
+                finalPrice = discountPrice;
             }
         } else {
             double discountPrice = product.getPrice() * (1 - product.getDiscount() / 100.0);
@@ -241,9 +283,12 @@ public class ProductDetailsActivity extends AppCompatActivity {
             }
             if (isFlashsale) {
                 displayFlashsalePrice(product.getPrice());
+                finalPrice = flashsalePrice;
+            } else {
+                finalPrice = discountPrice;
             }
         }
-
+        Log.d("ProductDetailsActivity", "💰 Final price set to: " + finalPrice);
         txtProductName.setText(product.getProduct_name());
         txtProductDescription.setText(product.getDescription());
     }
@@ -353,7 +398,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
             calculateFlashsalePrice(originalPrice);
             txtDiscountPrice.setText(formatter.format(flashsalePrice));
             txtProductPrice.setText(formatter.format(originalPrice));
-            txtDiscountRate.setText("-" + flashsaleDiscountRate + "%");
+            txtDiscountRate.setText("  -" + flashsaleDiscountRate + "%  ");
             txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             txtDiscountPrice.setTextColor(getColor(R.color.main_color));
         }

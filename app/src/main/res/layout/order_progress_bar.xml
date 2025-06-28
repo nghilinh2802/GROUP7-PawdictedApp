@@ -128,7 +128,7 @@
             android:layout_marginTop="6dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Out for Delivery"
+            android:text="Delivered"
             android:gravity="center"
             android:textColor="#6A4E3D"
             android:textSize="13sp"

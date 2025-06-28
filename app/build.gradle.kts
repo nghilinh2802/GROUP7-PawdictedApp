@@ -63,7 +63,8 @@ dependencies {
     // ➕ Google Sign-In support (cần để dùng GoogleSignInClient, GoogleSignIn...)
     implementation("com.google.android.gms:play-services-auth:21.3.0")  // phiên bản mới nhất :contentReference[oaicite:1]{index=1}
 
-    implementation ("com.google.firebase:firebase-bom:33.15.0")
+    implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
+    implementation("com.google.firebase:firebase-storage")
     implementation ("com.google.firebase:firebase-firestore:25.1.4")
 
     implementation ("com.google.code.gson:gson:2.8.9")

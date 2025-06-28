@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -23,36 +22,29 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
+            android:orientation="vertical"
+            android:padding="0dp">
 
             <!-- Banner -->
-            <androidx.cardview.widget.CardView
+            <ImageView
+                android:id="@+id/imageView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:padding="16dp"
-                app:cardBackgroundColor="@color/main_color">
-
-                <ImageView
-                    android:id="@+id/imageView"
-                    android:layout_width="match_parent"
-                    android:layout_height="383px"
-                    android:scaleType="centerCrop"
-                    android:src="@mipmap/ic_banner" />
-            </androidx.cardview.widget.CardView>
+                android:layout_margin="4dp"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/ic_banner" />
 
             <!-- TableLayout chứa icon -->
             <TableLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/main_color"
-                android:paddingBottom="12dp">
-
+                android:layout_marginBottom="24dp"
+                android:padding="0dp">
 
                 <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="wrap_content">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -89,7 +81,6 @@
                             android:textAlignment="center"
                             android:textColor="#FFFDFD"
                             android:textSize="14sp" />
-
                     </LinearLayout>
 
                     <LinearLayout
@@ -124,8 +115,8 @@
                             android:onClick="open_flashsale"
                             android:text="@string/title_homepage_flash_deals"
                             android:textAlignment="center"
-                            android:textColor="#FFFDFD" />
-
+                            android:textColor="#FFFDFD"
+                            android:textSize="14sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -160,8 +151,8 @@
                             android:fontFamily="@font/inter_bold"
                             android:text="@string/title_homepage_new_arrival"
                             android:textAlignment="center"
-                            android:textColor="#FFFDFD" />
-
+                            android:textColor="#FFFDFD"
+                            android:textSize="14sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -194,15 +185,14 @@
                             android:fontFamily="@font/inter_bold"
                             android:text="@string/title_voucher"
                             android:textAlignment="center"
-                            android:textColor="#FFFDFD" />
-
+                            android:textColor="#FFFDFD"
+                            android:textSize="14sp" />
                     </LinearLayout>
-
                 </TableRow>
 
                 <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="wrap_content">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -237,7 +227,6 @@
                             android:textAlignment="center"
                             android:textColor="#FFFDFD"
                             android:textSize="14sp" />
-
                     </LinearLayout>
 
                     <LinearLayout
@@ -274,8 +263,8 @@
                             android:text="@string/title_homepage_blog"
                             android:onClick="open_blogs"
                             android:textAlignment="center"
-                            android:textColor="#FFFDFD" />
-
+                            android:textColor="#FFFDFD"
+                            android:textSize="14sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -308,12 +297,11 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/inter_bold"
-                            android:scaleType="centerInside"
                             android:onClick="open_faq"
                             android:text="@string/title_faqs"
                             android:textAlignment="center"
-                            android:textColor="#FFFDFD" />
-
+                            android:textColor="#FFFDFD"
+                            android:textSize="14sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -349,10 +337,9 @@
                             android:onClick="open_policy"
                             android:text="@string/title_homepage_policy"
                             android:textAlignment="center"
-                            android:textColor="#FFFDFD" />
-
+                            android:textColor="#FFFDFD"
+                            android:textSize="14sp" />
                     </LinearLayout>
-
                 </TableRow>
             </TableLayout>
 
@@ -363,7 +350,329 @@
                 android:layout_height="wrap_content"
                 android:background="@color/lotus_pink"
                 android:orientation="vertical"
-                android:padding="16dp" />
+                android:padding="8dp">
+
+                <LinearLayout
+                    android:id="@+id/layout_suggest"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txt_suggest"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_bold"
+                        android:text="@string/title_suggest"
+                        android:paddingLeft="10dp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp" />
+
+                    <RelativeLayout
+                        android:id="@+id/reLayout_suggest"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="10dp"
+                        android:minHeight="120dp"
+                        android:paddingBottom="8dp">
+
+                        <HorizontalScrollView
+                            android:id="@+id/horizontalScrollView_suggest"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false">
+
+                            <LinearLayout
+                                android:id="@+id/lv_suggest_product"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:orientation="horizontal" />
+                        </HorizontalScrollView>
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout_recommendation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txt_recommendation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_bold"
+                        android:text="@string/title_recommend"
+                        android:paddingLeft="10dp"
+
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp" />
+
+                    <RelativeLayout
+                        android:id="@+id/reLayout_recommendation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="10dp"
+                        android:minHeight="120dp"
+                        android:paddingBottom="8dp">
+
+                        <HorizontalScrollView
+                            android:id="@+id/horizontalScrollView_recommendation"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false">
+
+                            <LinearLayout
+                                android:id="@+id/lv_recommendation_product"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:orientation="horizontal" />
+                        </HorizontalScrollView>
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout_ft"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txt_ft"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_bold"
+                        android:text="@string/title_food_treat"
+                        android:paddingLeft="10dp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp" />
+
+                    <RelativeLayout
+                        android:id="@+id/reLayout_ft"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="10dp"
+                        android:minHeight="120dp"
+                        android:paddingBottom="8dp">
+
+                        <HorizontalScrollView
+                            android:id="@+id/horizontalScrollView_ft"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false">
+
+                            <LinearLayout
+                                android:id="@+id/lv_ft_product"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:orientation="horizontal" />
+                        </HorizontalScrollView>
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout_pc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txt_pc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_bold"
+                        android:text="@string/title_pet_care"
+                        android:paddingLeft="10dp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp" />
+
+                    <RelativeLayout
+                        android:id="@+id/reLayout_pc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="10dp"
+                        android:minHeight="120dp"
+                        android:paddingBottom="8dp">
+
+                        <HorizontalScrollView
+                            android:id="@+id/horizontalScrollView_pc"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false">
+
+                            <LinearLayout
+                                android:id="@+id/lv_pc_product"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:orientation="horizontal" />
+                        </HorizontalScrollView>
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout_toy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txt_toy"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_bold"
+                        android:text="@string/title_toys"
+                        android:paddingLeft="10dp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp" />
+
+                    <RelativeLayout
+                        android:id="@+id/reLayout_toy"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="10dp"
+                        android:minHeight="120dp"
+                        android:paddingBottom="8dp">
+
+                        <HorizontalScrollView
+                            android:id="@+id/horizontalScrollView_toy"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false">
+
+                            <LinearLayout
+                                android:id="@+id/lv_toy_product"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:orientation="horizontal" />
+                        </HorizontalScrollView>
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout_acc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txt_acc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_bold"
+                        android:text="@string/title_accessories"
+                        android:paddingLeft="10dp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp" />
+
+                    <RelativeLayout
+                        android:id="@+id/reLayout_acc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="10dp"
+                        android:minHeight="120dp"
+                        android:paddingBottom="8dp">
+
+                        <HorizontalScrollView
+                            android:id="@+id/horizontalScrollView_acc"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false">
+
+                            <LinearLayout
+                                android:id="@+id/lv_acc_product"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:orientation="horizontal" />
+                        </HorizontalScrollView>
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout_ck"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txt_ck"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_bold"
+                        android:text="@string/title_carriers"
+                        android:paddingLeft="10dp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp" />
+
+                    <RelativeLayout
+                        android:id="@+id/reLayout_ck"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="10dp"
+                        android:minHeight="120dp"
+                        android:paddingBottom="8dp">
+
+                        <HorizontalScrollView
+                            android:id="@+id/horizontalScrollView_ck"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false">
+
+                            <LinearLayout
+                                android:id="@+id/lv_ck_product"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:orientation="horizontal" />
+                        </HorizontalScrollView>
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout_furniture"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txt_furniture"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_bold"
+                        android:text="@string/title_furniture"
+                        android:paddingLeft="10dp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp" />
+
+                    <RelativeLayout
+                        android:id="@+id/reLayout_furniture"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="10dp"
+                        android:minHeight="120dp"
+                        android:paddingBottom="8dp">
+
+                        <HorizontalScrollView
+                            android:id="@+id/horizontalScrollView_furniture"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false">
+
+                            <LinearLayout
+                                android:id="@+id/lv_furniture_product"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:orientation="horizontal" />
+                        </HorizontalScrollView>
+                    </RelativeLayout>
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
