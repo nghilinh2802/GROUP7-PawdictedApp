@@ -62,6 +62,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private String flashsaleId = "";
     private String flashsaleName = "";
     private long flashsaleEndTime = 0;
+    private double finalPrice = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,14 +146,25 @@ public class ProductDetailsActivity extends AppCompatActivity {
                         Map<String, String> variantImageMap = new HashMap<>(); // Map để lưu variant_image
                         String selectedVariantName = "Default";
                         String imageUrl = currentProduct.getProduct_image();
-                        double selectedPrice = currentProduct.getPrice() * (1 - currentProduct.getDiscount() / 100.0);
+
+                        // SỬ DỤNG finalPrice THAY VÌ TÍNH LẠI
+                        double selectedPrice = finalPrice;
+                        Log.d("Cart", "Using finalPrice: " + finalPrice + " (isFlashsale: " + isFlashsale + ")");
 
                         // Lấy dữ liệu từ Firestore
                         for (QueryDocumentSnapshot doc : querySnapshot) {
                             Variant var = doc.toObject(Variant.class);
                             variantNames.add(var.getVariant_name());
-                            int variantPrice = (int) (var.getVariant_price() * (1 - var.getVariant_discount() / 100.0));
+
+                            // Tính giá cho variant options
+                            int variantPrice;
+                            if (isFlashsale) {
+                                variantPrice = (int) (var.getVariant_price() * (1 - flashsaleDiscountRate / 100.0));
+                            } else {
+                                variantPrice = (int) (var.getVariant_price() * (1 - var.getVariant_discount() / 100.0));
+                            }
                             variantPriceMap.put(var.getVariant_name(), variantPrice);
+
                             // Lưu variant_image vào map, nếu không có thì dùng product_image
                             variantImageMap.put(var.getVariant_name(),
                                     var.getVariant_image() != null ? var.getVariant_image() : currentProduct.getProduct_image());
@@ -160,6 +172,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
                             if (var.getVariant_id().equals(selectedVariantId)) {
                                 selectedVariantName = var.getVariant_name();
                                 imageUrl = var.getVariant_image() != null ? var.getVariant_image() : imageUrl;
+                                // CẬP NHẬT selectedPrice CHO VARIANT ĐƯỢC CHỌN
                                 selectedPrice = variantPrice;
                             }
                         }
@@ -194,9 +207,14 @@ public class ProductDetailsActivity extends AppCompatActivity {
                             CartStorageHelper.saveCart(this, customerId, CartManager.getInstance().getCartItems());
                         }
 
-                        Toast.makeText(this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+                        // Toast thông báo khác nhau cho flashsale
+                        String toastMessage = isFlashsale ?
+                                "Đã thêm vào giỏ hàng với giá flashsale!" :
+                                "Đã thêm vào giỏ hàng";
+                        Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show();
                     });
         });
+
     }
 
     private void loadProductDetails() {
@@ -244,6 +262,9 @@ public class ProductDetailsActivity extends AppCompatActivity {
             }
             if (isFlashsale) {
                 displayFlashsalePrice(variant.getVariant_price());
+                finalPrice = flashsalePrice;
+            } else {
+                finalPrice = discountPrice;
             }
         } else {
             double discountPrice = product.getPrice() * (1 - product.getDiscount() / 100.0);
@@ -262,9 +283,12 @@ public class ProductDetailsActivity extends AppCompatActivity {
             }
             if (isFlashsale) {
                 displayFlashsalePrice(product.getPrice());
+                finalPrice = flashsalePrice;
+            } else {
+                finalPrice = discountPrice;
             }
         }
-
+        Log.d("ProductDetailsActivity", "💰 Final price set to: " + finalPrice);
         txtProductName.setText(product.getProduct_name());
         txtProductDescription.setText(product.getDescription());
     }
