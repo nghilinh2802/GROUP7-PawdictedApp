@@ -623,8 +623,9 @@ public class OrderDetailActivity extends AppCompatActivity {
 
                             // Cập nhật tổng chi phí
                             TextView totalCostTextView = findViewById(R.id.tv_total_cost);
-                            String formattedTotalCost = String.format("%,d", totalCostOfGoods);
-                            totalCostTextView.setText(formattedTotalCost + " ₫");
+                            java.text.NumberFormat formatter = java.text.NumberFormat.getInstance(new Locale("vi", "VN"));
+                            String formattedTotalCost = formatter.format(totalCostOfGoods);
+                            totalCostTextView.setText(formattedTotalCost + "₫");
                         }
                     }
                 });

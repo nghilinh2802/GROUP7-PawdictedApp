@@ -1,144 +1,145 @@
 package com.group7.pawdicted;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.text.Html;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
-import com.group7.pawdicted.mobile.connectors.SQLiteConnector;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.HashMap;
 
 public class RefundReturnDetailActivity extends AppCompatActivity {
-    TextView tvRefundAmount;
-    TextView tvDetailRefundAmount, tvDetailRequestedAt, tvDetailRefundTo, tvDetailApproved, tvDetailProcessed, tvDetailReason;
-    LinearLayout llRefundProducts;
+
+    ImageView btn_back;
+    TextView tv_status, tv_refund_amount, tv_refund_method;
+    TextView tv_detail_requested_at, tv_return_situation, tv_return_reason;
+    LinearLayout ll_items;
+
+    FirebaseFirestore db;
+    String orderId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Window window = getWindow();
-        window.setStatusBarColor(Color.WHITE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            View decor = window.getDecorView();
-            decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-        }
-
         setContentView(R.layout.activity_refund_return_detail);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
-            return insets;
-        });
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
+
+        db = FirebaseFirestore.getInstance();
+        orderId = getIntent().getStringExtra("order_id");
 
         addViews();
+        addEvents();
 
-        String orderId = getIntent().getStringExtra("order_id");
-        if (orderId != null) {
-            loadRefundInfo(orderId);
+        if (orderId != null && !orderId.isEmpty()) {
+            loadRefundDetails(orderId);
+        } else {
+            Toast.makeText(this, "Order ID not found", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void addViews() {
-        tvDetailRefundAmount = findViewById(R.id.tv_detail_refund_amount);
-        tvDetailRequestedAt  = findViewById(R.id.tv_detail_requested_at);
-        tvDetailRefundTo     = findViewById(R.id.tv_detail_refund_to);
-        tvDetailApproved     = findViewById(R.id.tv_detail_approved);
-        tvDetailProcessed    = findViewById(R.id.tv_detail_processed);
-        tvDetailReason       = findViewById(R.id.tv_detail_reason);
-        llRefundProducts     = findViewById(R.id.ll_refund_products);
-        tvRefundAmount = findViewById(R.id.tv_refund_amount);
-
-        findViewById(R.id.btn_back).setOnClickListener(v -> onBackPressed());
+        btn_back = findViewById(R.id.btn_back);
+        tv_status = findViewById(R.id.tv_status);
+        tv_refund_amount = findViewById(R.id.tv_refund_amount);
+        tv_refund_method = findViewById(R.id.tv_refund_method);
+        tv_detail_requested_at = findViewById(R.id.tv_detail_requested_at);
+        tv_return_situation = findViewById(R.id.tv_return_situation);
+        tv_return_reason = findViewById(R.id.tv_return_reason);
+        ll_items = findViewById(R.id.ll_items);
     }
 
-    private void loadRefundInfo(String orderId) {
-        SQLiteConnector dbHelper = new SQLiteConnector(this);
-        SQLiteDatabase db = dbHelper.getDatabase();
+    private void addEvents() {
+        btn_back.setOnClickListener(v -> onBackPressed());
+    }
 
-        Cursor cursor = db.rawQuery(
-                "SELECT i.product_name, i.quantity, o.refund_amount, o.refund_reason, " +
-                        "o.refund_requested_at, o.date_approved, o.date_processed " +
-                        "FROM order_items i JOIN orders o ON i.order_id = o.order_id " +
-                        "WHERE i.order_id = ?",
-                new String[]{orderId}
-        );
+    private void loadRefundDetails(String orderId) {
+        db.collection("orders").document(orderId).get().addOnSuccessListener(document -> {
+            if (document.exists()) {
+                tv_status.setText("Successfully requested a return!");
+                Number refundAmount = document.getDouble("return_amount");
+                String returnReason = document.getString("return_reason");
+                String refundMethod = document.getString("refund_method");
+                List<Map<String, String>> productReturn = (List<Map<String, String>>) document.get("product_return");
+                List<String> returnSituation = (List<String>) document.get("return_situation");
+                Date requestedAt = document.getDate("return_requested_at");
 
-        llRefundProducts.removeAllViews();
-
-        if (cursor.moveToFirst()) {
-            int refundAmount     = cursor.getInt(2);
-            String refundReason  = cursor.getString(3);
-            String requestedAt   = cursor.getString(4);
-            String dateApproved  = cursor.getString(5);
-            String dateProcessed = cursor.getString(6);
-
-            tvDetailRefundAmount.setText(formatCurrency(refundAmount) + " ₫");
-            tvRefundAmount.setText(formatCurrency(refundAmount) + " ₫");
-            tvDetailRequestedAt.setText(requestedAt);
-            tvDetailRefundTo.setText("Linked Smart Banking");
-            tvDetailApproved.setText(dateApproved);
-            tvDetailProcessed.setText(dateProcessed);
-            tvDetailReason.setText(refundReason);
-
-            do {
-                String productName = cursor.getString(0);
-                int quantity = cursor.getInt(1);
-
-                LinearLayout item = new LinearLayout(this);
-                item.setOrientation(LinearLayout.HORIZONTAL);
-                item.setPadding(0, 16, 0, 16);
-
-                ImageView img = new ImageView(this);
-                LinearLayout.LayoutParams imgParams = new LinearLayout.LayoutParams(100, 100);
-                img.setLayoutParams(imgParams);
-
-                TextView tvInfo = new TextView(this);
-                tvInfo.setLayoutParams(new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-                tvInfo.setPadding(16, 0, 0, 0);
-                tvInfo.setText(Html.fromHtml("<b>" + productName + "</b><br>x" + quantity));
-                tvInfo.setTextColor(Color.BLACK);
-
-                item.addView(img);
-                item.addView(tvInfo);
-
-                Cursor imgCursor = db.rawQuery(
-                        "SELECT ImageLink FROM products WHERE product_name = ? LIMIT 1",
-                        new String[]{productName}
-                );
-                if (imgCursor.moveToFirst()) {
-                    String imageUrl = imgCursor.getString(0);
-                    Glide.with(this).load(imageUrl).into(img);
+                if (refundAmount != null) {
+                    java.text.NumberFormat formatter = java.text.NumberFormat.getInstance(new Locale("vi", "VN"));
+                    tv_refund_amount.setText(formatter.format(refundAmount) + "₫");
                 }
-                imgCursor.close();
+                if (refundMethod != null) tv_refund_method.setText(refundMethod);
+                if (returnReason != null) tv_return_reason.setText(returnReason);
+                if (returnSituation != null) tv_return_situation.setText(String.join(", ", returnSituation));
+                if (requestedAt != null) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+                    tv_detail_requested_at.setText(sdf.format(requestedAt));
+                }
 
-                llRefundProducts.addView(item);
-            } while (cursor.moveToNext());
-        }
+                if (productReturn != null) {
+                    for (Map<String, String> item : productReturn) {
+                        String productId = item.get("product_id");
+                        String productName = item.get("product_name");
 
-        cursor.close();
-        db.close();
-    }
+                        db.collection("products").document(productId).get().addOnSuccessListener(productDoc -> {
+                            if (productDoc.exists()) {
+                                String imageUrl = productDoc.getString("product_image");
 
-    private String formatCurrency(int amount) {
-        NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
-        return formatter.format(amount);
+                                // Tạo container nằm ngang
+                                LinearLayout row = new LinearLayout(this);
+                                row.setOrientation(LinearLayout.HORIZONTAL);
+                                row.setPadding(0, 16, 0, 16);
+
+                                // Tạo ImageView
+                                ImageView imageView = new ImageView(this);
+                                int imageSize = (int) getResources().getDisplayMetrics().density * 64;
+                                LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(imageSize, imageSize);
+                                imageParams.setMargins(0, 0, 16, 0);
+                                imageView.setLayoutParams(imageParams);
+                                Glide.with(this)
+                                        .load(imageUrl)
+                                        .placeholder(R.mipmap.ic_launcher)
+                                        .error(R.mipmap.ic_launcher)
+                                        .into(imageView);
+
+                                // Tạo TextView cho tên sản phẩm
+                                TextView tvName = new TextView(this);
+                                tvName.setText(productName);
+                                tvName.setTextSize(15);
+                                tvName.setTextColor(getResources().getColor(android.R.color.black));
+                                tvName.setLayoutParams(new LinearLayout.LayoutParams(
+                                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                                        LinearLayout.LayoutParams.WRAP_CONTENT
+                                ));
+
+                                // Thêm ImageView và TextView vào dòng
+                                row.addView(imageView);
+                                row.addView(tvName);
+
+                                // Thêm dòng vào layout cha
+                                ll_items.addView(row);
+                            }
+                        });
+                    }
+                }
+
+            } else {
+                Toast.makeText(this, "Refund data not found", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

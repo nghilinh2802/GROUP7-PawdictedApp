@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="#FFFFFF"
+    android:fitsSystemWindows="true">
 
     <!-- Appbar -->
     <RelativeLayout
@@ -12,7 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:background="#9C162C"
-        android:padding="12dp">
+        android:paddingHorizontal="16dp"
+        android:gravity="center_vertical">
 
         <ImageView
             android:id="@+id/btn_back"
@@ -27,8 +28,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="RETURN REFUND DETAIL"
-            android:textColor="#ffffff"
-            android:textSize="20sp"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
             android:textStyle="bold"
             android:layout_centerInParent="true" />
     </RelativeLayout>
@@ -43,52 +44,54 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="16dp">
+            android:paddingHorizontal="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="24dp">
 
-            <!-- Status bar -->
+            <!-- Status Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
-                android:layout_marginTop="12dp"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="4dp"
-                app:cardBackgroundColor="#FFF7E8">
+                app:cardBackgroundColor="#FFF7E8"
+                android:layout_marginBottom="16dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@mipmap/ic_completed_red"/>
 
                     <TextView
                         android:id="@+id/tv_status"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Refund Credited Successfully"
+                        android:layout_marginStart="12dp"
+                        android:text="Successfully requested a return!"
                         android:textColor="#9C162C"
                         android:textSize="16sp"
                         android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tv_status_sub"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Good news! Your refund is approved. Thank you for returning your items in time."
-                        android:textColor="#000000"
-                        android:textSize="13sp"
-                        android:layout_marginTop="4dp"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Refund Summary Card -->
+            <!-- Refund Summary -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
                 app:cardCornerRadius="12dp"
-                android:layout_marginHorizontal="10dp"
                 app:cardElevation="4dp"
-                app:cardBackgroundColor="#f8f1f1">
+                app:cardBackgroundColor="#f8f1f1"
+                android:layout_marginBottom="16dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -110,10 +113,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="#9C162C"
-                        android:textSize="20sp"
+                        android:textSize="22sp"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:layout_marginTop="4dp" />
+                        android:layout_marginTop="6dp" />
 
                     <TextView
                         android:id="@+id/tv_refund_method"
@@ -121,120 +124,18 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:gravity="center"
-                        android:text="To your Linked Smart Banking"
-                        android:textColor="#000000"
+                        android:text="Funds will appear in your wallet soon (within 10 days)."
+                        android:textColor="#555555"
                         android:textStyle="italic"
-                        android:textSize="14sp" />
-
-                    <!-- Refund Progress -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center"
-                        android:layout_marginTop="16dp">
-
-                        <!-- Approved -->
-                        <LinearLayout
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
-
-                            <ImageView
-                                android:id="@+id/img_approved"
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:src="@mipmap/ic_all_product_red" />
-
-                            <TextView android:text="Refund Approved"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textSize="12sp"
-                                android:textColor="#000000" />
-                            <TextView
-                                android:id="@+id/tv_date_approved"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textSize="12sp"
-                                android:textColor="#666666" />
-                        </LinearLayout>
-
-                        <ImageView
-                            android:layout_marginHorizontal="8dp"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@mipmap/ic_line" />
-
-                        <!-- Processed -->
-                        <LinearLayout
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
-
-                            <ImageView
-                                android:id="@+id/img_processed"
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:src="@mipmap/ic_step_processed_red" />
-
-                            <TextView android:text="Refund Processed"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textSize="12sp"
-                                android:textColor="#000000" />
-                            <TextView
-                                android:id="@+id/tv_date_processed"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textSize="12sp"
-                                android:textColor="#666666" />
-                        </LinearLayout>
-
-                        <ImageView
-                            android:layout_marginHorizontal="8dp"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@mipmap/ic_line" />
-
-                        <!-- Credited -->
-                        <LinearLayout
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
-
-                            <ImageView
-                                android:id="@+id/img_credited"
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:src="@mipmap/ic_to_confirm" />
-
-                            <TextView
-                                android:text="Refund Credited"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:gravity="center"
-                                android:textSize="12sp"
-                                android:textColor="#000000"/>
-                            <TextView
-                                android:id="@+id/tv_date_credited"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textSize="12sp"
-                                android:textColor="#666666" />
-                        </LinearLayout>
-                    </LinearLayout>
+                        android:textSize="13sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Combined Refund Detail + Product List Card -->
+            <!-- Returned Products -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginHorizontal="10dp"
+                android:layout_marginBottom="16dp"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="4dp"
                 app:cardBackgroundColor="#f8f1f1">
@@ -245,29 +146,54 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <!-- Product List -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Returned Products"
+                        android:textStyle="bold"
+                        android:textColor="#000000"
+                        android:textSize="16sp"
+                        android:layout_marginBottom="8dp" />
+
                     <LinearLayout
-                        android:id="@+id/ll_refund_products"
+                        android:id="@+id/ll_items"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-                    <!-- Refund Detail (2-column GridLayout) -->
+            <!-- Refund Details -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#f8f1f1">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Refund Details"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:textColor="#000000"
+                        android:layout_marginBottom="8dp" />
+
                     <GridLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:columnCount="2">
+                        android:columnCount="2"
+                        android:columnOrderPreserved="false"
+                        android:layout_marginBottom="4dp">
 
-                        <TextView android:text="Refund Amount" />
-                        <TextView
-                            android:id="@+id/tv_detail_refund_amount"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
-                            android:gravity="end"
-                            android:textColor="#000000" />
-
-                        <TextView android:text="Requested at" />
+                        <TextView android:text="Requested At" />
                         <TextView
                             android:id="@+id/tv_detail_requested_at"
                             android:layout_width="0dp"
@@ -276,36 +202,18 @@
                             android:gravity="end"
                             android:textColor="#000000" />
 
-                        <TextView android:text="Refund to" />
+                        <TextView android:text="Return Situation" />
                         <TextView
-                            android:id="@+id/tv_detail_refund_to"
+                            android:id="@+id/tv_return_situation"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_columnWeight="1"
                             android:gravity="end"
                             android:textColor="#000000" />
 
-                        <TextView android:text="Approved at" />
+                        <TextView android:text="Return Reason" />
                         <TextView
-                            android:id="@+id/tv_detail_approved"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
-                            android:gravity="end"
-                            android:textColor="#000000" />
-
-                        <TextView android:text="Reason" />
-                        <TextView
-                            android:id="@+id/tv_detail_reason"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
-                            android:gravity="end"
-                            android:textColor="#000000" />
-
-                        <TextView android:text="Processed at" />
-                        <TextView
-                            android:id="@+id/tv_detail_processed"
+                            android:id="@+id/tv_return_reason"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_columnWeight="1"
@@ -314,7 +222,6 @@
                     </GridLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
-
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>
