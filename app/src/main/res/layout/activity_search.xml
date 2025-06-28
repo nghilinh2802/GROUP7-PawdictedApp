@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:background="#9C162C"
-        android:padding="12dp"
+        android:padding="15dp"
         android:gravity="center_vertical">
 
         <!-- Back Button -->

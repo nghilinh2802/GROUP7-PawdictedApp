@@ -355,5 +355,14 @@ public class CategoryDetailsActivity extends AppCompatActivity {
         finish();
         return true;
     }
+
+    public void open_search(View view) {
+        Intent intent=new Intent(CategoryDetailsActivity.this,SearchActivity.class);
+        startActivity(intent);
+    }
+    public void open_cart(View view) {
+        Intent intent=new Intent(CategoryDetailsActivity.this,CartActivity.class);
+        startActivity(intent);
+    }
 }
 

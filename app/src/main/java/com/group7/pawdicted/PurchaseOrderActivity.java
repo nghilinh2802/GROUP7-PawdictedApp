@@ -67,7 +67,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         btn_cancelled = findViewById(R.id.btn_cancelled);
         btn_returnrefund = findViewById(R.id.btn_returnrefund);
         btn_back = findViewById(R.id.btn_back);
-        btn_search = findViewById(R.id.btn_search);
+//        btn_search = findViewById(R.id.btn_search);
 
         emptyView = findViewById(R.id.empty_view); // layout không có dữ liệu cho status đó  -text "You have no orders yet"
 
