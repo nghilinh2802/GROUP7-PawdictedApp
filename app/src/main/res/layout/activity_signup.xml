@@ -98,11 +98,10 @@
         android:layout_marginEnd="32dp"
         android:background="@drawable/rounded_edittext_red"
         android:drawableStart="@mipmap/ic_password"
-        android:drawableEnd="@android:drawable/ic_menu_view"
         android:drawablePadding="8dp"
         android:hint="Enter Password"
         android:inputType="textPassword"
-        android:padding="11dp"
+        android:padding="15dp"
         android:textColorHint="#777777"
         android:textSize="16sp" />
 
@@ -125,6 +124,7 @@
 
         <TextView
             android:id="@+id/tvTerms"
+            android:onClick="open_policy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Terms"
@@ -142,6 +142,7 @@
 
         <TextView
             android:id="@+id/tvPolicies"
+            android:onClick="open_policy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Policies"

@@ -25,9 +25,9 @@
 
     <ImageView
         android:id="@+id/btnRemoveRecentSearch"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:src="@mipmap/ic_back_circle"
+        android:layout_width="17dp"
+        android:layout_height="17dp"
+        android:src="@mipmap/ic_delete_x"
         android:padding="2dp"
         android:contentDescription="Remove" />
 </LinearLayout>
