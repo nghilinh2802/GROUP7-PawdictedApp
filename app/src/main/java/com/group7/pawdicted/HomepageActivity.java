@@ -476,4 +476,13 @@ public class HomepageActivity extends AppCompatActivity {
         Intent intent = new Intent(HomepageActivity.this, ChatActivity.class);
         startActivity(intent);
     }
+
+    public void open_search(View view) {
+        Intent intent=new Intent(HomepageActivity.this,SearchActivity.class);
+        startActivity(intent);
+    }
+    public void open_cart(View view) {
+        Intent intent=new Intent(HomepageActivity.this,CartActivity.class);
+        startActivity(intent);
+    }
 }

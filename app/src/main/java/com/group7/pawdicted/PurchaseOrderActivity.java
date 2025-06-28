@@ -80,7 +80,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         btn_cancelled = findViewById(R.id.btn_cancelled);
         btn_returnrefund = findViewById(R.id.btn_returnrefund);
         btn_back = findViewById(R.id.btn_back);
-        btn_search = findViewById(R.id.btn_search);
+//        btn_search = findViewById(R.id.btn_search);
 
         emptyView = findViewById(R.id.empty_view);
         orderScroll = findViewById(R.id.order_scroll);

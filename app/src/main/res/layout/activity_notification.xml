@@ -11,16 +11,17 @@
         android:id="@+id/toolbar"
         android:title="Notification"
         android:layout_width="match_parent"
-        android:layout_height="86dp"
+        android:layout_height="wrap_content"
         android:paddingTop="24dp"
+        android:padding="16dp"
         android:background="@color/main_color"
         android:paddingStart="8dp"
         android:paddingEnd="8dp">
 
         <ImageView
             android:id="@+id/imgBack"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_marginStart="5dp"
             android:contentDescription="Back"
             android:src="@mipmap/ic_back_icon_white"

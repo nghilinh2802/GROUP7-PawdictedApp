@@ -10,9 +10,10 @@
     <!-- App Bar -->
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
         android:background="#9C162C"
-        android:padding="12dp">
+        >
 
         <ImageView
             android:id="@+id/btn_back"
@@ -31,13 +32,6 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <ImageView
-            android:id="@+id/btn_search"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:src="@mipmap/ic_search_white" />
     </RelativeLayout>
 
     <!-- Tab Buttons -->
@@ -45,6 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fillViewport="true"
+        android:padding="10dp"
         android:background="@android:color/transparent"
         android:paddingTop="8dp"
         android:paddingBottom="8dp">

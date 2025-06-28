@@ -1,193 +1,222 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#f8f1f1"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="16dp"
     tools:context=".LoginActivity">
 
-    <!-- Logo  -->
-    <ImageView
-        android:layout_width="344dp"
-        android:layout_height="280dp"
-        android:contentDescription="Login Logo"
-        android:src="@mipmap/ic_logo" />
-
-    <!-- Title -->
-    <TextView
-        android:id="@+id/txtLogin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/title_login_login"
-        android:textColor="#9c162c"
-        android:textSize="28sp"
-        android:textStyle="bold" />
-
-    <!-- Username Field -->
-    <EditText
-        android:id="@+id/edtPhone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="13dp"
-        android:layout_marginEnd="32dp"
-        android:background="@drawable/rounded_edittext_red"
-        android:drawableStart="@mipmap/ic_phone"
-        android:drawablePadding="8dp"
-        android:hint="Phone"
-        android:inputType="text"
-        android:padding="16dp"
-        android:textColorHint="#777777"
-        android:textSize="16sp" />
-
-    <!-- Password Field -->
-    <EditText
-        android:id="@+id/edtPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="13dp"
-        android:layout_marginEnd="32dp"
-        android:background="@drawable/rounded_edittext_red"
-        android:drawableStart="@mipmap/ic_password"
-        android:drawablePadding="8dp"
-        android:hint="Password"
-        android:inputType="textPassword"
-        android:padding="15dp"
-        android:textColorHint="#777777"
-        android:textSize="16sp" />
-
-    <!-- Remember Me and Forgot Password -->
+    <!-- Nội dung giao diện chính -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginTop="5dp"
-        android:gravity="center_vertical">
-
-        <CheckBox
-            android:id="@+id/ckbRememberInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:buttonTint="#9c162c"
-            android:text="@string/title_remember_me"
-            android:textColor="@color/black" />
-
-        <TextView
-            android:id="@+id/txtForgotPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="end"
-            android:onClick="open_forgot_password"
-            android:text="@string/title_forgot_password"
-            android:textColor="#9c162c"
-            android:textSize="14sp" />
-    </LinearLayout>
-
-    <!-- Login Button -->
-    <Button
-        android:id="@+id/btnLogin"
-        android:layout_width="186dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="32dp"
-        android:background="@drawable/rounded_login_button"
-        android:padding="10dp"
-        android:text="@string/title_login_login"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        app:backgroundTint="#9c162c" />
-
-    <!-- Or Login With -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:gravity="center"
-        android:layout_marginTop="20dp">
+        android:padding="16dp">
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1"
-            android:background="#9c162c" />
+        <!-- Logo -->
+        <ImageView
+            android:layout_width="344dp"
+            android:layout_height="280dp"
+            android:contentDescription="Login Logo"
+            android:src="@mipmap/ic_logo" />
 
+        <!-- Title -->
         <TextView
+            android:id="@+id/txtLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:text="@string/title_or_login_with"
-            android:textColor="#9c162c" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1"
-            android:background="#9c162c" />
-    </LinearLayout>
-
-    <!-- Google and Facebook Buttons -->
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="20dp">
-
-        <ImageButton
-            android:id="@+id/imgGoogle"
-            android:layout_width="150dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="30dp"
-            android:background="@drawable/account_login_button"
-            android:contentDescription="Google"
-            android:padding="1dp"
-            android:scaleType="fitCenter"
-            android:src="@mipmap/ic_google_login" />
-
-        <ImageButton
-            android:id="@+id/imgFacebook"
-            android:layout_width="150dp"
-            android:layout_height="40dp"
-            android:background="@drawable/account_login_button"
-            android:contentDescription="Facebook"
-            android:padding="1dp"
-            android:scaleType="fitCenter"
-            android:src="@mipmap/ic_facebook_login" />
-    </LinearLayout>
-
-    <!-- Sign Up Link -->
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="20dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/title_dont_have_account"
+            android:text="@string/title_login_login"
             android:textColor="#9c162c"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/txtSignUp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:clickable="true"
-            android:text="@string/title_signup_login"
-            android:textColor="#9c162c"
-            android:textSize="14sp"
-            android:onClick="open_signup"
+            android:textSize="28sp"
             android:textStyle="bold" />
+
+        <!-- Phone Field -->
+        <EditText
+            android:id="@+id/edtPhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="13dp"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/rounded_edittext_red"
+            android:drawableStart="@mipmap/ic_phone"
+            android:drawablePadding="8dp"
+            android:hint="Phone"
+            android:inputType="phone"
+            android:padding="16dp"
+            android:textColorHint="#777777"
+            android:textSize="16sp" />
+
+        <!-- Password Field -->
+        <EditText
+            android:id="@+id/edtPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="13dp"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/rounded_edittext_red"
+            android:drawableStart="@mipmap/ic_password"
+            android:drawablePadding="8dp"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:padding="15dp"
+            android:textColorHint="#777777"
+            android:textSize="16sp" />
+
+        <!-- Remember Me and Forgot Password -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginTop="5dp"
+            android:gravity="center_vertical">
+
+            <CheckBox
+                android:id="@+id/ckbRememberInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:buttonTint="#9c162c"
+                android:text="@string/title_remember_me"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/txtForgotPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:onClick="open_forgot_password"
+                android:text="@string/title_forgot_password"
+                android:textColor="#9c162c"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- Login Button -->
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="186dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/rounded_login_button"
+            android:padding="10dp"
+            android:text="@string/title_login_login"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            app:backgroundTint="#9c162c" />
+
+        <!-- Or Login With -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="20dp">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="#9c162c" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/title_or_login_with"
+                android:textColor="#9c162c" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="#9c162c" />
+        </LinearLayout>
+
+        <!-- Google and Facebook Buttons -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp">
+
+            <ImageButton
+                android:id="@+id/imgGoogle"
+                android:layout_width="150dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="30dp"
+                android:background="@drawable/account_login_button"
+                android:contentDescription="Google"
+                android:padding="1dp"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/ic_google_login" />
+
+            <ImageButton
+                android:id="@+id/imgFacebook"
+                android:layout_width="150dp"
+                android:layout_height="40dp"
+                android:background="@drawable/account_login_button"
+                android:contentDescription="Facebook"
+                android:padding="1dp"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/ic_facebook_login" />
+        </LinearLayout>
+
+        <!-- Sign Up Link -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title_dont_have_account"
+                android:textColor="#9c162c"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/txtSignUp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:clickable="true"
+                android:text="@string/title_signup_login"
+                android:textColor="#9c162c"
+                android:textSize="14sp"
+                android:onClick="open_signup"
+                android:textStyle="bold" />
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+
+    <!-- Overlay and ProgressBar -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true">
+
+        <View
+            android:id="@+id/overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#80000000"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:indeterminateTint="#9c162c"
+            android:visibility="gone" />
+    </FrameLayout>
+
+</RelativeLayout>
