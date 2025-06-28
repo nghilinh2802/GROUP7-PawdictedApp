@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -30,14 +32,17 @@ import com.group7.pawdicted.mobile.adapters.RecentSearchAdapter;
 import com.group7.pawdicted.mobile.models.PopularSearch;
 import com.group7.pawdicted.mobile.models.Product;
 import com.group7.pawdicted.mobile.models.RecentSearch;
+import com.group7.pawdicted.mobile.services.SearchService;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class SearchActivity extends AppCompatActivity {
     private static final String TAG = "SearchActivity";
@@ -64,10 +69,17 @@ public class SearchActivity extends AppCompatActivity {
     // Firebase
     private FirebaseFirestore db;
 
+    // Smart Search Service
+    private SearchService searchService;
+
     // Search handler
-    private Handler searchHandler = new Handler();
+    private Handler searchHandler = new Handler(Looper.getMainLooper());
     private Runnable searchRunnable;
-    private static final int SEARCH_DELAY = 500; // 500ms delay
+    private static final int SEARCH_DELAY = 800; // 800ms delay để tránh gọi API quá nhiều
+
+    // Search state
+    private boolean isSearching = false;
+    private String currentQuery = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +87,7 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
 
         initViews();
-        initFirebase();
+        initServices();
         setupRecyclerViews();
         setupListeners();
         loadData();
@@ -100,8 +112,9 @@ public class SearchActivity extends AppCompatActivity {
         rvSearchResults = findViewById(R.id.rvSearchResults);
     }
 
-    private void initFirebase() {
+    private void initServices() {
         db = FirebaseFirestore.getInstance();
+        searchService = new SearchService();
     }
 
     private void setupRecyclerViews() {
@@ -143,10 +156,11 @@ public class SearchActivity extends AppCompatActivity {
                 }
 
                 if (query.isEmpty()) {
+                    currentQuery = "";
                     showSuggestions();
-                } else {
-                    // Delayed search
-                    searchRunnable = () -> performSearch(query);
+                } else if (!query.equals(currentQuery)) {
+                    // Delayed search chỉ khi query thay đổi
+                    searchRunnable = () -> performSmartSearch(query);
                     searchHandler.postDelayed(searchRunnable, SEARCH_DELAY);
                 }
             }
@@ -165,7 +179,7 @@ public class SearchActivity extends AppCompatActivity {
         btnSearch.setOnClickListener(v -> {
             String query = edtSearchInput.getText().toString().trim();
             if (!query.isEmpty()) {
-                performSearch(query);
+                performSmartSearch(query);
                 saveRecentSearch(query);
             }
         });
@@ -176,7 +190,7 @@ public class SearchActivity extends AppCompatActivity {
         // Popular search click
         popularSearchAdapter.setOnPopularSearchClickListener(popularSearch -> {
             edtSearchInput.setText(popularSearch.getSearchTerm());
-            performSearch(popularSearch.getSearchTerm());
+            performSmartSearch(popularSearch.getSearchTerm());
             saveRecentSearch(popularSearch.getSearchTerm());
         });
 
@@ -185,7 +199,7 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onRecentSearchClick(RecentSearch recentSearch) {
                 edtSearchInput.setText(recentSearch.getSearchTerm());
-                performSearch(recentSearch.getSearchTerm());
+                performSmartSearch(recentSearch.getSearchTerm());
             }
 
             @Override
@@ -207,19 +221,16 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void loadPopularSearches() {
-        // Create some sample popular searches or load from Firestore
         popularSearches.clear();
 
-        // You can either hardcode popular searches or calculate them from Firestore
         List<String> popularTerms = List.of("Thức ăn cho mèo", "Pate cho chó", "Đồ chơi cho thú cưng",
                 "Cát vệ sinh", "Vitamin cho thú cưng");
 
         for (String term : popularTerms) {
-            // Get a sample product image for each term
             getProductImageForTerm(term, (imageUrl, count) -> {
                 PopularSearch popularSearch = new PopularSearch(term, imageUrl, count);
                 popularSearches.add(popularSearch);
-                popularSearchAdapter.notifyDataSetChanged();
+                runOnUiThread(() -> popularSearchAdapter.notifyDataSetChanged());
             });
         }
     }
@@ -231,16 +242,14 @@ public class SearchActivity extends AppCompatActivity {
                 .limit(1)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    String imageUrl = ""; // Khởi tạo mặc định là empty string
+                    String imageUrl = "";
 
                     if (!queryDocumentSnapshots.isEmpty()) {
                         DocumentSnapshot doc = queryDocumentSnapshots.getDocuments().get(0);
                         String productImage = doc.getString("product_image");
-                        // Kiểm tra null và gán giá trị an toàn
                         imageUrl = (productImage != null) ? productImage : "";
                     }
 
-                    // Biến final để sử dụng trong lambda
                     final String finalImageUrl = imageUrl;
 
                     // Get total count for this search term
@@ -319,26 +328,164 @@ public class SearchActivity extends AppCompatActivity {
         layoutRecentSearches.setVisibility(recentSearches.isEmpty() ? View.GONE : View.VISIBLE);
     }
 
-    private void performSearch(String query) {
-        if (query.trim().isEmpty()) return;
+    /**
+     * Perform Smart Search using AI API + Firestore fallback
+     */
+    private void performSmartSearch(String query) {
+        if (query.trim().isEmpty() || isSearching) return;
 
+        currentQuery = query.trim();
+        isSearching = true;
         showLoading();
 
-        // Search in Firestore
+        Log.d(TAG, "Starting smart search for: " + query);
+
+        // First try Smart Search API
+        searchService.searchProducts(currentQuery, new SearchService.SearchCallback() {
+            @Override
+            public void onSuccess(List<String> productIds) {
+                Log.d(TAG, "Smart search API returned " + productIds.size() + " product IDs");
+
+                if (!productIds.isEmpty()) {
+                    // Get products from Firestore using the AI-recommended IDs
+                    getProductsByIds(productIds, true);
+                } else {
+                    // Fallback to traditional search
+                    Log.d(TAG, "No results from smart search, falling back to traditional search");
+                    performTraditionalSearch(currentQuery);
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                Log.e(TAG, "Smart search API error: " + error);
+                runOnUiThread(() -> {
+                    // Show toast for API error but don't stop the search
+                    Toast.makeText(SearchActivity.this, "Smart search unavailable, using basic search", Toast.LENGTH_SHORT).show();
+
+                    // Fallback to traditional search
+                    performTraditionalSearch(currentQuery);
+                });
+            }
+        });
+    }
+
+    /**
+     * Get products by their IDs from Firestore
+     */
+    private void getProductsByIds(List<String> productIds, boolean isFromSmartSearch) {
+        if (productIds.isEmpty()) {
+            runOnUiThread(() -> {
+                isSearching = false;
+                showNoResults();
+            });
+            return;
+        }
+
+        Log.d(TAG, "Getting products by IDs: " + productIds.size() + " items");
+
+        // Split productIds into chunks of 10 (Firestore's 'in' query limit)
+        List<List<String>> chunks = new ArrayList<>();
+        for (int i = 0; i < productIds.size(); i += 10) {
+            chunks.add(productIds.subList(i, Math.min(i + 10, productIds.size())));
+        }
+
+        List<Product> allProducts = new ArrayList<>();
+        final int[] completedChunks = {0};
+
+        for (List<String> chunk : chunks) {
+            db.collection("products")
+                    .whereIn("product_id", chunk)
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            try {
+                                Product product = document.toObject(Product.class);
+                                if (product != null) {
+                                    allProducts.add(product);
+                                }
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error parsing product: " + document.getId(), e);
+                            }
+                        }
+
+                        completedChunks[0]++;
+
+                        // When all chunks are processed
+                        if (completedChunks[0] == chunks.size()) {
+                            runOnUiThread(() -> {
+                                isSearching = false;
+
+                                if (!allProducts.isEmpty()) {
+                                    // Sort by the order of productIds (maintain AI ranking)
+                                    if (isFromSmartSearch) {
+                                        allProducts.sort((p1, p2) -> {
+                                            int index1 = productIds.indexOf(p1.getProduct_id());
+                                            int index2 = productIds.indexOf(p2.getProduct_id());
+                                            return Integer.compare(index1, index2);
+                                        });
+                                    }
+
+                                    searchResults.clear();
+                                    searchResults.addAll(allProducts);
+                                    showSearchResults();
+
+                                    Log.d(TAG, "Successfully loaded " + allProducts.size() + " products");
+                                } else {
+                                    // If smart search found IDs but Firestore has no matching products
+                                    // fallback to traditional search
+                                    if (isFromSmartSearch) {
+                                        Log.d(TAG, "Smart search IDs not found in Firestore, falling back to traditional search");
+                                        performTraditionalSearch(currentQuery);
+                                    } else {
+                                        showNoResults();
+                                    }
+                                }
+                            });
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Error getting products by IDs", e);
+                        completedChunks[0]++;
+
+                        if (completedChunks[0] == chunks.size()) {
+                            runOnUiThread(() -> {
+                                isSearching = false;
+                                if (isFromSmartSearch) {
+                                    // Fallback to traditional search
+                                    performTraditionalSearch(currentQuery);
+                                } else {
+                                    showNoResults();
+                                }
+                            });
+                        }
+                    });
+        }
+    }
+
+    /**
+     * Traditional Firestore search (fallback)
+     */
+    private void performTraditionalSearch(String query) {
+        if (query.trim().isEmpty()) return;
+
+        Log.d(TAG, "Performing traditional search for: " + query);
+
+        // Search in product names
         db.collection("products")
                 .whereGreaterThanOrEqualTo("product_name", query)
                 .whereLessThanOrEqualTo("product_name", query + "\uf8ff")
                 .orderBy("product_name")
-                .limit(50)
+                .limit(25)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    searchResults.clear();
+                    List<Product> nameSearchResults = new ArrayList<>();
 
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         try {
                             Product product = document.toObject(Product.class);
                             if (product != null) {
-                                searchResults.add(product);
+                                nameSearchResults.add(product);
                             }
                         } catch (Exception e) {
                             Log.e(TAG, "Error parsing product: " + document.getId(), e);
@@ -346,49 +493,64 @@ public class SearchActivity extends AppCompatActivity {
                     }
 
                     // Also search in description
-                    searchInDescription(query);
+                    searchInDescription(query, nameSearchResults);
 
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error searching products", e);
-                    showNoResults();
+                    Log.e(TAG, "Error in traditional search", e);
+                    runOnUiThread(() -> {
+                        isSearching = false;
+                        showNoResults();
+                    });
                 });
     }
 
-    private void searchInDescription(String query) {
+    private void searchInDescription(String query, List<Product> nameSearchResults) {
         db.collection("products")
                 .whereGreaterThanOrEqualTo("description", query)
                 .whereLessThanOrEqualTo("description", query + "\uf8ff")
                 .limit(25)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
+                    Set<String> existingIds = new HashSet<>();
 
+                    // Add existing products from name search
+                    for (Product product : nameSearchResults) {
+                        existingIds.add(product.getProduct_id());
+                    }
+
+                    // Add products from description search (avoid duplicates)
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         try {
                             Product product = document.toObject(Product.class);
-                            if (product != null && !containsProduct(product)) {
-                                searchResults.add(product);
+                            if (product != null && !existingIds.contains(product.getProduct_id())) {
+                                nameSearchResults.add(product);
+                                existingIds.add(product.getProduct_id());
                             }
                         } catch (Exception e) {
                             Log.e(TAG, "Error parsing product from description search: " + document.getId(), e);
                         }
                     }
 
-                    showSearchResults();
+                    runOnUiThread(() -> {
+                        isSearching = false;
+                        searchResults.clear();
+                        searchResults.addAll(nameSearchResults);
+                        showSearchResults();
+
+                        Log.d(TAG, "Traditional search completed with " + nameSearchResults.size() + " results");
+                    });
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error searching in description", e);
-                    showSearchResults(); // Show results from name search even if description search fails
+                    runOnUiThread(() -> {
+                        isSearching = false;
+                        // Show results from name search even if description search fails
+                        searchResults.clear();
+                        searchResults.addAll(nameSearchResults);
+                        showSearchResults();
+                    });
                 });
-    }
-
-    private boolean containsProduct(Product newProduct) {
-        for (Product existing : searchResults) {
-            if (existing.getProduct_id().equals(newProduct.getProduct_id())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private void showSuggestions() {
@@ -415,7 +577,8 @@ public class SearchActivity extends AppCompatActivity {
             layoutSearchResults.setVisibility(View.VISIBLE);
             layoutNoResults.setVisibility(View.GONE);
 
-            txtResultsCount.setText("Tìm thấy " + searchResults.size() + " kết quả");
+            String resultText = "Tìm thấy " + searchResults.size() + " kết quả";
+            txtResultsCount.setText(resultText);
 
             // Convert to Object list for adapter
             List<Object> items = new ArrayList<>(searchResults);
@@ -435,6 +598,9 @@ public class SearchActivity extends AppCompatActivity {
         super.onDestroy();
         if (searchHandler != null && searchRunnable != null) {
             searchHandler.removeCallbacks(searchRunnable);
+        }
+        if (searchService != null) {
+            searchService.shutdown();
         }
     }
 }
