@@ -224,129 +224,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
-                        android:nestedScrollingEnabled="false" />
+                        android:nestedScrollingEnabled="false"
+                        android:minHeight="200dp" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Payment Methods -->
-            <!-- Mỗi phương thức thanh toán -->
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="vertical"-->
-<!--                android:background="@drawable/white_fill_rounded_background"-->
-<!--                android:padding="12dp"-->
-<!--                android:layout_marginBottom="16dp"-->
-<!--                android:backgroundTint="#FFFFFF"-->
-<!--                android:elevation="1dp"-->
-<!--                android:clipToPadding="false">-->
-
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Payment Methods"-->
-<!--                    android:textColor="#000000"-->
-<!--                    android:textSize="18sp"-->
-<!--                    android:textStyle="bold"-->
-<!--                    android:layout_marginBottom="8dp" />-->
-
-<!--                &lt;!&ndash; Payment Option: Cash on Delivery &ndash;&gt;-->
-<!--                <LinearLayout-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:orientation="horizontal"-->
-<!--                    android:gravity="center_vertical"-->
-<!--                    android:padding="12dp"-->
-<!--                    android:layout_marginBottom="12dp"-->
-<!--                    android:background="@drawable/gray_rounded_background">-->
-
-<!--                    <ImageView-->
-<!--                        android:layout_width="24dp"-->
-<!--                        android:layout_height="24dp"-->
-<!--                        android:src="@mipmap/ic_cod" />-->
-
-<!--                    <TextView-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:text="Cash on Delivery"-->
-<!--                        android:textSize="16sp"-->
-<!--                        android:textColor="#000000"-->
-<!--                        android:paddingStart="8dp" />-->
-<!--                </LinearLayout>-->
-
-<!--                &lt;!&ndash; Payment Option: VNPAY &ndash;&gt;-->
-<!--                <LinearLayout-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:orientation="horizontal"-->
-<!--                    android:gravity="center_vertical"-->
-<!--                    android:padding="12dp"-->
-<!--                    android:layout_marginBottom="12dp"-->
-<!--                    android:background="@drawable/gray_rounded_background">-->
-
-<!--                    <ImageView-->
-<!--                        android:layout_width="24dp"-->
-<!--                        android:layout_height="24dp"-->
-<!--                        android:src="@mipmap/ic_vnpay" />-->
-
-<!--                    <TextView-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:text="QR Code - VNPay"-->
-<!--                        android:textSize="16sp"-->
-<!--                        android:textColor="#000000"-->
-<!--                        android:paddingStart="8dp" />-->
-<!--                </LinearLayout>-->
-
-<!--                &lt;!&ndash; Payment Option: ZaloPay &ndash;&gt;-->
-<!--                <LinearLayout-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:orientation="horizontal"-->
-<!--                    android:gravity="center_vertical"-->
-<!--                    android:padding="12dp"-->
-<!--                    android:layout_marginBottom="12dp"-->
-<!--                    android:background="@drawable/gray_rounded_background">-->
-
-<!--                    <ImageView-->
-<!--                        android:layout_width="24dp"-->
-<!--                        android:layout_height="24dp"-->
-<!--                        android:src="@mipmap/ic_zalopay" />-->
-
-<!--                    <TextView-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:text="ZaloPay"-->
-<!--                        android:textSize="16sp"-->
-<!--                        android:textColor="#000000"-->
-<!--                        android:paddingStart="8dp" />-->
-<!--                </LinearLayout>-->
-
-<!--                &lt;!&ndash; Payment Option: MoMo (selected) &ndash;&gt;-->
-<!--                <LinearLayout-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:orientation="horizontal"-->
-<!--                    android:gravity="center_vertical"-->
-<!--                    android:padding="12dp"-->
-<!--                    android:layout_marginBottom="12dp"-->
-<!--                    android:background="@drawable/gray_rounded_background">-->
-
-<!--                    <ImageView-->
-<!--                        android:layout_width="24dp"-->
-<!--                        android:layout_height="24dp"-->
-<!--                        android:src="@mipmap/ic_momo" />-->
-
-<!--                    <TextView-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:text="MoMo Wallet"-->
-<!--                        android:textSize="16sp"-->
-<!--                        android:textColor="#000000"-->
-<!--                        android:paddingStart="8dp" />-->
-<!--                </LinearLayout>-->
-<!--            </LinearLayout>-->
             <!-- Payment Methods -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -446,7 +329,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Merchandise Discount Subtotal"
+                        android:text="Merchandise Discount"
                         android:textColor="#000000" />
 
                     <TextView
@@ -467,7 +350,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Shipping Discount Subtotal"
+                        android:text="Shipping Discount"
                         android:textColor="#000000" />
 
                     <TextView
@@ -527,6 +410,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/txtTotalFooter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Total đ0"
@@ -535,6 +419,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/txtSavedFooter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Saved đ0"

@@ -1,6 +1,7 @@
 package com.group7.pawdicted;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -141,7 +143,10 @@ public class CartActivity extends AppCompatActivity {
         totalText.setText(formatter.format(total)); // Update the total price
         checkoutBtn.setText("Check Out (" + selectedCount + ")");
         checkoutBtn.setEnabled(selectedCount > 0); // Disable if no item is selected
-        checkoutBtn.setBackgroundColor(selectedCount > 0 ? getResources().getColor(R.color.main_color) : getResources().getColor(R.color.gray_text));
+        Drawable bg = ContextCompat.getDrawable(this,
+                selectedCount > 0 ? R.drawable.rounded_button_red : R.drawable.rounded_button_gray);
+        checkoutBtn.setBackground(bg);
+
     }
 
 

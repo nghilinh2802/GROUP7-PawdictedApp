@@ -35,6 +35,7 @@ public class CheckoutActivity extends AppCompatActivity {
     private RecyclerView recyclerViewPaymentMethods;
     private List<CartItem> cartItems;
     private TextView txtMerchandiseSubtotal, txtShippingSubtotal, txtShippingDiscountSubtotal, txtMerchandiseDiscountSubtotal, txtTotalPayment;
+    private TextView txtTotalFooter, txtSavedFooter;
     private Button btnPlaceOrder;
     private ShippingOption selectedShippingOption;
     private PaymentMethod selectedPaymentMethod;
@@ -53,6 +54,8 @@ public class CheckoutActivity extends AppCompatActivity {
         txtShippingSubtotal = findViewById(R.id.txtShippingSubtotal);
         txtShippingDiscountSubtotal = findViewById(R.id.txtShippingDiscountSubtotal);
         txtMerchandiseDiscountSubtotal = findViewById(R.id.txtMerchandiseDiscountSubtotal);
+        txtTotalFooter = findViewById(R.id.txtTotalFooter);
+        txtSavedFooter = findViewById(R.id.txtSavedFooter);
         txtTotalPayment = findViewById(R.id.txtTotalPayment);
         btnPlaceOrder = findViewById(R.id.btnPlaceOrder);
 
@@ -76,12 +79,12 @@ public class CheckoutActivity extends AppCompatActivity {
         List<ShippingOption> shippingOptions = new ArrayList<>();
         shippingOptions.add(new ShippingOption(
                 "STANDARD DELIVERY",
-                "Delivery fee 20K (HCMC); delivery fee 30K (outside province). Estimated delivery time is 2–5 days, excluding Sundays and holidays.",
+                "Delivery fee 20K. Estimated delivery time is 2–5 days, excluding Sundays and holidays.",
                 20000
         ));
         shippingOptions.add(new ShippingOption(
                 "EXPRESS DELIVERY",
-                "Delivery fee 45K (only available in HCMC); order before 5pm will be delivered the same day, after 5pm will be delivered the next day.",
+                "Delivery fee 45K (only available in HCMC); order before 5pm will be delivered the same day.",
                 45000
         ));
         Log.d("CheckoutActivity", "Shipping options size: " + shippingOptions.size());
@@ -139,14 +142,17 @@ public class CheckoutActivity extends AppCompatActivity {
         // Shipping Subtotal
         int shippingSubtotal = selectedShippingOption != null ? selectedShippingOption.getCost() : 0;
 
-        // Merchandise Discount Subtotal (currently set to 0)
+        // Merchandise Discount Subtotal (currently set to 0, update as needed)
         int merchandiseDiscountSubtotal = 0;
 
-        // Shipping Discount Subtotal (currently set to 0)
+        // Shipping Discount Subtotal (currently set to 0, update as needed)
         int shippingDiscountSubtotal = 0;
 
         // Total Payment Calculation
         int totalPayment = merchandiseSubtotal + shippingSubtotal - shippingDiscountSubtotal - merchandiseDiscountSubtotal;
+
+        // Saved Amount Calculation
+        int savedAmount = merchandiseDiscountSubtotal + shippingDiscountSubtotal;
 
         // Update the UI with calculated values
         txtMerchandiseSubtotal.setText(String.format("đ%s", formatCurrency(merchandiseSubtotal)));
@@ -154,6 +160,11 @@ public class CheckoutActivity extends AppCompatActivity {
         txtShippingDiscountSubtotal.setText(String.format("đ%s", formatCurrency(shippingDiscountSubtotal)));
         txtMerchandiseDiscountSubtotal.setText(String.format("đ%s", formatCurrency(merchandiseDiscountSubtotal)));
         txtTotalPayment.setText(String.format("đ%s", formatCurrency(totalPayment)));
+
+        // Update footer
+        txtTotalFooter.setText(String.format("Total đ%s", formatCurrency(totalPayment)));
+        txtSavedFooter.setText(String.format("Saved đ%s", formatCurrency(savedAmount)));
+        txtSavedFooter.setVisibility(savedAmount > 0 ? View.VISIBLE : View.GONE);
     }
 
     private String formatCurrency(int value) {
