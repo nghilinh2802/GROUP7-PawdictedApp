@@ -1,6 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- File: res/xml/network_security_config.xml -->
 <network-security-config>
-    <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">res.cloudinary.com</domain>
+    <!-- Cấu hình cho domain của Hugging Face -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">linhldn22411c-smart-search.hf.space</domain>
+        <domain includeSubdomains="true">huggingface.co</domain>
+        <domain includeSubdomains="true">hf.space</domain>
+        <!-- Chỉ cho phép HTTPS, không cho phép HTTP -->
+        <trust-anchors>
+            <!-- Sử dụng system certificate authorities -->
+            <certificates src="system"/>
+        </trust-anchors>
     </domain-config>
+
+    <!-- Cấu hình cho Firebase và Google services -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">firebase.googleapis.com</domain>
+        <domain includeSubdomains="true">firestore.googleapis.com</domain>
+        <domain includeSubdomains="true">googleapis.com</domain>
+        <domain includeSubdomains="true">google.com</domain>
+        <domain includeSubdomains="true">gstatic.com</domain>
+        <trust-anchors>
+            <certificates src="system"/>
+        </trust-anchors>
+    </domain-config>
+
+    <!-- Cấu hình mặc định cho tất cả domains khác -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <!-- Sử dụng system certificate authorities -->
+            <certificates src="system"/>
+        </trust-anchors>
+    </base-config>
+
+    <!-- Cấu hình debug (chỉ dùng cho debug build) -->
+    <debug-overrides>
+        <trust-anchors>
+            <!-- Trong debug mode, có thể thêm custom certificates nếu cần -->
+            <certificates src="system"/>
+            <!-- Uncomment dòng dưới nếu cần debug với custom certificates -->
+            <!-- <certificates src="user"/> -->
+        </trust-anchors>
+    </debug-overrides>
 </network-security-config>

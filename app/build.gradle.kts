@@ -63,7 +63,8 @@ dependencies {
     // ➕ Google Sign-In support (cần để dùng GoogleSignInClient, GoogleSignIn...)
     implementation("com.google.android.gms:play-services-auth:21.3.0")  // phiên bản mới nhất :contentReference[oaicite:1]{index=1}
 
-    implementation ("com.google.firebase:firebase-bom:33.15.0")
+    implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
+    implementation("com.google.firebase:firebase-storage")
     implementation ("com.google.firebase:firebase-firestore:25.1.4")
 
     implementation ("com.google.code.gson:gson:2.8.9")
@@ -74,4 +75,15 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.navigation:navigation-fragment:2.7.7")
     implementation("androidx.navigation:navigation-ui:2.7.7")
+
+    // OkHttp for API calls
+    implementation ("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+
+    // Optional: Retrofit (alternative to raw OkHttp)
+     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
+
 }

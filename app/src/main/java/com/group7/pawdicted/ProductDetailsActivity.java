@@ -264,7 +264,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
             double discountPrice = variant.getVariant_price() * (1 - variant.getVariant_discount() / 100.0);
             txtDiscountPrice.setText(formatter.format(discountPrice));
             txtProductPrice.setText(formatter.format(variant.getVariant_price()));
-            txtDiscountRate.setText(variant.getVariant_discount() > 0 ? "-" + variant.getVariant_discount() + "%" : "");
+            txtDiscountRate.setText(variant.getVariant_discount() > 0 ? "  -" + variant.getVariant_discount() + "%  " : "");
             txtSoldQuantity.setText(variant.getVariant_sold_quantity() + " sold");
             productRatingBar.setRating((float) variant.getVariant_rating());
             productRatingBar2.setRating((float) variant.getVariant_rating());
@@ -413,7 +413,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
             calculateFlashsalePrice(originalPrice);
             txtDiscountPrice.setText(formatter.format(flashsalePrice));
             txtProductPrice.setText(formatter.format(originalPrice));
-            txtDiscountRate.setText("-" + flashsaleDiscountRate + "%");
+            txtDiscountRate.setText("  -" + flashsaleDiscountRate + "%  ");
             txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             txtDiscountPrice.setTextColor(getColor(R.color.main_color));
         }

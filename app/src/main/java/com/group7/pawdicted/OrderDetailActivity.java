@@ -39,8 +39,9 @@ public class OrderDetailActivity extends AppCompatActivity {
 
     ImageView btn_back;
     FirebaseFirestore db;
-    Button btn_cancel, btn_contact, btn_evaluate;
+    Button btn_cancel, btn_contact, btn_evaluate, btn_returnrefund;
     private String orderId;
+    private String orderItemId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +71,40 @@ public class OrderDetailActivity extends AppCompatActivity {
             return;  // Dừng lại để không tiếp tục xử lý
         }
 
+        // Lấy thông tin đơn hàng từ Firestore để lấy order_item_id
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("orders").document(orderId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            // Lấy order_item_id từ Firestore
+                            orderItemId = document.getString("order_item_id");
+                            Log.d("DEBUG", "📥 Lấy được order_item_id: " + orderItemId);
+
+                            // Nếu order_item_id hợp lệ, chuyển sang EvaluateActivity
+                            if (orderItemId != null && !orderItemId.isEmpty()) {
+                                // Khi nhấn nút Evaluate
+                                Button btnEvaluate = findViewById(R.id.btn_evaluate);
+                                btnEvaluate.setOnClickListener(v -> {
+                                    Intent intent = new Intent(OrderDetailActivity.this, EvaluateActivity.class);
+                                    intent.putExtra("order_item_id", orderItemId);  // Truyền order_item_id sang EvaluateActivity
+                                    startActivity(intent);
+                                });
+                            } else {
+                                Toast.makeText(this, "Order Item ID is missing!", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Log.e("ERROR", "❌ No such order document!");
+                            Toast.makeText(this, "No such order found!", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Log.e("ERROR", "❌ Failed to fetch order details!");
+                        Toast.makeText(this, "Failed to load order details", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
         String statusFilter = getIntent().getStringExtra("status_filter");
         if (statusFilter == null) {
             statusFilter = "Unknown";  // Hoặc sử dụng trạng thái mặc định khác
@@ -87,12 +122,12 @@ public class OrderDetailActivity extends AppCompatActivity {
         btn_cancel = findViewById(R.id.btn_cancel);
         btn_contact = findViewById(R.id.btn_contact);
         btn_evaluate = findViewById(R.id.btn_evaluate);
+        btn_returnrefund = findViewById(R.id.btn_returnrefund);
     }
 
     private void addEvents() {
         btn_back.setOnClickListener(v -> onBackPressed());
         btn_cancel.setOnClickListener(v -> {
-            Log.d("DEBUG", "📌 Cancel button clicked!");
             showCancelConfirmationDialog();
         });
     }
@@ -162,7 +197,6 @@ public class OrderDetailActivity extends AppCompatActivity {
                     finish();  // Quay lại màn trước
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("ERROR", "❌ Failed to update order: " + e.getMessage());
                     Toast.makeText(this, "Failed to cancel order", Toast.LENGTH_SHORT).show();
                 });
     }
@@ -390,7 +424,7 @@ public class OrderDetailActivity extends AppCompatActivity {
 
                                 case "Completed":
                                     // Hiển thị nút "Contact Shop" và "Evaluate"
-                                    btn_contact.setVisibility(View.VISIBLE);
+                                    btn_returnrefund.setVisibility(View.VISIBLE);
                                     btn_evaluate.setVisibility(View.VISIBLE);
                                     break;
 
@@ -399,6 +433,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                                     btn_contact.setVisibility(View.GONE);
                                     btn_cancel.setVisibility(View.GONE);
                                     btn_evaluate.setVisibility(View.GONE);
+                                    btn_returnrefund.setVisibility(View.GONE);
                                     break;
 
                                 default:
@@ -412,10 +447,13 @@ public class OrderDetailActivity extends AppCompatActivity {
 
                             // Thiết lập sự kiện click cho nút "Evaluate" nếu trạng thái là Completed
                             btn_evaluate.setOnClickListener(v -> {
-                                Log.d("DEBUG", "📝 Evaluate button clicked");
-                                Intent intent = new Intent(OrderDetailActivity.this, EvaluateActivity.class);
-                                intent.putExtra("order_id", orderId);
-                                startActivity(intent);
+                                if (orderItemId != null && !orderItemId.isEmpty()) {
+                                    Intent intent = new Intent(OrderDetailActivity.this, EvaluateActivity.class);
+                                    intent.putExtra("order_item_id", orderItemId);
+                                    startActivity(intent);
+                                } else {
+                                    Toast.makeText(OrderDetailActivity.this, "Order Item ID is missing!", Toast.LENGTH_SHORT).show();
+                                }
                             });
 
                             // Thiết lập sự kiện click cho nút "Cancel Order"
@@ -425,9 +463,19 @@ public class OrderDetailActivity extends AppCompatActivity {
                                     Log.e("ERROR", "Order ID is null or empty! Cannot proceed with cancellation.");
                                     return;
                                 }
-
-                                // Mở AlertDialog xác nhận hủy đơn hàng
                                 showCancelConfirmationDialog();
+                            });
+
+                            // Thiết lập sự kiện click cho nút "Return/Refund"
+                            btn_returnrefund.setOnClickListener(v -> {
+                                if (orderItemId != null && !orderItemId.isEmpty()) {
+                                    Intent intent = new Intent(OrderDetailActivity.this, RefundReturnRequestActivity.class );
+                                    intent.putExtra("order_item_id", orderItemId);
+                                    intent.putExtra("order_id", orderId);
+                                    startActivity(intent);
+                                } else {
+                                    Toast.makeText(OrderDetailActivity.this, "Order Item ID is missing!", Toast.LENGTH_SHORT).show();
+                                }
                             });
                         }
                     }
@@ -575,9 +623,9 @@ public class OrderDetailActivity extends AppCompatActivity {
 
                             // Cập nhật tổng chi phí
                             TextView totalCostTextView = findViewById(R.id.tv_total_cost);
-                            String formattedTotalCost = String.format("%,d", totalCostOfGoods);
-                            totalCostTextView.setText(formattedTotalCost + " ₫");
-
+                            java.text.NumberFormat formatter = java.text.NumberFormat.getInstance(new Locale("vi", "VN"));
+                            String formattedTotalCost = formatter.format(totalCostOfGoods);
+                            totalCostTextView.setText(formattedTotalCost + "₫");
                         }
                     }
                 });
@@ -629,8 +677,7 @@ public class OrderDetailActivity extends AppCompatActivity {
 
     private String formatCurrency(int amount) {
         NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
-        return formatter.format(amount);
+        String formattedAmount = formatter.format(amount);
+        return formattedAmount;
     }
-
-
 }

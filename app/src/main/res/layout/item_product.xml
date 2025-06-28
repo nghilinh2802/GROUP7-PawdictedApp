@@ -20,7 +20,7 @@
         <ImageView
             android:id="@+id/img_child_cate_product"
             android:layout_width="150dp"
-            android:layout_height="220dp"
+            android:layout_height="160dp"
             android:layout_gravity="center_horizontal"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"

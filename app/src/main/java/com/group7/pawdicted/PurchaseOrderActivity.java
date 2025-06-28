@@ -11,6 +11,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -26,7 +27,10 @@ import com.google.firebase.Timestamp;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
 import android.util.Log;
 import android.widget.Toast;
 
@@ -76,7 +80,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         btn_cancelled = findViewById(R.id.btn_cancelled);
         btn_returnrefund = findViewById(R.id.btn_returnrefund);
         btn_back = findViewById(R.id.btn_back);
-        btn_search = findViewById(R.id.btn_search);
+//        btn_search = findViewById(R.id.btn_search);
 
         emptyView = findViewById(R.id.empty_view);
         orderScroll = findViewById(R.id.order_scroll);
@@ -116,8 +120,6 @@ public class PurchaseOrderActivity extends AppCompatActivity {
 
                                 if (orderTime == null) orderTime = "Unknown Time";
                                 if (orderValue == null) orderValue = 0;
-
-                                Log.d("DEBUG_ORDER", "✅ Order phù hợp: " + orderId + " | time=" + orderTime + " | total=" + orderValue);
 
                                 // Load the order items (products) based on the order_item_id
                                 loadOrderItems(orderId, itemGroupId, orderTime, orderValue, status);
@@ -168,108 +170,150 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     }
 
     private void loadOrderItems(String orderId, String itemGroupId, String orderTime, int totalPrice, String status) {
-        Log.d("DEBUG_ORDER", "Truy vấn với order_item_id: " + itemGroupId);  // Log giá trị itemGroupId
+        Log.d("DEBUG_ORDER", "Truy vấn với order_item_id: " + itemGroupId);
 
-        // Query the order_items collection based on the order_id or itemGroupId
-        orderItemsRef.document(itemGroupId)  // Using itemGroupId as the document ID
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot productSnap = task.getResult();
-                        if (productSnap.exists()) {
-                            // Create a list to store all product rows for the current order
-                            LinearLayout productList = new LinearLayout(PurchaseOrderActivity.this);
-                            productList.setOrientation(LinearLayout.VERTICAL);  // Arrange products vertically
+        if (status.equalsIgnoreCase("Return/Refund")) {
+            db.collection("orders").document(orderId).get().addOnSuccessListener(orderDoc -> {
+                if (orderDoc.exists()) {
+                    Integer returnAmount = orderDoc.getLong("return_amount") != null
+                            ? orderDoc.getLong("return_amount").intValue()
+                            : 0;
 
-                            // Loop through the product fields (e.g., product1, product2, etc.)
-                            for (String productKey : productSnap.getData().keySet()) {
-                                if (productKey.startsWith("product")) {
-                                    String productId = productSnap.getString(productKey + ".product_id");
-                                    int quantity = productSnap.getLong(productKey + ".quantity").intValue();
-                                    Log.d("DEBUG_ORDER", "Sản phẩm ID: " + productId + " | Số lượng: " + quantity);  // Log product info
+                    List<Map<String, String>> productReturnList = (List<Map<String, String>>) orderDoc.get("product_return");
 
-                                    // Fetch the product name from the "products" collection using the productId
-                                    db.collection("products")
-                                            .document(productId)
-                                            .get()
-                                            .addOnCompleteListener(productTask -> {
-                                                if (productTask.isSuccessful()) {
-                                                    DocumentSnapshot productDoc = productTask.getResult();
-                                                    if (productDoc.exists()) {
-                                                        String productName = productDoc.getString("product_name");
+                    View orderView = createOrderView(orderId, orderTime, 0, status, null, null, returnAmount, productReturnList);
+                    orderListContainer.addView(orderView);
+                } else {
+                    Log.w("DEBUG_ORDER", "⚠️ Không tìm thấy đơn hàng với ID: " + orderId);
+                }
+            });
+        } else {
+            // Trường hợp đơn hàng bình thường
+            orderItemsRef.document(itemGroupId)
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot productSnap = task.getResult();
+                            if (productSnap.exists()) {
+                                LinearLayout productList = new LinearLayout(PurchaseOrderActivity.this);
+                                productList.setOrientation(LinearLayout.VERTICAL);
 
-                                                        // Create a row for the product
-                                                        LinearLayout row = new LinearLayout(PurchaseOrderActivity.this);
-                                                        row.setOrientation(LinearLayout.HORIZONTAL);
-                                                        row.setLayoutParams(new LinearLayout.LayoutParams(
-                                                                LinearLayout.LayoutParams.MATCH_PARENT,
-                                                                LinearLayout.LayoutParams.WRAP_CONTENT));
+                                Map<String, Object> data = productSnap.getData();
+                                if (data != null) {
+                                    for (String productKey : data.keySet()) {
+                                        if (productKey.startsWith("product")) {
+                                            String productId = productSnap.getString(productKey + ".product_id");
+                                            Long quantityLong = productSnap.getLong(productKey + ".quantity");
+                                            int quantity = quantityLong != null ? quantityLong.intValue() : 0;
 
-                                                        TextView tvQty = new TextView(PurchaseOrderActivity.this);
-                                                        tvQty.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 0.3f));
-                                                        tvQty.setText(quantity + "x");
-                                                        tvQty.setTextSize(14f);
-                                                        tvQty.setTextColor(Color.BLACK);
+                                            db.collection("products")
+                                                    .document(productId)
+                                                    .get()
+                                                    .addOnCompleteListener(productTask -> {
+                                                        if (productTask.isSuccessful()) {
+                                                            DocumentSnapshot productDoc = productTask.getResult();
+                                                            if (productDoc.exists()) {
+                                                                String productName = productDoc.getString("product_name");
 
-                                                        TextView tvName = new TextView(PurchaseOrderActivity.this);
-                                                        tvName.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 2f));
-                                                        tvName.setText("Product: " + productName);
-                                                        tvName.setTextSize(14f);
-                                                        tvName.setTextColor(Color.BLACK);
+                                                                LinearLayout row = new LinearLayout(PurchaseOrderActivity.this);
+                                                                row.setOrientation(LinearLayout.HORIZONTAL);
+                                                                row.setLayoutParams(new LinearLayout.LayoutParams(
+                                                                        LinearLayout.LayoutParams.MATCH_PARENT,
+                                                                        LinearLayout.LayoutParams.WRAP_CONTENT));
 
-                                                        row.addView(tvQty);
-                                                        row.addView(tvName);
-                                                        productList.addView(row);  // Add each product to the list
-                                                    }
-                                                }
-                                            });
+                                                                TextView tvQty = new TextView(PurchaseOrderActivity.this);
+                                                                tvQty.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 0.3f));
+                                                                tvQty.setText(quantity + "x");
+                                                                tvQty.setTextSize(14f);
+                                                                tvQty.setTextColor(Color.BLACK);
+
+                                                                TextView tvName = new TextView(PurchaseOrderActivity.this);
+                                                                tvName.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 2f));
+                                                                tvName.setText("Product: " + productName);
+                                                                tvName.setTextSize(14f);
+                                                                tvName.setTextColor(Color.BLACK);
+
+                                                                row.addView(tvQty);
+                                                                row.addView(tvName);
+                                                                productList.addView(row);
+                                                            }
+                                                        }
+                                                    });
+                                        }
+                                    }
                                 }
-                            }
 
-                            // After fetching all products, create the CardView for the order
-                            View orderView = createOrderView(orderId, orderTime, totalPrice, status, itemGroupId, productList);
-                            orderListContainer.addView(orderView);
-                        } else {
-                            Log.w("DEBUG_ORDER", "⚠️ No order items found for itemGroupId: " + itemGroupId);
+                                View orderView = createOrderView(orderId, orderTime, totalPrice, status, itemGroupId, productList, null, null);
+                                orderListContainer.addView(orderView);
+                            } else {
+                                Log.w("DEBUG_ORDER", "⚠️ No order items found for itemGroupId: " + itemGroupId);
+                            }
                         }
-                    }
-                });
+                    });
+        }
     }
 
-    private View createOrderView(String orderId, String orderTime, int totalPrice, String status, String itemGroupId, LinearLayout productList) {
-        // Inflate the order_item layout for this order
+    private View createOrderView(String orderId, String orderTime, int totalPrice, String status,
+                                 String itemGroupId, LinearLayout productList,
+                                 @Nullable Integer returnAmount, @Nullable List<Map<String, String>> productReturnList) {
+        // Inflate the layout
         View view = getLayoutInflater().inflate(R.layout.order_item, orderListContainer, false);
 
-        // Find the UI elements in the inflated layout
+        // View bindings
         TextView tvTime = view.findViewById(R.id.tv_order_time);
         TextView tvTotal = view.findViewById(R.id.tv_total_price);
         TextView tvStatus = view.findViewById(R.id.tv_status);
         LinearLayout productListContainer = view.findViewById(R.id.product_list);
 
-        // Set order time, total price, and order status
-        tvTime.setText(orderTime);  // Display formatted order time
-        tvTotal.setText("Total: " + formatCurrency(totalPrice) + " ₫");
+        // Set values
+        tvTime.setText(orderTime);
         tvStatus.setText(getStatusLabel(status));
 
-        // Add the product list to the order view
-        productListContainer.removeAllViews();  // Clear any previous views (if any)
-        productListContainer.addView(productList);  // Add all the product rows (as a LinearLayout)
+        if (status.equalsIgnoreCase("Return/Refund")) {
+            // Sử dụng return_amount và đổi text thành Return Amount
+            java.text.NumberFormat formatter = java.text.NumberFormat.getInstance(new Locale("vi", "VN"));
+            String formattedAmount = formatter.format(returnAmount != null ? returnAmount : 0);
+            tvTotal.setText("Return Amount: " + formattedAmount + " ₫");
 
-        // Add click listener for the whole order view to navigate to Order Detail
+            // Chỉ hiển thị product_name từ productReturnList
+            productListContainer.removeAllViews();
+            if (productReturnList != null) {
+                for (Map<String, String> product : productReturnList) {
+                    String productName = product.get("product_name");
+
+                    TextView tv = new TextView(this);
+                    tv.setText(" " + productName);
+                    tv.setTextSize(14);
+                    tv.setTextColor(getResources().getColor(android.R.color.black));
+                    tv.setPadding(0, 4, 0, 4);
+                    productListContainer.addView(tv);
+                }
+            }
+
+        } else {
+            // Trường hợp còn lại xử lý như cũ
+            tvTotal.setText("Total: " + formatCurrency(totalPrice) + " ₫");
+
+            productListContainer.removeAllViews();
+            productListContainer.addView(productList);
+        }
+
+        // Click → Mở chi tiết
         view.setOnClickListener(v -> {
-            // Kiểm tra orderId trước khi truyền vào Intent
             if (orderId == null || orderId.isEmpty()) {
                 Log.e("ERROR", "Order ID is null or empty in PurchaseOrderActivity");
                 Toast.makeText(PurchaseOrderActivity.this, "Order ID is missing!", Toast.LENGTH_SHORT).show();
-                return;  // Dừng nếu không có orderId
+                return;
             }
 
             Log.d("DEBUG", "📤 Gửi sang OrderDetailActivity với orderId = " + orderId);
 
-            Intent intent = new Intent(PurchaseOrderActivity.this, OrderDetailActivity.class);
-            intent.putExtra("order_id", orderId);  // Truyền orderId
-            intent.putExtra("status_filter", status);  // Truyền trạng thái nếu cần
-            Log.d("DEBUG", "Passing orderId: " + orderId);  // Kiểm tra log
+            Intent intent = status.equalsIgnoreCase("Return/Refund")
+                    ? new Intent(PurchaseOrderActivity.this, RefundReturnDetailActivity.class)
+                    : new Intent(PurchaseOrderActivity.this, OrderDetailActivity.class);
+
+            intent.putExtra("order_id", orderId);
+            intent.putExtra("status_filter", status);
             startActivity(intent);
         });
 

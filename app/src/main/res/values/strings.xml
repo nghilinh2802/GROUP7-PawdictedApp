@@ -157,7 +157,6 @@ If you have any questions or requests regarding our privacy and security policy,
 ]]></string>
 
 
-
     <string name="language_vietnamese">Vietnamese</string>
     <string name="language_english">English</string>
 
@@ -194,4 +193,36 @@ If you have any questions or requests regarding our privacy and security policy,
     <string name="title_carriers"><![CDATA[Carriers & Kennels]]></string>
     <string name="title_chat">Chat</string>
     <string name="hint_type">Type a message...</string>
+    <string name="title_suggest">Today\'s Picks</string>
+    <string name="title_recommend">Recommended for You</string>
+    <string name="feature_in_development">This feature is under development</string>
+    <string name="title_fill_all_fields">Please fill in all fields!</string>
+    <string name="title_agree_terms">You must agree to the terms!</string>
+    <string name="title_invalid_email">Invalid email!</string>
+    <string name="title_invalid_phone">Phone must be numeric!</string>
+    <string name="title_password_too_short">Password must be at least 6 characters!</string>
+    <string name="title_email_exists">Email already exists!</string>
+    <string name="title_phone_exists">Phone already exists!</string>
+    <string name="title_check_email_error">Error checking email: %1$s</string>
+    <string name="title_check_phone_error">Error checking phone: %1$s</string>
+    <string name="signup_failed">Signup failed: %1$s</string>
+    <string name="signup_google_failed">Google sign-in failed: %1$s</string>
+
+    <string name="title_phone_not_found">Phone number not found!</string>
+    <string name="title_login_failed">Incorrect password or email!</string>
+    <string name="login_success">Login successful!</string>
+    <string name="login_account_not_registered">Account not registered!</string>
+    <string name="login_account_verification_failed">Unable to verify account!</string>
+    <string name="login_google_failed">Google login error!</string>
+    <string name="login_check_account_error">Error checking account: %1$s</string>
+    <string name="title_find_product">Find product ...</string>
+    <string name="title_find">Find</string>
+    <string name="title_search_suggestion">Suggestions</string>
+    <string name="title_search_recent">Recent search</string>
+    <string name="title_clear_all">Clear all</string>
+    <string name="title_find_no_result">Find 0 result</string>
+    <string name="title_can_not_find">Can not find</string>
+    <string name="title_try_another_keyword">Try another keyword</string>
+    <string name="title_finding">Finding...</string>
+    <string name="title_n_products"> products</string>
 </resources>
