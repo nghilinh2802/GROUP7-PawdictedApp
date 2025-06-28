@@ -1,6 +1,7 @@
 package com.group7.pawdicted;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -43,12 +44,14 @@ public class EvaluateActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         orderId = getIntent().getStringExtra("order_id");  // Nhận orderId từ Intent
-
         // Kiểm tra nếu orderId hợp lệ, sau đó tải thông tin sản phẩm
         if (orderId != null && !orderId.isEmpty()) {
             loadOrderDetails(orderId);
-        } else {
-            Toast.makeText(this, "Order ID is missing!", Toast.LENGTH_SHORT).show();
+        }
+        // Nhận order_item_id từ Intent
+        String orderItemId = getIntent().getStringExtra("order_item_id");
+        if (orderItemId != null && !orderItemId.isEmpty()) {
+            loadOrderItems(orderItemId);  // Lấy thông tin sản phẩm của đơn hàng
         }
     }
 
@@ -64,7 +67,11 @@ public class EvaluateActivity extends AppCompatActivity {
     }
 
     private void loadOrderDetails(String orderId) {
-        // Lấy thông tin đơn hàng từ Firestore theo orderId
+        if (orderId == null || orderId.isEmpty()) {
+            Toast.makeText(this, "Invalid Order ID", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         db.collection("orders").document(orderId)
                 .get()
                 .addOnCompleteListener(task -> {
@@ -72,7 +79,11 @@ public class EvaluateActivity extends AppCompatActivity {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
                             String orderItemId = document.getString("order_item_id");
-                            loadOrderItems(orderItemId);  // Lấy thông tin sản phẩm của đơn hàng
+                            if (orderItemId != null && !orderItemId.isEmpty()) {
+                                loadOrderItems(orderItemId);  // Lấy thông tin sản phẩm của đơn hàng
+                            } else {
+                                Toast.makeText(this, "Order does not contain items", Toast.LENGTH_SHORT).show();
+                            }
                         } else {
                             Toast.makeText(this, "No such order!", Toast.LENGTH_SHORT).show();
                         }
@@ -89,13 +100,17 @@ public class EvaluateActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
-                            // Duyệt qua các sản phẩm trong đơn hàng
+                            // Lấy thông tin sản phẩm
                             for (String key : document.getData().keySet()) {
                                 if (key.startsWith("product")) {
-                                    String productName = document.getString(key + ".product_name");
-                                    String productImage = document.getString(key + ".product_image");
-                                    // Thêm sản phẩm vào layout
-                                    addProductToLayout(productName, productImage);
+                                    // Lấy product_id từ mỗi sản phẩm
+                                    String productId = document.getString(key + ".product_id");
+
+                                    // Log để kiểm tra
+                                    Log.d("DEBUG", "Product ID: " + productId);
+
+                                    // Lấy thông tin chi tiết sản phẩm từ bảng products
+                                    loadProductDetails(productId);
                                 }
                             }
                         } else {
@@ -107,18 +122,74 @@ public class EvaluateActivity extends AppCompatActivity {
                 });
     }
 
+    private void loadProductDetails(String productId) {
+        db.collection("products").document(productId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            // Lấy thông tin từ bảng products
+                            String productName = document.getString("product_name");
+                            String productImage = document.getString("product_image");
+
+                            // Log để kiểm tra
+                            Log.d("DEBUG", "Product name: " + productName);
+                            Log.d("DEBUG", "Product image: " + productImage);
+
+                            // Kiểm tra nếu thông tin hợp lệ
+                            if (productName != null && !productName.isEmpty() && productImage != null && !productImage.isEmpty()) {
+                                // Thêm sản phẩm vào layout
+                                addProductToLayout(productName, productImage);
+                            } else {
+                                Log.e("ERROR", "Product name or image is null or empty.");
+                            }
+                        } else {
+                            Log.e("ERROR", "No such product in products collection.");
+                        }
+                    } else {
+                        Log.e("ERROR", "Failed to load product details.");
+                    }
+                });
+    }
+
     private void addProductToLayout(String productName, String productImage) {
+        // Kiểm tra xem productName và productImage có hợp lệ không
+        if (productName == null || productImage == null || productName.isEmpty() || productImage.isEmpty()) {
+            Log.e("ERROR", "Product name or image is null or empty.");
+            return;  // Nếu không có dữ liệu hợp lệ, không nạp sản phẩm
+        }
+
         // Nạp layout từ evaluate_item_layout.xml
         LinearLayout productLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.evaluate_item_layout, null);
 
         // Lấy các phần tử trong layout
         TextView productTextView = productLayout.findViewById(R.id.txt_product_name);
         RatingBar ratingBar = productLayout.findViewById(R.id.ratingBar_product);
+
+        // Lắng nghe sự kiện thay đổi giá trị RatingBar
+        ratingBar.setOnRatingBarChangeListener((ratingBar1, rating, fromUser) -> {
+            if (fromUser) {
+                Log.d("DEBUG", "User changed the rating to: " + rating);
+            } else {
+                Log.d("DEBUG", "Rating changed programmatically to: " + rating);
+            }
+        });
+
         ImageView productImageView = productLayout.findViewById(R.id.img_product);
 
-        // Cập nhật tên sản phẩm và ảnh
+        // Đảm bảo có giá trị cho tên sản phẩm và hình ảnh
+        Log.d("DEBUG", "Fetched product: " + productName + ", Image: " + productImage);
+
+        // Cập nhật tên sản phẩm
         productTextView.setText(productName);
-        Glide.with(this).load(productImage).into(productImageView);
+
+        // Kiểm tra và tải ảnh bằng Glide
+        Glide.with(this)
+                .load(productImage)
+                .placeholder(R.mipmap.ic_launcher)  // Hình ảnh mặc định khi đang tải
+                .error(R.mipmap.ic_launcher)  // Hình ảnh lỗi nếu tải không thành công
+                .into(productImageView);
 
         // Thêm layout vào LinearLayout chứa các sản phẩm
         productsLayout.addView(productLayout);
@@ -135,7 +206,7 @@ public class EvaluateActivity extends AppCompatActivity {
             return;
         }
 
-        // Lấy order_item_id từ Intent (đảm bảo order_item_id được truyền đến Activity này)
+        // Lấy order_item_id từ Intent
         String orderItemId = getIntent().getStringExtra("order_item_id");
 
         if (orderItemId == null || orderItemId.isEmpty()) {
@@ -146,7 +217,13 @@ public class EvaluateActivity extends AppCompatActivity {
         // Cập nhật đánh giá và bình luận cho từng sản phẩm
         for (int i = 0; i < ratingBars.size(); i++) {
             float rating = ratingBars.get(i).getRating();
-            String productName = "Product " + (i + 1);  // Điều chỉnh theo tên sản phẩm thực tế nếu có
+            String productName = "Product " + (i + 1);
+
+            // Kiểm tra giá trị đánh giá hợp lệ trước khi gửi
+            if (rating == 0) {
+                Toast.makeText(this, "Please rate all products", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             // Chuẩn bị dữ liệu đánh giá
             Map<String, Object> productEvaluation = new HashMap<>();
