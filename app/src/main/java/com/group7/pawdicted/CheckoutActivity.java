@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,9 +18,11 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.group7.pawdicted.mobile.adapters.OrderItemAdapter;
 import com.group7.pawdicted.mobile.adapters.ShippingOptionAdapter;
+import com.group7.pawdicted.mobile.adapters.PaymentMethodAdapter;
 import com.group7.pawdicted.mobile.models.AddressItem;
 import com.group7.pawdicted.mobile.models.CartItem;
 import com.group7.pawdicted.mobile.models.ShippingOption;
+import com.group7.pawdicted.mobile.models.PaymentMethod;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -31,10 +32,12 @@ public class CheckoutActivity extends AppCompatActivity {
 
     private RecyclerView recyclerViewOrderItems;
     private RecyclerView recyclerViewShippingOptions;
+    private RecyclerView recyclerViewPaymentMethods;
     private List<CartItem> cartItems;
     private TextView txtMerchandiseSubtotal, txtShippingSubtotal, txtShippingDiscountSubtotal, txtMerchandiseDiscountSubtotal, txtTotalPayment;
     private Button btnPlaceOrder;
     private ShippingOption selectedShippingOption;
+    private PaymentMethod selectedPaymentMethod;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +45,10 @@ public class CheckoutActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_checkout);
 
+        // Initialize views
         recyclerViewOrderItems = findViewById(R.id.recyclerViewOrderItems);
         recyclerViewShippingOptions = findViewById(R.id.recyclerViewShippingOptions);
+        recyclerViewPaymentMethods = findViewById(R.id.recyclerViewPaymentMethods);
         txtMerchandiseSubtotal = findViewById(R.id.txtMerchandiseSubtotal);
         txtShippingSubtotal = findViewById(R.id.txtShippingSubtotal);
         txtShippingDiscountSubtotal = findViewById(R.id.txtShippingDiscountSubtotal);
@@ -57,6 +62,9 @@ public class CheckoutActivity extends AppCompatActivity {
             Gson gson = new Gson();
             Type type = new TypeToken<List<CartItem>>(){}.getType();
             cartItems = gson.fromJson(cartJson, type);
+        } else {
+            cartItems = new ArrayList<>();
+            Log.e("CheckoutActivity", "No cart items received");
         }
 
         // Set up the RecyclerView for order items
@@ -68,7 +76,7 @@ public class CheckoutActivity extends AppCompatActivity {
         List<ShippingOption> shippingOptions = new ArrayList<>();
         shippingOptions.add(new ShippingOption(
                 "STANDARD DELIVERY",
-                "Delivery fee 20K. Estimated delivery time is 2–5 days, excluding Sundays and holidays.",
+                "Delivery fee 20K (HCMC); delivery fee 30K (outside province). Estimated delivery time is 2–5 days, excluding Sundays and holidays.",
                 20000
         ));
         shippingOptions.add(new ShippingOption(
@@ -76,8 +84,9 @@ public class CheckoutActivity extends AppCompatActivity {
                 "Delivery fee 45K (only available in HCMC); order before 5pm will be delivered the same day, after 5pm will be delivered the next day.",
                 45000
         ));
+        Log.d("CheckoutActivity", "Shipping options size: " + shippingOptions.size());
 
-//        selectedShippingOption = shippingOptions.get(0); // Default to Standard Delivery
+        selectedShippingOption = shippingOptions.get(0); // Default to Standard Delivery
 
         ShippingOptionAdapter shippingOptionAdapter = new ShippingOptionAdapter(this, shippingOptions, option -> {
             selectedShippingOption = option;
@@ -86,11 +95,29 @@ public class CheckoutActivity extends AppCompatActivity {
         recyclerViewShippingOptions.setAdapter(shippingOptionAdapter);
         recyclerViewShippingOptions.setLayoutManager(new LinearLayoutManager(this));
 
+        // Set up the RecyclerView for payment methods
+        List<PaymentMethod> paymentMethods = new ArrayList<>();
+        paymentMethods.add(new PaymentMethod("Cash on Delivery", R.mipmap.ic_cod));
+        paymentMethods.add(new PaymentMethod("QR Code - VNPay", R.mipmap.ic_vnpay));
+        paymentMethods.add(new PaymentMethod("ZaloPay", R.mipmap.ic_zalopay));
+        paymentMethods.add(new PaymentMethod("MoMo Wallet", R.mipmap.ic_momo));
+        Log.d("CheckoutActivity", "Payment methods size: " + paymentMethods.size());
+
+        selectedPaymentMethod = paymentMethods.get(3); // Default to MoMo Wallet
+
+        PaymentMethodAdapter paymentMethodAdapter = new PaymentMethodAdapter(this, paymentMethods, method -> {
+            selectedPaymentMethod = method;
+            // Optionally update UI or logic based on selected payment method
+            Log.d("CheckoutActivity", "Selected payment method: " + method.getName());
+        });
+        recyclerViewPaymentMethods.setAdapter(paymentMethodAdapter);
+        recyclerViewPaymentMethods.setLayoutManager(new LinearLayoutManager(this));
+
         // Calculate and update total payment
         calculateAndUpdateTotals();
 
         btnPlaceOrder.setOnClickListener(v -> {
-            Toast.makeText(CheckoutActivity.this, "Order Placed!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(CheckoutActivity.this, "Order Placed with " + selectedPaymentMethod.getName() + "!", Toast.LENGTH_SHORT).show();
         });
 
         // Hiển thị địa chỉ mặc định khi khởi tạo
