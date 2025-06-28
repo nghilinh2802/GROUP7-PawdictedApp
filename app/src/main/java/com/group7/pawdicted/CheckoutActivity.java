@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,9 +18,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.group7.pawdicted.mobile.adapters.OrderItemAdapter;
+import com.group7.pawdicted.mobile.adapters.ShippingOptionAdapter;
 import com.group7.pawdicted.mobile.models.AddressItem;
-import com.group7.pawdicted.mobile.models.OrderItem;
 import com.group7.pawdicted.mobile.models.CartItem;
+import com.group7.pawdicted.mobile.models.ShippingOption;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -29,11 +29,12 @@ import java.util.List;
 
 public class CheckoutActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerView;
+    private RecyclerView recyclerViewOrderItems;
+    private RecyclerView recyclerViewShippingOptions;
     private List<CartItem> cartItems;
     private TextView txtMerchandiseSubtotal, txtShippingSubtotal, txtShippingDiscountSubtotal, txtMerchandiseDiscountSubtotal, txtTotalPayment;
-    private RadioGroup radioGroupDelivery;
     private Button btnPlaceOrder;
+    private ShippingOption selectedShippingOption;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,57 +42,52 @@ public class CheckoutActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_checkout);
 
-        recyclerView = findViewById(R.id.recyclerViewOrderItems);
+        recyclerViewOrderItems = findViewById(R.id.recyclerViewOrderItems);
+        recyclerViewShippingOptions = findViewById(R.id.recyclerViewShippingOptions);
         txtMerchandiseSubtotal = findViewById(R.id.txtMerchandiseSubtotal);
         txtShippingSubtotal = findViewById(R.id.txtShippingSubtotal);
         txtShippingDiscountSubtotal = findViewById(R.id.txtShippingDiscountSubtotal);
         txtMerchandiseDiscountSubtotal = findViewById(R.id.txtMerchandiseDiscountSubtotal);
         txtTotalPayment = findViewById(R.id.txtTotalPayment);
-        radioGroupDelivery = findViewById(R.id.radioGroupDelivery);
         btnPlaceOrder = findViewById(R.id.btnPlaceOrder);
-
-        // Debug: Check if radioGroupDelivery is found
-        if (radioGroupDelivery == null) {
-            Log.e("CheckoutActivity", "radioGroupDelivery is null! Check layout XML.");
-            Toast.makeText(this, "Lỗi giao diện, vui lòng kiểm tra lại!", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
 
         // Get the selected cart items from the intent
         String cartJson = getIntent().getStringExtra("cartItems");
-        Log.d("CheckoutActivity", "Received cartJson: " + cartJson);
         if (cartJson != null && !cartJson.isEmpty()) {
-            try {
-                Gson gson = new Gson();
-                Type type = new TypeToken<List<CartItem>>(){}.getType();
-                cartItems = gson.fromJson(cartJson, type);
-            } catch (Exception e) {
-                Log.e("CheckoutActivity", "Error deserializing cart items: " + e.getMessage());
-                Toast.makeText(this, "Có lỗi xảy ra, vui lòng thử lại!", Toast.LENGTH_SHORT).show();
-                finish();
-            }
-        } else {
-            cartItems = new ArrayList<>();
-            Log.w("CheckoutActivity", "cartJson is null or empty, initializing empty cart.");
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<CartItem>>(){}.getType();
+            cartItems = gson.fromJson(cartJson, type);
         }
 
-        // Set up the RecyclerView to display cart items
-        OrderItemAdapter adapter = new OrderItemAdapter(this, cartItems);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        // Set up the RecyclerView for order items
+        OrderItemAdapter orderItemAdapter = new OrderItemAdapter(this, cartItems);
+        recyclerViewOrderItems.setAdapter(orderItemAdapter);
+        recyclerViewOrderItems.setLayoutManager(new LinearLayoutManager(this));
 
-        // Set default shipping option to Standard Delivery
-        radioGroupDelivery.check(R.id.radioStandard);
+        // Set up the RecyclerView for shipping options
+        List<ShippingOption> shippingOptions = new ArrayList<>();
+        shippingOptions.add(new ShippingOption(
+                "STANDARD DELIVERY",
+                "Delivery fee 20K. Estimated delivery time is 2–5 days, excluding Sundays and holidays.",
+                20000
+        ));
+        shippingOptions.add(new ShippingOption(
+                "EXPRESS DELIVERY",
+                "Delivery fee 45K (only available in HCMC); order before 5pm will be delivered the same day, after 5pm will be delivered the next day.",
+                45000
+        ));
+
+//        selectedShippingOption = shippingOptions.get(0); // Default to Standard Delivery
+
+        ShippingOptionAdapter shippingOptionAdapter = new ShippingOptionAdapter(this, shippingOptions, option -> {
+            selectedShippingOption = option;
+            calculateAndUpdateTotals();
+        });
+        recyclerViewShippingOptions.setAdapter(shippingOptionAdapter);
+        recyclerViewShippingOptions.setLayoutManager(new LinearLayoutManager(this));
 
         // Calculate and update total payment
         calculateAndUpdateTotals();
-
-        // Handle shipping option change
-        radioGroupDelivery.setOnCheckedChangeListener((group, checkedId) -> {
-            Log.d("CheckoutActivity", "Checked ID: " + checkedId);
-            calculateAndUpdateTotals();
-        });
 
         btnPlaceOrder.setOnClickListener(v -> {
             Toast.makeText(CheckoutActivity.this, "Order Placed!", Toast.LENGTH_SHORT).show();
@@ -108,30 +104,19 @@ public class CheckoutActivity extends AppCompatActivity {
         // Merchandise Subtotal
         int merchandiseSubtotal = 0;
         for (CartItem item : cartItems) {
-            if (item != null && item.isSelected) {
+            if (item.isSelected) {
                 merchandiseSubtotal += item.price * item.quantity;
             }
         }
 
         // Shipping Subtotal
-        int shippingSubtotal = 0;
-        int shippingDiscountSubtotal = 0;
-
-        // Get the selected shipping option from RadioGroup
-        int checkedRadioButtonId = radioGroupDelivery.getCheckedRadioButtonId();
-
-        // Update shippingSubtotal based on the selected shipping option
-        if (checkedRadioButtonId == R.id.radioStandard) {
-            shippingSubtotal = 25000; // Standard Delivery: 25,000đ
-        } else if (checkedRadioButtonId == R.id.radioExpress) {
-            shippingSubtotal = 45000; // Express Delivery: 45,000đ
-        }
+        int shippingSubtotal = selectedShippingOption != null ? selectedShippingOption.getCost() : 0;
 
         // Merchandise Discount Subtotal (currently set to 0)
         int merchandiseDiscountSubtotal = 0;
 
         // Shipping Discount Subtotal (currently set to 0)
-        shippingDiscountSubtotal = 0;
+        int shippingDiscountSubtotal = 0;
 
         // Total Payment Calculation
         int totalPayment = merchandiseSubtotal + shippingSubtotal - shippingDiscountSubtotal - merchandiseDiscountSubtotal;
