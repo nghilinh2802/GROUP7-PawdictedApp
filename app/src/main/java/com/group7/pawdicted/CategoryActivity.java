@@ -429,5 +429,14 @@ public class CategoryActivity extends AppCompatActivity {
         Intent intent=new Intent(CategoryActivity.this,ChatActivity.class);
         startActivity(intent);
     }
+
+    public void open_search(View view) {
+        Intent intent=new Intent(CategoryActivity.this,SearchActivity.class);
+        startActivity(intent);
+    }
+    public void open_cart(View view) {
+        Intent intent=new Intent(CategoryActivity.this,CartActivity.class);
+        startActivity(intent);
+    }
 }
 

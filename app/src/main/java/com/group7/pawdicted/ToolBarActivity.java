@@ -48,4 +48,7 @@ public class ToolBarActivity extends AppCompatActivity {
 
     public void open_search(View view) {
     }
+
+    public void open_cart(View view) {
+    }
 }

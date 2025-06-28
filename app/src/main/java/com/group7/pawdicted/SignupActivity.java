@@ -229,7 +229,6 @@
 //    }
 //}
 
-
 package com.group7.pawdicted;
 
 import android.content.Intent;
@@ -239,6 +238,7 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -247,9 +247,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.*;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
@@ -265,6 +262,8 @@ public class SignupActivity extends AppCompatActivity implements SuccessSignupDi
 
     private EditText edtUsername, edtEmail, edtPhone, edtPassword;
     private CheckBox chkAgree;
+    private ProgressBar progressBar;
+    private View overlay;
     private CallbackManager fbCallbackManager;
     private GoogleSignInClient googleSignInClient;
     private FirebaseAuth mAuth;
@@ -280,6 +279,8 @@ public class SignupActivity extends AppCompatActivity implements SuccessSignupDi
         edtPhone = findViewById(R.id.edtPhone);
         edtPassword = findViewById(R.id.edtEnterPassword);
         chkAgree = findViewById(R.id.ckbAgree);
+        progressBar = findViewById(R.id.progressBar);
+        overlay = findViewById(R.id.overlay);
 
         findViewById(R.id.btnLogin).setOnClickListener(v -> registerUser());
 
@@ -293,7 +294,7 @@ public class SignupActivity extends AppCompatActivity implements SuccessSignupDi
     private void setupFacebook() {
         fbCallbackManager = CallbackManager.Factory.create();
         findViewById(R.id.imgFacebook).setOnClickListener(v -> {
-            Toast.makeText(SignupActivity.this, "Chức năng này đang được phát triển", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SignupActivity.this, R.string.feature_in_development, Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -317,54 +318,78 @@ public class SignupActivity extends AppCompatActivity implements SuccessSignupDi
         String pass = edtPassword.getText().toString().trim();
 
         if (u.isEmpty() || e.isEmpty() || p.isEmpty() || pass.isEmpty()) {
-            Toast.makeText(this, "Nhập đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.title_fill_all_fields, Toast.LENGTH_SHORT).show();
             return;
         }
         if (!chkAgree.isChecked()) {
-            Toast.makeText(this, "Bạn phải đồng ý với điều khoản!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.title_agree_terms, Toast.LENGTH_SHORT).show();
             return;
         }
         if (!Patterns.EMAIL_ADDRESS.matcher(e).matches()) {
-            Toast.makeText(this, "Email không hợp lệ!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.title_invalid_email, Toast.LENGTH_SHORT).show();
             return;
         }
         if (!p.matches("\\d+")) {
-            Toast.makeText(this, "Phone phải là số!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.title_invalid_phone, Toast.LENGTH_SHORT).show();
             return;
         }
         if (pass.length() < 6) {
-            Toast.makeText(this, "Password ≥ 6 ký tự!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.title_password_too_short, Toast.LENGTH_SHORT).show();
             return;
         }
 
+        progressBar.setVisibility(View.VISIBLE);
+        overlay.setVisibility(View.VISIBLE);
         db.collection("customers")
                 .whereEqualTo("customer_email", e).get()
                 .addOnSuccessListener(q -> {
                     if (!q.isEmpty()) {
-                        Toast.makeText(this, "Email đã tồn tại!", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                        overlay.setVisibility(View.GONE);
+                        Toast.makeText(this, R.string.title_email_exists, Toast.LENGTH_SHORT).show();
                         return;
                     }
                     db.collection("customers")
                             .whereEqualTo("phone_number", p).get()
                             .addOnSuccessListener(q2 -> {
                                 if (!q2.isEmpty()) {
-                                    Toast.makeText(this, "Phone đã tồn tại!", Toast.LENGTH_SHORT).show();
+                                    progressBar.setVisibility(View.GONE);
+                                    overlay.setVisibility(View.GONE);
+                                    Toast.makeText(this, R.string.title_phone_exists, Toast.LENGTH_SHORT).show();
                                     return;
                                 }
                                 createFirebaseUser(u, e, p, pass);
+                            })
+                            .addOnFailureListener(err -> {
+                                progressBar.setVisibility(View.GONE);
+                                overlay.setVisibility(View.GONE);
+                                Toast.makeText(this, R.string.title_check_phone_error + err.getMessage(), Toast.LENGTH_SHORT).show();
                             });
+                })
+                .addOnFailureListener(err -> {
+                    progressBar.setVisibility(View.GONE);
+                    overlay.setVisibility(View.GONE);
+                    Toast.makeText(this, R.string.title_check_email_error + err.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
     private void createFirebaseUser(String u, String e, String p, String pass) {
+        progressBar.setVisibility(View.VISIBLE);
+        overlay.setVisibility(View.VISIBLE);
         mAuth.createUserWithEmailAndPassword(e, pass)
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {
-                        Toast.makeText(this, "Signup lỗi: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        progressBar.setVisibility(View.GONE);
+                        overlay.setVisibility(View.GONE);
+                        Toast.makeText(this, R.string.signup_failed + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                         return;
                     }
                     FirebaseUser f = mAuth.getCurrentUser();
-                    if (f == null) return;
+                    if (f == null) {
+                        progressBar.setVisibility(View.GONE);
+                        overlay.setVisibility(View.GONE);
+                        return;
+                    }
 
                     Customer cust = new Customer(
                             f.getUid(), u, e, u, p, "", "Male", new Date(), new Date(), "", "Customer"
@@ -372,17 +397,32 @@ public class SignupActivity extends AppCompatActivity implements SuccessSignupDi
 
                     db.collection("customers").document(f.getUid())
                             .set(cust)
-                            .addOnSuccessListener(a -> showSuccessDialog())
-                            .addOnFailureListener(err -> Toast.makeText(this, "Lỗi lưu: " + err.getMessage(), Toast.LENGTH_SHORT).show());
+                            .addOnSuccessListener(a -> {
+                                progressBar.setVisibility(View.GONE);
+                                overlay.setVisibility(View.GONE);
+                                showSuccessDialog();
+                            })
+                            .addOnFailureListener(err -> {
+                                progressBar.setVisibility(View.GONE);
+                                overlay.setVisibility(View.GONE);
+                                Toast.makeText(this, "Lỗi lưu: " + err.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
                 });
     }
 
     private void firebaseAuthWithGoogle(String idToken) {
+        progressBar.setVisibility(View.VISIBLE);
+        overlay.setVisibility(View.VISIBLE);
         AuthCredential cred = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(cred)
                 .addOnCompleteListener(this, t -> {
-                    if (t.isSuccessful()) saveSocialUser(mAuth.getCurrentUser());
-                    else Toast.makeText(this, "Google login lỗi", Toast.LENGTH_SHORT).show();
+                    if (t.isSuccessful()) {
+                        saveSocialUser(mAuth.getCurrentUser());
+                    } else {
+                        progressBar.setVisibility(View.GONE);
+                        overlay.setVisibility(View.GONE);
+                        Toast.makeText(this, R.string.signup_google_failed, Toast.LENGTH_SHORT).show();
+                    }
                 });
     }
 
@@ -396,14 +436,20 @@ public class SignupActivity extends AppCompatActivity implements SuccessSignupDi
     }
 
     private void saveSocialUser(FirebaseUser user) {
-        if (user == null) return;
+        if (user == null) {
+            progressBar.setVisibility(View.GONE);
+            overlay.setVisibility(View.GONE);
+            return;
+        }
         String uid = user.getUid(), e = user.getEmail();
 
         db.collection("customers")
                 .whereEqualTo("customer_email", e).get()
                 .addOnSuccessListener(q -> {
                     if (!q.isEmpty()) {
-                        Toast.makeText(this, "Email đã tồn tại!", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                        overlay.setVisibility(View.GONE);
+                        Toast.makeText(this, R.string.title_email_exists, Toast.LENGTH_SHORT).show();
                         mAuth.signOut();
                         googleSignInClient.signOut();
                         return;
@@ -423,8 +469,21 @@ public class SignupActivity extends AppCompatActivity implements SuccessSignupDi
                     );
                     db.collection("customers").document(uid)
                             .set(cust)
-                            .addOnSuccessListener(a -> showSuccessDialog())
-                            .addOnFailureListener(err -> Toast.makeText(this, "Lưu social lỗi: " + err.getMessage(), Toast.LENGTH_SHORT).show());
+                            .addOnSuccessListener(a -> {
+                                progressBar.setVisibility(View.GONE);
+                                overlay.setVisibility(View.GONE);
+                                showSuccessDialog();
+                            })
+                            .addOnFailureListener(err -> {
+                                progressBar.setVisibility(View.GONE);
+                                overlay.setVisibility(View.GONE);
+                                Toast.makeText(this, R.string.signup_failed + err.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
+                })
+                .addOnFailureListener(err -> {
+                    progressBar.setVisibility(View.GONE);
+                    overlay.setVisibility(View.GONE);
+                    Toast.makeText(this, R.string.title_invalid_email + err.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
@@ -436,7 +495,10 @@ public class SignupActivity extends AppCompatActivity implements SuccessSignupDi
             try {
                 firebaseAuthWithGoogle(task.getResult(ApiException.class).getIdToken());
             } catch (Exception e) {
+                progressBar.setVisibility(View.GONE);
+                overlay.setVisibility(View.GONE);
                 Log.e(TAG, "Google sign-in error", e);
+                Toast.makeText(this, R.string.signup_google_failed + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
     }

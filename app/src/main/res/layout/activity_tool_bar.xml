@@ -63,7 +63,7 @@
                     android:src="@mipmap/ic_search"
                     app:tint="@android:color/darker_gray" />
 
-                <EditText
+                <TextView
                     android:onClick="open_search"
                     android:id="@+id/edtSearch"
                     android:layout_width="0dp"
@@ -82,6 +82,7 @@
 
             <!-- Icon giỏ hàng -->
             <ImageView
+                android:onClick="open_cart"
                 android:id="@+id/imgCartBackbar"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
