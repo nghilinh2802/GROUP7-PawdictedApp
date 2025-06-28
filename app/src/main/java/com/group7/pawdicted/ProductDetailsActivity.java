@@ -23,10 +23,9 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.gson.Gson;
 import com.group7.pawdicted.mobile.models.CartItem;
 import com.group7.pawdicted.mobile.models.CartManager;
 import com.group7.pawdicted.mobile.models.Product;
@@ -35,11 +34,9 @@ import com.group7.pawdicted.mobile.services.CartStorageHelper;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 public class ProductDetailsActivity extends AppCompatActivity {
 
@@ -143,20 +140,15 @@ public class ProductDetailsActivity extends AppCompatActivity {
                     .addOnSuccessListener(querySnapshot -> {
                         List<String> variantNames = new ArrayList<>();
                         Map<String, Integer> variantPriceMap = new HashMap<>();
-                        Map<String, String> variantImageMap = new HashMap<>(); // Map để lưu variant_image
+                        Map<String, String> variantImageMap = new HashMap<>();
                         String selectedVariantName = "Default";
                         String imageUrl = currentProduct.getProduct_image();
-
-                        // SỬ DỤNG finalPrice THAY VÌ TÍNH LẠI
                         double selectedPrice = finalPrice;
                         Log.d("Cart", "Using finalPrice: " + finalPrice + " (isFlashsale: " + isFlashsale + ")");
 
-                        // Lấy dữ liệu từ Firestore
                         for (QueryDocumentSnapshot doc : querySnapshot) {
                             Variant var = doc.toObject(Variant.class);
                             variantNames.add(var.getVariant_name());
-
-                            // Tính giá cho variant options
                             int variantPrice;
                             if (isFlashsale) {
                                 variantPrice = (int) (var.getVariant_price() * (1 - flashsaleDiscountRate / 100.0));
@@ -164,17 +156,23 @@ public class ProductDetailsActivity extends AppCompatActivity {
                                 variantPrice = (int) (var.getVariant_price() * (1 - var.getVariant_discount() / 100.0));
                             }
                             variantPriceMap.put(var.getVariant_name(), variantPrice);
-
-                            // Lưu variant_image vào map, nếu không có thì dùng product_image
                             variantImageMap.put(var.getVariant_name(),
                                     var.getVariant_image() != null ? var.getVariant_image() : currentProduct.getProduct_image());
 
                             if (var.getVariant_id().equals(selectedVariantId)) {
                                 selectedVariantName = var.getVariant_name();
                                 imageUrl = var.getVariant_image() != null ? var.getVariant_image() : imageUrl;
-                                // CẬP NHẬT selectedPrice CHO VARIANT ĐƯỢC CHỌN
-                                selectedPrice = variantPrice;
+                                selectedPrice = isFlashsale ? flashsalePrice : variantPrice;
                             }
+                        }
+
+                        if (variantNames.isEmpty()) {
+                            variantNames.add("Default");
+                            variantPriceMap.put("Default", (int) selectedPrice);
+                            variantImageMap.put("Default", imageUrl);
+                            Log.d("ProductDetailsActivity", "No variants found, using Default variant for product: " + currentProduct.getProduct_name());
+                        } else {
+                            Log.d("ProductDetailsActivity", "Variants found: " + variantNames);
                         }
 
                         List<CartItem> cartItems = CartManager.getInstance().getCartItems();
@@ -198,7 +196,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
                                     selectedVariantName
                             );
                             newItem.optionPrices = variantPriceMap;
-                            newItem.optionImageUrls = variantImageMap; // Thiết lập optionImageUrls
+                            newItem.optionImageUrls = variantImageMap;
+                            newItem.isSelected = true; // Ensure item is selected for checkout
                             CartManager.getInstance().addToCart(newItem);
                         }
 
@@ -207,7 +206,6 @@ public class ProductDetailsActivity extends AppCompatActivity {
                             CartStorageHelper.saveCart(this, customerId, CartManager.getInstance().getCartItems());
                         }
 
-                        // Toast thông báo khác nhau cho flashsale
                         String toastMessage = isFlashsale ?
                                 "Đã thêm vào giỏ hàng với giá flashsale!" :
                                 "Đã thêm vào giỏ hàng";
@@ -215,6 +213,24 @@ public class ProductDetailsActivity extends AppCompatActivity {
                     });
         });
 
+        btnBuyNow.setOnClickListener(v -> {
+            btnAddToCart.performClick(); // Add to cart first
+            List<CartItem> selectedItems = new ArrayList<>();
+            for (CartItem item : CartManager.getInstance().getCartItems()) {
+                if (item.isSelected) {
+                    selectedItems.add(item);
+                }
+            }
+            if (!selectedItems.isEmpty()) {
+                Intent intent = new Intent(this, CheckoutActivity.class);
+                Gson gson = new Gson();
+                String cartJson = gson.toJson(selectedItems);
+                intent.putExtra("cartItems", cartJson);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "Vui lòng chọn ít nhất một sản phẩm để thanh toán.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void loadProductDetails() {
@@ -239,7 +255,6 @@ public class ProductDetailsActivity extends AppCompatActivity {
                     }
                 });
     }
-
 
     private void displayProductDetails(Product product, Variant variant) {
         DecimalFormat formatter = new DecimalFormat("#,###đ");

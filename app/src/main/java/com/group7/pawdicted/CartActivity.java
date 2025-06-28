@@ -16,6 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.gson.Gson;
+import com.group7.pawdicted.CheckoutActivity;
+import com.group7.pawdicted.R;
 import com.group7.pawdicted.mobile.adapters.CartAdapter;
 import com.group7.pawdicted.mobile.models.CartItem;
 import com.group7.pawdicted.mobile.models.CartManager;
@@ -58,7 +61,6 @@ public class CartActivity extends AppCompatActivity {
             cartItemList = CartStorageHelper.loadCart(this, customerId);
 
             if (cartItemList.isEmpty()) {
-                // Nếu local rỗng → load từ Firestore
                 CartManager.getInstance().loadCartFromFirestore(this, customerId, () -> {
                     cartItemList = CartManager.getInstance().getCartItems();
                     CartStorageHelper.saveCart(this, customerId, cartItemList);
@@ -78,6 +80,7 @@ public class CartActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerAndEvents() {
+        // Khởi tạo adapter với toàn bộ danh sách sản phẩm trong giỏ hàng
         cartAdapter = new CartAdapter(this, cartItemList);
         recyclerView.setAdapter(cartAdapter);
 
@@ -91,24 +94,27 @@ public class CartActivity extends AppCompatActivity {
             }
         });
 
-        LinearLayout voucherLayout = findViewById(R.id.voucher_layout);
-        voucherLayout.setOnClickListener(v -> {
-            Intent intent = new Intent(CartActivity.this, VoucherManagementActivity.class);
-            startActivity(intent);
-        });
-
+        // Sự kiện khi nhấn nút Check Out
         checkoutBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(CartActivity.this, CheckoutActivity.class);
-            startActivity(intent);
+            // Filter the selected items only
+            List<CartItem> selectedItems = new ArrayList<>();
+            for (CartItem item : cartItemList) {
+                if (item.isSelected) {
+                    selectedItems.add(item);
+                }
+            }
+
+            if (!selectedItems.isEmpty()) {
+                Intent intent = new Intent(CartActivity.this, CheckoutActivity.class);
+                Gson gson = new Gson();
+                String cartJson = gson.toJson(selectedItems); // Pass only selected items
+                intent.putExtra("cartItems", cartJson);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "Vui lòng chọn ít nhất một sản phẩm để thanh toán.", Toast.LENGTH_SHORT).show();
+            }
         });
 
-        selectAllCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            for (CartItem item : cartItemList) {
-                item.isSelected = isChecked;
-            }
-            cartAdapter.notifyDataSetChanged();
-            updateTotal();
-        });
 
         updateTotal();
         syncSelectAllCheckbox();
@@ -119,7 +125,7 @@ public class CartActivity extends AppCompatActivity {
         int selectedCount = 0;
         for (CartItem item : cartItemList) {
             if (item.isSelected) {
-                total += item.price * item.quantity;
+                total += item.price * item.quantity; // Only add the price of selected items
                 selectedCount++;
             }
         }
@@ -132,9 +138,12 @@ public class CartActivity extends AppCompatActivity {
         }
 
         DecimalFormat formatter = new DecimalFormat("#,###đ");
-        totalText.setText(formatter.format(total));
+        totalText.setText(formatter.format(total)); // Update the total price
         checkoutBtn.setText("Check Out (" + selectedCount + ")");
+        checkoutBtn.setEnabled(selectedCount > 0); // Disable if no item is selected
+        checkoutBtn.setBackgroundColor(selectedCount > 0 ? getResources().getColor(R.color.main_color) : getResources().getColor(R.color.gray_text));
     }
+
 
     private void syncSelectAllCheckbox() {
         boolean allSelected = true;
@@ -154,10 +163,5 @@ public class CartActivity extends AppCompatActivity {
             cartAdapter.notifyDataSetChanged();
             updateTotal();
         });
-    }
-
-    public void open_voucher_activity(View view) {
-        Intent intent = new Intent(CartActivity.this, VoucherManagementActivity.class);
-        startActivity(intent);
     }
 }
