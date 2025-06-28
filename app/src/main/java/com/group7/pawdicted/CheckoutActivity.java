@@ -3,9 +3,11 @@ package com.group7.pawdicted;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,8 +17,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.group7.pawdicted.mobile.adapters.OrderItemAdapter;
+import com.group7.pawdicted.mobile.adapters.ShippingOptionAdapter;
+import com.group7.pawdicted.mobile.adapters.PaymentMethodAdapter;
 import com.group7.pawdicted.mobile.models.AddressItem;
-import com.group7.pawdicted.mobile.models.OrderItem;
+import com.group7.pawdicted.mobile.models.CartItem;
+import com.group7.pawdicted.mobile.models.ShippingOption;
+import com.group7.pawdicted.mobile.models.PaymentMethod;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -24,26 +30,98 @@ import java.util.List;
 
 public class CheckoutActivity extends AppCompatActivity {
 
+    private RecyclerView recyclerViewOrderItems;
+    private RecyclerView recyclerViewShippingOptions;
+    private RecyclerView recyclerViewPaymentMethods;
+    private List<CartItem> cartItems;
+    private TextView txtMerchandiseSubtotal, txtShippingSubtotal, txtShippingDiscountSubtotal, txtMerchandiseDiscountSubtotal, txtTotalPayment;
+    private TextView txtTotalFooter, txtSavedFooter;
+    private Button btnPlaceOrder;
+    private ShippingOption selectedShippingOption;
+    private PaymentMethod selectedPaymentMethod;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_checkout);
 
-        ImageView imgBack = findViewById(R.id.imgBack);
-        if (imgBack != null) {
-            imgBack.setOnClickListener(v -> finish());
+        // Initialize views
+        recyclerViewOrderItems = findViewById(R.id.recyclerViewOrderItems);
+        recyclerViewShippingOptions = findViewById(R.id.recyclerViewShippingOptions);
+        recyclerViewPaymentMethods = findViewById(R.id.recyclerViewPaymentMethods);
+        txtMerchandiseSubtotal = findViewById(R.id.txtMerchandiseSubtotal);
+        txtShippingSubtotal = findViewById(R.id.txtShippingSubtotal);
+        txtShippingDiscountSubtotal = findViewById(R.id.txtShippingDiscountSubtotal);
+        txtMerchandiseDiscountSubtotal = findViewById(R.id.txtMerchandiseDiscountSubtotal);
+        txtTotalFooter = findViewById(R.id.txtTotalFooter);
+        txtSavedFooter = findViewById(R.id.txtSavedFooter);
+        txtTotalPayment = findViewById(R.id.txtTotalPayment);
+        btnPlaceOrder = findViewById(R.id.btnPlaceOrder);
+
+        // Get the selected cart items from the intent
+        String cartJson = getIntent().getStringExtra("cartItems");
+        if (cartJson != null && !cartJson.isEmpty()) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<CartItem>>(){}.getType();
+            cartItems = gson.fromJson(cartJson, type);
+        } else {
+            cartItems = new ArrayList<>();
+            Log.e("CheckoutActivity", "No cart items received");
         }
 
-        RecyclerView recyclerView = findViewById(R.id.recyclerViewOrderItems);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        // Set up the RecyclerView for order items
+        OrderItemAdapter orderItemAdapter = new OrderItemAdapter(this, cartItems);
+        recyclerViewOrderItems.setAdapter(orderItemAdapter);
+        recyclerViewOrderItems.setLayoutManager(new LinearLayoutManager(this));
 
-        List<OrderItem> items = new ArrayList<>();
-        items.add(new OrderItem("Barkbutler x Fofos Cheese Box Interactive Toy for Cats", "ORANGE", "đ240.000", 1, R.mipmap.cat_toy));
-        items.add(new OrderItem("Squeeezys Latex Monster Brother Chew Toy for Dogs", "", "đ85.000", 2, R.mipmap.fofos));
+        // Set up the RecyclerView for shipping options
+        List<ShippingOption> shippingOptions = new ArrayList<>();
+        shippingOptions.add(new ShippingOption(
+                "STANDARD DELIVERY",
+                "Delivery fee 20K. Estimated delivery time is 2–5 days, excluding Sundays and holidays.",
+                20000
+        ));
+        shippingOptions.add(new ShippingOption(
+                "EXPRESS DELIVERY",
+                "Delivery fee 45K (only available in HCMC); order before 5pm will be delivered the same day.",
+                45000
+        ));
+        Log.d("CheckoutActivity", "Shipping options size: " + shippingOptions.size());
 
-        OrderItemAdapter adapter = new OrderItemAdapter(this, items);
-        recyclerView.setAdapter(adapter);
+        selectedShippingOption = shippingOptions.get(0); // Default to Standard Delivery
+
+        ShippingOptionAdapter shippingOptionAdapter = new ShippingOptionAdapter(this, shippingOptions, option -> {
+            selectedShippingOption = option;
+            calculateAndUpdateTotals();
+        });
+        recyclerViewShippingOptions.setAdapter(shippingOptionAdapter);
+        recyclerViewShippingOptions.setLayoutManager(new LinearLayoutManager(this));
+
+        // Set up the RecyclerView for payment methods
+        List<PaymentMethod> paymentMethods = new ArrayList<>();
+        paymentMethods.add(new PaymentMethod("Cash on Delivery", R.mipmap.ic_cod));
+        paymentMethods.add(new PaymentMethod("QR Code - VNPay", R.mipmap.ic_vnpay));
+        paymentMethods.add(new PaymentMethod("ZaloPay", R.mipmap.ic_zalopay));
+        paymentMethods.add(new PaymentMethod("MoMo Wallet", R.mipmap.ic_momo));
+        Log.d("CheckoutActivity", "Payment methods size: " + paymentMethods.size());
+
+        selectedPaymentMethod = paymentMethods.get(3); // Default to MoMo Wallet
+
+        PaymentMethodAdapter paymentMethodAdapter = new PaymentMethodAdapter(this, paymentMethods, method -> {
+            selectedPaymentMethod = method;
+            // Optionally update UI or logic based on selected payment method
+            Log.d("CheckoutActivity", "Selected payment method: " + method.getName());
+        });
+        recyclerViewPaymentMethods.setAdapter(paymentMethodAdapter);
+        recyclerViewPaymentMethods.setLayoutManager(new LinearLayoutManager(this));
+
+        // Calculate and update total payment
+        calculateAndUpdateTotals();
+
+        btnPlaceOrder.setOnClickListener(v -> {
+            Toast.makeText(CheckoutActivity.this, "Order Placed with " + selectedPaymentMethod.getName() + "!", Toast.LENGTH_SHORT).show();
+        });
 
         // Hiển thị địa chỉ mặc định khi khởi tạo
         AddressItem defaultAddress = getDefaultAddress();
@@ -52,10 +130,50 @@ public class CheckoutActivity extends AppCompatActivity {
         }
     }
 
+    private void calculateAndUpdateTotals() {
+        // Merchandise Subtotal
+        int merchandiseSubtotal = 0;
+        for (CartItem item : cartItems) {
+            if (item.isSelected) {
+                merchandiseSubtotal += item.price * item.quantity;
+            }
+        }
+
+        // Shipping Subtotal
+        int shippingSubtotal = selectedShippingOption != null ? selectedShippingOption.getCost() : 0;
+
+        // Merchandise Discount Subtotal (currently set to 0, update as needed)
+        int merchandiseDiscountSubtotal = 0;
+
+        // Shipping Discount Subtotal (currently set to 0, update as needed)
+        int shippingDiscountSubtotal = 0;
+
+        // Total Payment Calculation
+        int totalPayment = merchandiseSubtotal + shippingSubtotal - shippingDiscountSubtotal - merchandiseDiscountSubtotal;
+
+        // Saved Amount Calculation
+        int savedAmount = merchandiseDiscountSubtotal + shippingDiscountSubtotal;
+
+        // Update the UI with calculated values
+        txtMerchandiseSubtotal.setText(String.format("đ%s", formatCurrency(merchandiseSubtotal)));
+        txtShippingSubtotal.setText(String.format("đ%s", formatCurrency(shippingSubtotal)));
+        txtShippingDiscountSubtotal.setText(String.format("đ%s", formatCurrency(shippingDiscountSubtotal)));
+        txtMerchandiseDiscountSubtotal.setText(String.format("đ%s", formatCurrency(merchandiseDiscountSubtotal)));
+        txtTotalPayment.setText(String.format("đ%s", formatCurrency(totalPayment)));
+
+        // Update footer
+        txtTotalFooter.setText(String.format("Total đ%s", formatCurrency(totalPayment)));
+        txtSavedFooter.setText(String.format("Saved đ%s", formatCurrency(savedAmount)));
+        txtSavedFooter.setVisibility(savedAmount > 0 ? View.VISIBLE : View.GONE);
+    }
+
+    private String formatCurrency(int value) {
+        return String.format("%,d", value);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Xóa vị trí cuối cùng khi thoát để quay về địa chỉ mặc định
         saveLastSelectedPosition(-1);
     }
 
@@ -66,12 +184,11 @@ public class CheckoutActivity extends AppCompatActivity {
 
     public void open_address_selection_activity(View view) {
         Intent intent = new Intent(this, AddressSelectionActivity.class);
-        // Truyền vị trí cuối cùng được chọn (nếu có)
         int lastSelected = getLastSelectedPosition();
         if (lastSelected != -1) {
             intent.putExtra("lastSelectedPosition", lastSelected);
         }
-        startActivityForResult(intent, 200); // Sử dụng request code 200
+        startActivityForResult(intent, 200);
     }
 
     @Override
@@ -81,7 +198,6 @@ public class CheckoutActivity extends AppCompatActivity {
             AddressItem selectedAddress = (AddressItem) data.getSerializableExtra("selectedAddress");
             if (selectedAddress != null) {
                 updateAddressUI(selectedAddress);
-                // Lưu vị trí cuối cùng được chọn
                 int lastSelected = data.getIntExtra("lastSelectedPosition", -1);
                 if (lastSelected != -1) {
                     saveLastSelectedPosition(lastSelected);
@@ -102,7 +218,6 @@ public class CheckoutActivity extends AppCompatActivity {
                     return address;
                 }
             }
-            // Nếu không có địa chỉ mặc định, đặt địa chỉ đầu tiên làm mặc định
             if (addressList.size() == 1) {
                 addressList.get(0).setDefault(true);
                 saveAddressList(addressList);

@@ -219,111 +219,18 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
 
-                    <RelativeLayout
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerViewShippingOptions"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/white"
-                        android:padding="8dp">
-
-                        <RadioGroup
-                            android:id="@+id/radioGroupDelivery"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical">
-
-                            <!-- STANDARD -->
-                            <LinearLayout
-                                android:id="@+id/layoutStandard"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="12dp"
-                                android:background="@drawable/gray_rounded_background"
-                                android:clickable="true"
-                                android:focusable="true"
-                                android:foreground="?attr/selectableItemBackground"
-                                android:orientation="horizontal"
-                                android:padding="16dp">
-
-                                <RadioButton
-                                    android:id="@+id/radioStandard"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginEnd="8dp"
-                                    android:buttonTint="#D32F2F" />
-
-                                <LinearLayout
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:orientation="vertical">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="STANDARD DELIVERY"
-                                        android:textColor="#000000"
-                                        android:textSize="14sp"
-                                        android:textStyle="bold" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Delivery fee 20K (HCMC); delivery fee 30K (outside province). Estimated delivery time is 2–5 days, excluding Sundays and holidays."
-                                        android:textColor="#000000"
-                                        android:textSize="12sp" />
-                                </LinearLayout>
-                            </LinearLayout>
-
-                            <!-- EXPRESS -->
-                            <LinearLayout
-                                android:id="@+id/layoutExpress"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
-                                android:background="@drawable/gray_rounded_background"
-                                android:clickable="true"
-                                android:focusable="true"
-                                android:foreground="?attr/selectableItemBackground"
-                                android:orientation="horizontal"
-                                android:padding="16dp">
-
-                                <RadioButton
-                                    android:id="@+id/radioExpress"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginEnd="8dp"
-                                    android:buttonTint="#D32F2F" />
-
-                                <LinearLayout
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:orientation="vertical">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="EXPRESS DELIVERY"
-                                        android:textColor="#000000"
-                                        android:textSize="14sp"
-                                        android:textStyle="bold" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Delivery fee 45K (only available in HCMC); order before 5pm will be delivered the same day, after 5pm will be delivered the next day."
-                                        android:textColor="#000000"
-                                        android:textSize="12sp" />
-                                </LinearLayout>
-                            </LinearLayout>
-                        </RadioGroup>
-                    </RelativeLayout>
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:nestedScrollingEnabled="false"
+                        android:minHeight="200dp" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
             <!-- Payment Methods -->
-            <!-- Mỗi phương thức thanh toán -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -344,101 +251,11 @@
                     android:textStyle="bold"
                     android:layout_marginBottom="8dp" />
 
-                <!-- Payment Option: Cash on Delivery -->
-                <LinearLayout
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewPaymentMethods"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="12dp"
-                    android:layout_marginBottom="12dp"
-                    android:background="@drawable/gray_rounded_background">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@mipmap/ic_cod" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Cash on Delivery"
-                        android:textSize="16sp"
-                        android:textColor="#000000"
-                        android:paddingStart="8dp" />
-                </LinearLayout>
-
-                <!-- Payment Option: VNPAY -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="12dp"
-                    android:layout_marginBottom="12dp"
-                    android:background="@drawable/gray_rounded_background">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@mipmap/ic_vnpay" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="QR Code - VNPay"
-                        android:textSize="16sp"
-                        android:textColor="#000000"
-                        android:paddingStart="8dp" />
-                </LinearLayout>
-
-                <!-- Payment Option: ZaloPay -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="12dp"
-                    android:layout_marginBottom="12dp"
-                    android:background="@drawable/gray_rounded_background">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@mipmap/ic_zalopay" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="ZaloPay"
-                        android:textSize="16sp"
-                        android:textColor="#000000"
-                        android:paddingStart="8dp" />
-                </LinearLayout>
-
-                <!-- Payment Option: MoMo (selected) -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="12dp"
-                    android:layout_marginBottom="12dp"
-                    android:background="@drawable/gray_rounded_background">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@mipmap/ic_momo" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="MoMo Wallet"
-                        android:textSize="16sp"
-                        android:textColor="#000000"
-                        android:paddingStart="8dp" />
-                </LinearLayout>
+                    android:nestedScrollingEnabled="false" />
             </LinearLayout>
 
             <LinearLayout
@@ -472,7 +289,8 @@
                         android:textColor="#000000" />
 
                     <TextView
-                        android:text="đ410.000"
+                        android:id="@+id/txtMerchandiseSubtotal"
+                        android:text="đ0"
                         android:textColor="#000000"
                         android:textStyle="bold"
                         android:layout_width="wrap_content"
@@ -493,7 +311,8 @@
                         android:textColor="#000000" />
 
                     <TextView
-                        android:text="đ20.000"
+                        android:id="@+id/txtShippingSubtotal"
+                        android:text="đ0"
                         android:textColor="#000000"
                         android:textStyle="bold"
                         android:layout_width="wrap_content"
@@ -510,11 +329,33 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Shipping Discount Subtotal"
+                        android:text="Merchandise Discount"
                         android:textColor="#000000" />
 
                     <TextView
-                        android:text="- đ20.000"
+                        android:id="@+id/txtMerchandiseDiscountSubtotal"
+                        android:text="đ0"
+                        android:textColor="#D32F2F"
+                        android:textStyle="bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Shipping Discount"
+                        android:textColor="#000000" />
+
+                    <TextView
+                        android:id="@+id/txtShippingDiscountSubtotal"
+                        android:text="đ0"
                         android:textColor="#D32F2F"
                         android:textStyle="bold"
                         android:layout_width="wrap_content"
@@ -536,7 +377,8 @@
                         android:textColor="#000000" />
 
                     <TextView
-                        android:text="đ410.000"
+                        android:id="@+id/txtTotalPayment"
+                        android:text="đ0"
                         android:textColor="#000000"
                         android:textStyle="bold"
                         android:layout_width="wrap_content"
@@ -568,23 +410,25 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/txtTotalFooter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Total đ410.000"
+                android:text="Total đ0"
                 android:textColor="#D32F2F"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/txtSavedFooter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Saved đ20.000"
+                android:text="Saved đ0"
                 android:textColor="#D32F2F"
                 android:textSize="12sp" />
         </LinearLayout>
 
         <Button
-            android:id="@+id/btn_place_order"
+            android:id="@+id/btnPlaceOrder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/red_fill_rounded_background"
