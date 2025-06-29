@@ -5,16 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_marginLeft="5dp"
     android:padding="8dp">
-    <!-- Container -->
+
     <LinearLayout
         android:id="@+id/item_product_container"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
+        android:layout_width="170dp"
+        android:layout_height="280dp"
         android:background="@drawable/white_fill_rounded_background"
         android:orientation="vertical"
-        android:padding="6dp">
+        android:paddingHorizontal="6dp"
+        android:paddingVertical="3dp">
 
         <!-- Product Image -->
         <ImageView
