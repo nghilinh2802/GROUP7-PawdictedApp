@@ -38,7 +38,7 @@ import android.widget.Toast;
 
 public class PurchaseOrderActivity extends AppCompatActivity {
 
-    Button btn_confirm, btn_to_pickup, btn_received, btn_completed, btn_cancelled, btn_returnrefund;
+    Button btn_confirm, btn_to_pickup, btn_received, btn_completed, btn_cancelled, btn_returnrefund, btn_contact;
     ImageView btn_back, btn_search;
     LinearLayout emptyView;
 
@@ -81,7 +81,8 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         btn_cancelled = findViewById(R.id.btn_cancelled);
         btn_returnrefund = findViewById(R.id.btn_returnrefund);
         btn_back = findViewById(R.id.btn_back);
-//        btn_search = findViewById(R.id.btn_search);
+        btn_contact = findViewById(R.id.btn_contact);
+//      btn_search = findViewById(R.id.btn_search);
 
         emptyView = findViewById(R.id.empty_view);
         orderScroll = findViewById(R.id.order_scroll);
@@ -276,6 +277,13 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                                  @Nullable Integer returnAmount, @Nullable List<Map<String, String>> productReturnList) {
         // Inflate the layout
         View view = getLayoutInflater().inflate(R.layout.order_item, orderListContainer, false);
+
+        MaterialButton btnContact = view.findViewById(R.id.btn_contact);
+        btnContact.setOnClickListener(v -> {
+            Intent intent = new Intent(PurchaseOrderActivity.this, ChatActivity.class);
+            intent.putExtra("initial_message", "Tôi cần hỗ trợ với đơn hàng: " + orderId);
+            startActivity(intent);
+        });
 
         // View bindings
         TextView tvTime = view.findViewById(R.id.tv_order_time);

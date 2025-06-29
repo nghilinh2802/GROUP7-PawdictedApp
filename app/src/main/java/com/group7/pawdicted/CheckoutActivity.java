@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -29,8 +30,11 @@ import com.group7.pawdicted.mobile.adapters.ShippingOptionAdapter;
 import com.group7.pawdicted.mobile.adapters.PaymentMethodAdapter;
 import com.group7.pawdicted.mobile.models.AddressItem;
 import com.group7.pawdicted.mobile.models.CartItem;
+import com.group7.pawdicted.mobile.models.CartManager;
 import com.group7.pawdicted.mobile.models.ShippingOption;
 import com.group7.pawdicted.mobile.models.PaymentMethod;
+import com.group7.pawdicted.mobile.services.CartFirestoreService;
+import com.group7.pawdicted.mobile.services.CartStorageHelper;
 
 
 import java.lang.reflect.Type;
@@ -188,7 +192,9 @@ public class CheckoutActivity extends AppCompatActivity {
                     productDetail.put("product_id", item.productId);
                     productDetail.put("quantity", item.quantity);
                     productDetail.put("total_cost_of_goods", cost);
-
+                    if (item.selectedOption != null && !item.selectedOption.isEmpty()) {
+                        productDetail.put("selected_option", item.selectedOption);
+                    }
 
                     productMap.put("product" + index, productDetail);
                     index++;
@@ -221,6 +227,8 @@ public class CheckoutActivity extends AppCompatActivity {
 
                         db.collection("orders").add(orderData)
                                 .addOnSuccessListener(docRef -> {
+                                    //removePurchasedItemsFromCart();
+                                    //removePurchasedItemsFromFirestore(customerId);
                                     Toast.makeText(CheckoutActivity.this, "Đặt hàng thành công!", Toast.LENGTH_SHORT).show();
                                     finish();
                                 })
@@ -401,4 +409,54 @@ public class CheckoutActivity extends AppCompatActivity {
         editor.putString("selectedAddressId", addressId);
         editor.apply();
     }
+
+//    private void removePurchasedItemsFromCart() {
+//        SharedPreferences prefs = getSharedPreferences("CartPrefs", MODE_PRIVATE);
+//        String cartJson = prefs.getString("cart_items", null);
+//
+//        if (cartJson != null) {
+//            Gson gson = new Gson();
+//            Type type = new TypeToken<List<CartItem>>() {}.getType();
+//            List<CartItem> currentCart = gson.fromJson(cartJson, type);
+//
+//            List<CartItem> updatedCart = new ArrayList<>();
+//            for (CartItem item : currentCart) {
+//                if (!item.isSelected) {
+//                    updatedCart.add(item);
+//                }
+//            }
+//
+//            SharedPreferences.Editor editor = prefs.edit();
+//            editor.putString("cart_items", gson.toJson(updatedCart));
+//            editor.apply();
+//        }
+//    }
+
+//    private void removePurchasedItemsFromFirestore(String customerId) {
+//        List<CartItem> updatedList = new ArrayList<>();
+//
+//        for (CartItem item : cartItems) {
+//            String docId = item.productId + "_" + item.selectedOption;
+//
+//            if (item.isSelected) {
+//                // Xoá đúng documentId đang được dùng
+//                FirebaseFirestore.getInstance()
+//                        .collection("carts")
+//                        .document(customerId)
+//                        .collection("items")
+//                        .document(docId)
+//                        .delete()
+//                        .addOnSuccessListener(aVoid ->
+//                                Log.d("Firestore", "✅ Đã xoá sản phẩm khỏi giỏ hàng: " + docId))
+//                        .addOnFailureListener(e ->
+//                                Log.e("Firestore", "❌ Lỗi xoá sản phẩm: " + docId, e));
+//            } else {
+//                updatedList.add(item); // Giữ lại sản phẩm chưa mua
+//            }
+//        }
+//
+//        CartManager.getInstance().setCartItems(updatedList);
+//        CartStorageHelper.saveCart(this, customerId, updatedList);
+//        CartFirestoreService.syncCartToFirestore(customerId, updatedList);
+//    }
 }

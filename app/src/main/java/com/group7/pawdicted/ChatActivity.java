@@ -15,7 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.group7.pawdicted.mobile.adapters.ChatAdapter;
 import com.group7.pawdicted.mobile.models.MessageItem;
@@ -23,7 +26,9 @@ import com.group7.pawdicted.mobile.services.ChatService;
 import com.group7.pawdicted.mobile.services.CustomerManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ChatActivity extends AppCompatActivity {
     private EditText edtMessage;
@@ -43,6 +48,11 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
+
         setContentView(R.layout.activity_chat);
 
         initViews();
@@ -54,6 +64,28 @@ public class ChatActivity extends AppCompatActivity {
         setupKeyboardListener();
         loadMessages();
         displayCustomerInfo();
+
+        String initialMessage = getIntent().getStringExtra("initial_message");
+
+        if (initialMessage != null && !initialMessage.isEmpty()) {
+            // 👉 Tùy vào cách hiển thị chat, bạn có thể tự động hiển thị tin nhắn này
+            sendInitialMessage(initialMessage);
+        }
+    }
+
+    private void sendInitialMessage(String initialMessage) {
+        if (initialMessage == null || initialMessage.trim().isEmpty()) return;
+
+        chatService.sendCustomerMessage(initialMessage, new ChatService.OnMessageSentListener() {
+            @Override
+            public void onSuccess() {
+                runOnUiThread(() -> Log.d("ChatActivity", "Tin nhắn đầu tiên đã gửi: " + initialMessage));
+            }
+            @Override
+            public void onFailure(String error) {
+                runOnUiThread(() -> Toast.makeText(ChatActivity.this, "Lỗi gửi tin nhắn đầu tiên: " + error, Toast.LENGTH_SHORT).show());
+            }
+        });
     }
 
     private void setupKeyboardListener() {

@@ -19,7 +19,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Source;
 
 public class AccountManagementActivity extends AppCompatActivity {
-    ImageView ToConfirm, ToPickUp, ToShip, imgComplete, imgAvatar;
+    ImageView ToConfirm, ToPickUp, ToShip, imgComplete, imgAvatar, imgChat;
     TextView txtToConfirm, txtToPickUp, txtToShip, txtComplete, txtUsername;
     FirebaseAuth mAuth;
     FirebaseFirestore db;
@@ -57,6 +57,7 @@ public class AccountManagementActivity extends AppCompatActivity {
         txtComplete = findViewById(R.id.txtComplete);
         imgAvatar = findViewById(R.id.imgAvatar);
         txtUsername = findViewById(R.id.txtUsername);
+        imgChat = findViewById(R.id.imgChat);
     }
 
     private void addEvents() {
@@ -91,6 +92,13 @@ public class AccountManagementActivity extends AppCompatActivity {
         txtComplete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {openPurchaseOrderActivity("Completed");}
+        });
+        imgChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(AccountManagementActivity.this, ChatActivity.class);
+                startActivity(intent);
+            }
         });
     }
 

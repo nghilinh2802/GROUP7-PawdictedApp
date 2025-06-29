@@ -1,5 +1,6 @@
 package com.group7.pawdicted.mobile.services;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
@@ -26,7 +27,7 @@ public class ChatService {
     }
 
     public void sendCustomerMessage(String content, OnMessageSentListener listener) {
-        ChatMessage message = new ChatMessage(content, System.currentTimeMillis());
+        ChatMessage message = new ChatMessage(content, com.google.firebase.Timestamp.now());
 
         DocumentReference chatRef = db.collection("chats").document(customerId);
 
@@ -104,8 +105,18 @@ public class ChatService {
                 if (customerMessages != null) {
                     for (HashMap<String, Object> msg : customerMessages) {
                         String content = (String) msg.get("content");
-                        Long time = (Long) msg.get("time");
-                        allMessages.add(new MessageItem(content, time, "customer"));
+
+                        Object timeObj = msg.get("time");
+                        Timestamp timestamp;
+                        if (timeObj instanceof Timestamp) {
+                            timestamp = (Timestamp) timeObj;
+                        } else if (timeObj instanceof Long) {
+                            timestamp = new Timestamp(new java.util.Date((Long) timeObj));
+                        } else {
+                            timestamp = Timestamp.now();
+                        }
+
+                        allMessages.add(new MessageItem(content, timestamp, "customer"));
                     }
                 }
 
@@ -114,15 +125,25 @@ public class ChatService {
                 if (pawdictedMessages != null) {
                     for (HashMap<String, Object> msg : pawdictedMessages) {
                         String content = (String) msg.get("content");
-                        Long time = (Long) msg.get("time");
-                        allMessages.add(new MessageItem(content, time, "pawdicted"));
+
+                        Object timeObj = msg.get("time");
+                        Timestamp timestamp;
+                        if (timeObj instanceof Timestamp) {
+                            timestamp = (Timestamp) timeObj;
+                        } else if (timeObj instanceof Long) {
+                            timestamp = new Timestamp(new java.util.Date((Long) timeObj));
+                        } else {
+                            timestamp = Timestamp.now(); // fallback
+                        }
+
+                        allMessages.add(new MessageItem(content, timestamp, "pawdicted"));
                     }
                 }
 
                 Collections.sort(allMessages, new Comparator<MessageItem>() {
                     @Override
                     public int compare(MessageItem m1, MessageItem m2) {
-                        return Long.compare(m1.getTime(), m2.getTime());
+                        return m1.getTime().compareTo(m2.getTime());
                     }
                 });
 

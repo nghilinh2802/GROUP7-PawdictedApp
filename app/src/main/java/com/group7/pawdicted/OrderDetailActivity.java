@@ -426,7 +426,10 @@ public class OrderDetailActivity extends AppCompatActivity {
 
                             // Thiết lập sự kiện click cho nút "Contact Shop"
                             btn_contact.setOnClickListener(v -> {
-                                // Mở màn hình liên hệ với cửa hàng hoặc chat, gọi điện
+                                Intent intent = new Intent(OrderDetailActivity.this, ChatActivity.class);
+                                String initialMessage = "Tôi cần hỗ trợ với đơn hàng: " + orderId;
+                                intent.putExtra("initial_message", initialMessage);
+                                startActivity(intent);
                             });
 
                             // Thiết lập sự kiện click cho nút "Evaluate" nếu trạng thái là Completed
@@ -663,7 +666,8 @@ public class OrderDetailActivity extends AppCompatActivity {
                                     long productCost = orderItemDoc.getLong(productKey + ".total_cost_of_goods");
                                     int actualUnitPrice = (int) (productCost / quantity);
 
-                                    fetchProductDetails(productId, quantity, actualUnitPrice, productCost, productListLayout);
+                                    String selectedOption = orderItemDoc.getString(productKey + ".selected_option");
+                                    fetchProductDetails(productId, quantity, actualUnitPrice, productCost, productListLayout, selectedOption);
 
                                 }
                             }
@@ -678,7 +682,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                 });
     }
 
-    private void fetchProductDetails(String productId, int quantity, int actualUnitPrice, long productCost, LinearLayout productListLayout) {
+    private void fetchProductDetails(String productId, int quantity, int actualUnitPrice, long productCost, LinearLayout productListLayout, String selectedOption) {
         db.collection("products").document(productId)
                 .get()
                 .addOnCompleteListener(task -> {
@@ -699,7 +703,11 @@ public class OrderDetailActivity extends AppCompatActivity {
                             TextView txtProductQuantity = productView.findViewById(R.id.txtProductQuantity);
 
                             txtProductName.setText(productName);
-                            txtProductColor.setText(productColor != null ? productColor : "No Color/Variant");
+                            if (selectedOption != null && !selectedOption.isEmpty()) {
+                                txtProductColor.setText(selectedOption);
+                            } else {
+                                txtProductColor.setText(productColor != null ? productColor : "No Color/Variant");
+                            }
                             txtProductQuantity.setText("x" + quantity);
 
                             // Hiển thị giá thực và giá niêm yết nếu khác nhau
