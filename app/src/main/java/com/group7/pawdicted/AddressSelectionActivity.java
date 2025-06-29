@@ -9,23 +9,15 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.group7.pawdicted.mobile.adapters.AddressAdapter;
 import com.group7.pawdicted.mobile.models.AddressItem;
-import com.google.firebase.Timestamp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +52,7 @@ public class AddressSelectionActivity extends AppCompatActivity {
                 .collection("addresses")
                 .document(customerId)
                 .collection("items")
-                .orderBy("time") // giúp load theo thời gian
+                .orderBy("time")
                 .get()
                 .addOnSuccessListener(snapshot -> {
                     addressList.clear();
@@ -70,22 +62,27 @@ public class AddressSelectionActivity extends AppCompatActivity {
                         addressList.add(item);
                     }
 
-                    // Nếu chỉ có 1 địa chỉ thì set default
                     if (addressList.size() == 1) {
                         addressList.get(0).setDefault(true);
                     }
 
-                    addressAdapter.notifyDataSetChanged(); // cập nhật UI
+                    addressAdapter.notifyDataSetChanged();
 
-                    // Xử lý chọn lại vị trí cũ (nếu có)
-                    int lastSelected = getIntent().getIntExtra("lastSelectedPosition", -1);
-                    if (lastSelected >= 0 && lastSelected < addressList.size()) {
-                        addressAdapter.setSelectedPosition(lastSelected);
-                    } else {
-                        int defaultPos = getDefaultAddressPosition();
-                        if (defaultPos != -1) {
-                            addressAdapter.setSelectedPosition(defaultPos);
+                    String selectedAddressId = getIntent().getStringExtra("selectedAddressId");
+                    int selectedPos = -1;
+                    if (selectedAddressId != null) {
+                        for (int i = 0; i < addressList.size(); i++) {
+                            if (addressList.get(i).getId().equals(selectedAddressId)) {
+                                selectedPos = i;
+                                break;
+                            }
                         }
+                    }
+                    if (selectedPos == -1) {
+                        selectedPos = getDefaultAddressPosition();
+                    }
+                    if (selectedPos != -1) {
+                        addressAdapter.setSelectedPosition(selectedPos);
                     }
                 })
                 .addOnFailureListener(e -> {
