@@ -46,8 +46,7 @@ public class PopularSearchAdapter extends RecyclerView.Adapter<PopularSearchAdap
         PopularSearch popularSearch = popularSearches.get(position);
 
         holder.txtSearchTerm.setText(popularSearch.getSearchTerm());
-        holder.txtSearchCount.setText(popularSearch.getProductCount() + " sản phẩm");
-
+        holder.txtSearchCount.setText(popularSearch.getProductCount() + " " + context.getString(R.string.title_n_products));
         // Load product image
         Glide.with(context)
                 .load(popularSearch.getProductImage())
