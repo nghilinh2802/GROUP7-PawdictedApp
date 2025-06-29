@@ -5,33 +5,44 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.gson.Gson;
+import com.group7.pawdicted.mobile.adapters.DividerItemDecoration;
+import com.group7.pawdicted.mobile.adapters.ProductAdapter;
+import com.group7.pawdicted.mobile.adapters.ReviewAdapter;
 import com.group7.pawdicted.mobile.models.CartItem;
 import com.group7.pawdicted.mobile.models.CartManager;
+import com.group7.pawdicted.mobile.models.ListReview;
 import com.group7.pawdicted.mobile.models.Product;
+import com.group7.pawdicted.mobile.models.Review;
 import com.group7.pawdicted.mobile.models.Variant;
 import com.group7.pawdicted.mobile.services.CartStorageHelper;
-
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,11 +59,16 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private ImageButton btnChat;
     private Button btnAddToCart, btnBuyNow;
     private LinearLayout lvVariation, viewAllDescription, viewAllRating;
+    private RecyclerView rvReview, rvYouMay;
+    private LinearLayout relatedProductContainer;
+    private HorizontalScrollView horizontalScrollView;
     private String selectedVariantId;
     private String defaultProductImage;
     private Product currentProduct;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
+
+    // FLASHSALE VARIABLES
     private boolean isFlashsale = false;
     private int flashsaleDiscountRate = 0;
     private double flashsalePrice = 0;
@@ -60,6 +76,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private String flashsaleName = "";
     private long flashsaleEndTime = 0;
     private double finalPrice = 0;
+
+    private ListReview listReview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +93,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
+
         ImageView imgBack = findViewById(R.id.imgBack);
         if (imgBack != null) {
             imgBack.setOnClickListener(v -> finish());
@@ -103,8 +122,15 @@ public class ProductDetailsActivity extends AppCompatActivity {
         btnBuyNow = findViewById(R.id.btnBuyNow);
         lvVariation = findViewById(R.id.lvVariation);
         txtNoVariants = findViewById(R.id.txt_no_variants);
-        viewAllRating = findViewById(R.id.view_all_rating);
         viewAllDescription = findViewById(R.id.view_all_description);
+        viewAllRating = findViewById(R.id.view_all_rating);
+        rvReview = findViewById(R.id.rv_review);
+        relatedProductContainer = findViewById(R.id.lv_related_product);
+        horizontalScrollView = findViewById(R.id.horizontalScrollView_related);
+        rvYouMay = findViewById(R.id.rv_you_may);
+
+        // Initialize review data
+        listReview = new ListReview();
 
         viewAllDescription.setOnClickListener(v -> {
             String productId = getIntent().getStringExtra("product_id");
@@ -126,13 +152,10 @@ public class ProductDetailsActivity extends AppCompatActivity {
             }
         });
 
-        viewAllRating.setOnClickListener(v -> {
-            String productId = getIntent().getStringExtra("product_id");
-            Intent intent = new Intent(this, RatingActivity.class);
-            intent.putExtra("product_id", productId);
-            startActivity(intent);
-        });
+        // Hide view all rating since RatingActivity is no longer needed
+        viewAllRating.setVisibility(View.GONE);
 
+        // THÊM ADD TO CART LOGIC
         btnAddToCart.setOnClickListener(v -> {
             if (currentProduct == null) return;
 
@@ -143,12 +166,17 @@ public class ProductDetailsActivity extends AppCompatActivity {
                         Map<String, String> variantImageMap = new HashMap<>();
                         String selectedVariantName = "Default";
                         String imageUrl = currentProduct.getProduct_image();
+
+                        // SỬ DỤNG finalPrice ĐÃ ĐƯỢC TÍNH
                         double selectedPrice = finalPrice;
                         Log.d("Cart", "Using finalPrice: " + finalPrice + " (isFlashsale: " + isFlashsale + ")");
 
+                        // Lấy dữ liệu từ Firestore
                         for (QueryDocumentSnapshot doc : querySnapshot) {
                             Variant var = doc.toObject(Variant.class);
                             variantNames.add(var.getVariant_name());
+
+                            // Tính giá cho variant options
                             int variantPrice;
                             if (isFlashsale) {
                                 variantPrice = (int) (var.getVariant_price() * (1 - flashsaleDiscountRate / 100.0));
@@ -156,23 +184,15 @@ public class ProductDetailsActivity extends AppCompatActivity {
                                 variantPrice = (int) (var.getVariant_price() * (1 - var.getVariant_discount() / 100.0));
                             }
                             variantPriceMap.put(var.getVariant_name(), variantPrice);
+
                             variantImageMap.put(var.getVariant_name(),
                                     var.getVariant_image() != null ? var.getVariant_image() : currentProduct.getProduct_image());
 
                             if (var.getVariant_id().equals(selectedVariantId)) {
                                 selectedVariantName = var.getVariant_name();
                                 imageUrl = var.getVariant_image() != null ? var.getVariant_image() : imageUrl;
-                                selectedPrice = isFlashsale ? flashsalePrice : variantPrice;
+                                selectedPrice = variantPrice;
                             }
-                        }
-
-                        if (variantNames.isEmpty()) {
-                            variantNames.add("Default");
-                            variantPriceMap.put("Default", (int) selectedPrice);
-                            variantImageMap.put("Default", imageUrl);
-                            Log.d("ProductDetailsActivity", "No variants found, using Default variant for product: " + currentProduct.getProduct_name());
-                        } else {
-                            Log.d("ProductDetailsActivity", "Variants found: " + variantNames);
                         }
 
                         List<CartItem> cartItems = CartManager.getInstance().getCartItems();
@@ -197,7 +217,6 @@ public class ProductDetailsActivity extends AppCompatActivity {
                             );
                             newItem.optionPrices = variantPriceMap;
                             newItem.optionImageUrls = variantImageMap;
-                            newItem.isSelected = true; // Ensure item is selected for checkout
                             CartManager.getInstance().addToCart(newItem);
                         }
 
@@ -211,25 +230,6 @@ public class ProductDetailsActivity extends AppCompatActivity {
                                 "Đã thêm vào giỏ hàng";
                         Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show();
                     });
-        });
-
-        btnBuyNow.setOnClickListener(v -> {
-            btnAddToCart.performClick(); // Add to cart first
-            List<CartItem> selectedItems = new ArrayList<>();
-            for (CartItem item : CartManager.getInstance().getCartItems()) {
-                if (item.isSelected) {
-                    selectedItems.add(item);
-                }
-            }
-            if (!selectedItems.isEmpty()) {
-                Intent intent = new Intent(this, CheckoutActivity.class);
-                Gson gson = new Gson();
-                String cartJson = gson.toJson(selectedItems);
-                intent.putExtra("cartItems", cartJson);
-                startActivity(intent);
-            } else {
-                Toast.makeText(this, "Vui lòng chọn ít nhất một sản phẩm để thanh toán.", Toast.LENGTH_SHORT).show();
-            }
         });
     }
 
@@ -249,6 +249,9 @@ public class ProductDetailsActivity extends AppCompatActivity {
                             defaultProductImage = product.getProduct_image();
                             displayProductDetails(product, null);
                             loadVariations(product.getVariant_id(), productId);
+                            loadReviews();
+                            loadRelatedProducts(product.getCategory_id());
+                            loadYouMayAlsoLike();
                         }
                     } else {
                         finish();
@@ -261,10 +264,27 @@ public class ProductDetailsActivity extends AppCompatActivity {
         txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
 
         if (variant != null) {
-            double discountPrice = variant.getVariant_price() * (1 - variant.getVariant_discount() / 100.0);
-            txtDiscountPrice.setText(formatter.format(discountPrice));
-            txtProductPrice.setText(formatter.format(variant.getVariant_price()));
-            txtDiscountRate.setText(variant.getVariant_discount() > 0 ? "  -" + variant.getVariant_discount() + "%  " : "");
+            if (isFlashsale) {
+                // FLASHSALE CHO VARIANT
+                double flashsalePrice = variant.getVariant_price() * (1 - flashsaleDiscountRate / 100.0);
+                txtDiscountPrice.setText(formatter.format(flashsalePrice));
+                txtProductPrice.setText(formatter.format(variant.getVariant_price()));
+                txtDiscountRate.setText("  -" + flashsaleDiscountRate + "%  ");
+                txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                txtDiscountPrice.setTextColor(getColor(R.color.main_color));
+                finalPrice = flashsalePrice;
+            } else {
+                // GIÁ BÌNH THƯỜNG CHO VARIANT
+                double discountPrice = variant.getVariant_price() * (1 - variant.getVariant_discount() / 100.0);
+                txtDiscountPrice.setText(formatter.format(discountPrice));
+                txtProductPrice.setText(formatter.format(variant.getVariant_price()));
+                txtDiscountRate.setText(variant.getVariant_discount() > 0 ? "  -" + variant.getVariant_discount() + "%  " : "");
+                if (variant.getVariant_discount() > 0) {
+                    txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                }
+                finalPrice = discountPrice;
+            }
+
             txtSoldQuantity.setText(variant.getVariant_sold_quantity() + " sold");
             productRatingBar.setRating((float) variant.getVariant_rating());
             productRatingBar2.setRating((float) variant.getVariant_rating());
@@ -272,20 +292,29 @@ public class ProductDetailsActivity extends AppCompatActivity {
             txtRatingCount.setText("(" + variant.getVariant_rating_number() + " Reviews)");
             txtProductRatingCount.setText(variant.getVariant_rating_number() + " Reviews");
             loadImage(variant.getVariant_image() != null ? variant.getVariant_image() : defaultProductImage);
-            if (variant.getVariant_discount() > 0) {
-                txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            }
+        } else {
             if (isFlashsale) {
-                displayFlashsalePrice(variant.getVariant_price());
+                // FLASHSALE CHO PRODUCT
+                double flashsalePrice = product.getPrice() * (1 - flashsaleDiscountRate / 100.0);
+                txtDiscountPrice.setText(formatter.format(flashsalePrice));
+                txtProductPrice.setText(formatter.format(product.getPrice()));
+                txtDiscountRate.setText("  -" + flashsaleDiscountRate + "%  ");
+                txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                txtDiscountPrice.setTextColor(getColor(R.color.main_color));
                 finalPrice = flashsalePrice;
             } else {
+                // GIÁ BÌNH THƯỜNG CHO PRODUCT
+                double discountPrice = product.getPrice() * (1 - product.getDiscount() / 100.0);
+                txtDiscountPrice.setText(formatter.format(discountPrice));
+                txtProductPrice.setText(formatter.format(product.getPrice()));
+                txtDiscountRate.setText(product.getDiscount() > 0 ? "  -" + product.getDiscount() + "%  " : "");
+                if (product.getDiscount() > 0) {
+                    txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                }
                 finalPrice = discountPrice;
             }
-        } else {
-            double discountPrice = product.getPrice() * (1 - product.getDiscount() / 100.0);
-            txtDiscountPrice.setText(formatter.format(discountPrice));
-            txtProductPrice.setText(formatter.format(product.getPrice()));
-            txtDiscountRate.setText(product.getDiscount() > 0 ? "-" + product.getDiscount() + "%" : "");
+
+            defaultProductImage = product.getProduct_image();
             txtSoldQuantity.setText(product.getSold_quantity() + " sold");
             productRatingBar.setRating((float) product.getAverage_rating());
             productRatingBar2.setRating((float) product.getAverage_rating());
@@ -293,16 +322,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
             txtRatingCount.setText("(" + product.getRating_number() + " Reviews)");
             txtProductRatingCount.setText(product.getRating_number() + " Reviews");
             loadImage(defaultProductImage);
-            if (product.getDiscount() > 0) {
-                txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            }
-            if (isFlashsale) {
-                displayFlashsalePrice(product.getPrice());
-                finalPrice = flashsalePrice;
-            } else {
-                finalPrice = discountPrice;
-            }
         }
+
         Log.d("ProductDetailsActivity", "💰 Final price set to: " + finalPrice);
         txtProductName.setText(product.getProduct_name());
         txtProductDescription.setText(product.getDescription());
@@ -390,6 +411,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
         return (int) (dp * getResources().getDisplayMetrics().density + 0.5f);
     }
 
+    // CHỈ NHẬN DỮ LIỆU FLASHSALE TỪ INTENT
     private void receiveFlashsaleData() {
         Intent intent = getIntent();
         if (intent != null) {
@@ -398,6 +420,12 @@ public class ProductDetailsActivity extends AppCompatActivity {
             flashsaleId = intent.getStringExtra("FLASHSALE_ID");
             flashsaleName = intent.getStringExtra("FLASHSALE_NAME");
             flashsaleEndTime = intent.getLongExtra("FLASHSALE_END_TIME", 0);
+
+            if (isFlashsale) {
+                Log.d("ProductDetailsActivity", "=== FLASHSALE MODE ACTIVATED ===");
+                Log.d("ProductDetailsActivity", "Flashsale: " + flashsaleName);
+                Log.d("ProductDetailsActivity", "Discount: " + flashsaleDiscountRate + "%");
+            }
         }
     }
 
@@ -417,6 +445,160 @@ public class ProductDetailsActivity extends AppCompatActivity {
             txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             txtDiscountPrice.setTextColor(getColor(R.color.main_color));
         }
+    }
+
+    private void loadReviews() {
+        db.collection("reviews")
+                .whereEqualTo("product_id", currentProduct.getProduct_id())
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Review> productReviews = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        String reviewId = document.getString("review_id");
+                        String customerId = document.getString("customer_id");
+                        Long ratingLong = document.getLong("rating");
+                        int rating = ratingLong != null ? ratingLong.intValue() : 0;
+                        String productId = document.getString("product_id");
+                        String productVariation = document.getString("product_variation");
+                        String comment = document.getString("comment");
+                        Long timestamp = document.getLong("timestamp");
+
+                        Review review = new Review(reviewId, customerId, rating, productId, productVariation, comment, timestamp);
+                        productReviews.add(review);
+                    }
+
+                    if (rvReview != null) {
+                        rvReview.setLayoutManager(new LinearLayoutManager(this));
+                        rvReview.setAdapter(new ReviewAdapter(this, productReviews));
+                        rvReview.addItemDecoration(new DividerItemDecoration(this, 1, android.R.color.darker_gray, 16));
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("ProductDetailsActivity", "Error fetching reviews: " + e.getMessage());
+                    if (rvReview != null) {
+                        rvReview.setAdapter(new ReviewAdapter(this, new ArrayList<>()));
+                    }
+                });
+    }
+
+    private void loadRelatedProducts(String categoryId) {
+        if (relatedProductContainer == null) {
+            Log.e("ProductDetailsActivity", "relatedProductContainer is null");
+            return;
+        }
+
+        db.collection("products")
+                .whereEqualTo("category_id", categoryId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Product> relatedProducts = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        Product product = document.toObject(Product.class);
+                        if (!product.getProduct_id().equals(currentProduct.getProduct_id())) {
+                            relatedProducts.add(product);
+                        }
+                    }
+
+                    relatedProductContainer.removeAllViews();
+                    LayoutInflater inflater = LayoutInflater.from(this);
+                    DecimalFormat formatter = new DecimalFormat("#,###đ");
+
+                    for (Product product : relatedProducts) {
+                        View itemView = inflater.inflate(R.layout.item_product, relatedProductContainer, false);
+                        ImageView imgChildCateProduct = itemView.findViewById(R.id.img_child_cate_product);
+                        TextView txtChildCateProductName = itemView.findViewById(R.id.txt_child_cate_product_name);
+                        RatingBar ratingBar = itemView.findViewById(R.id.rating_bar);
+                        TextView txtRating = itemView.findViewById(R.id.txt_rating);
+                        TextView txtChildCateProductPrice = itemView.findViewById(R.id.txt_child_cate_product_price);
+                        TextView txtChildCateProductDiscount = itemView.findViewById(R.id.txt_child_cate_product_discount);
+                        TextView txtChildCateOriginalPrice = itemView.findViewById(R.id.txt_child_cate_original_price);
+                        TextView txtChildCateSold = itemView.findViewById(R.id.txt_child_cate_sold);
+
+                        LinearLayout productContainer = itemView.findViewById(R.id.item_product_container);
+                        if (productContainer != null) {
+                            productContainer.setBackground(ContextCompat.getDrawable(this, R.drawable.gray_rounded_background));
+                        }
+
+                        if (imgChildCateProduct != null) {
+                            Glide.with(this).load(product.getProduct_image()).into(imgChildCateProduct);
+                        }
+                        if (txtChildCateProductName != null) {
+                            txtChildCateProductName.setText(product.getProduct_name());
+                        }
+                        if (ratingBar != null) {
+                            ratingBar.setRating((float) product.getAverage_rating());
+                        }
+                        if (txtRating != null) {
+                            txtRating.setText(String.format("%.1f", product.getAverage_rating()));
+                        }
+                        double discountedPrice = product.getPrice() * (1 - product.getDiscount() / 100.0);
+                        if (txtChildCateProductPrice != null) {
+                            txtChildCateProductPrice.setText(formatter.format(discountedPrice));
+                        }
+                        if (txtChildCateProductDiscount != null) {
+                            txtChildCateProductDiscount.setText(product.getDiscount() > 0 ? "-" + product.getDiscount() + "%" : "");
+                            txtChildCateProductDiscount.setVisibility(product.getDiscount() > 0 ? View.VISIBLE : View.GONE);
+                        }
+                        if (txtChildCateOriginalPrice != null) {
+                            txtChildCateOriginalPrice.setText(formatter.format(product.getPrice()));
+                            if (product.getDiscount() > 0) {
+                                txtChildCateOriginalPrice.setPaintFlags(txtChildCateOriginalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                            } else {
+                                txtChildCateOriginalPrice.setPaintFlags(txtChildCateOriginalPrice.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                            }
+                        }
+                        if (txtChildCateSold != null) {
+                            txtChildCateSold.setText(product.getSold_quantity() + " sold");
+                        }
+
+                        itemView.setOnClickListener(v -> {
+                            Intent intent = new Intent(ProductDetailsActivity.this, ProductDetailsActivity.class);
+                            intent.putExtra("product_id", product.getProduct_id());
+                            startActivity(intent);
+                        });
+
+                        relatedProductContainer.addView(itemView);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("ProductDetailsActivity", "Error fetching related products: " + e.getMessage());
+                    relatedProductContainer.removeAllViews();
+                });
+    }
+
+    private void loadYouMayAlsoLike() {
+        if (rvYouMay == null) {
+            Log.e("ProductDetailsActivity", "rvYouMay is null");
+            return;
+        }
+
+        db.collection("products")
+                .orderBy("average_rating", Query.Direction.DESCENDING)
+                .limit(6)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Product> topProducts = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        Product product = document.toObject(Product.class);
+                        topProducts.add(product);
+                    }
+
+                    rvYouMay.setLayoutManager(new GridLayoutManager(this, 2));
+                    ProductAdapter productAdapter = new ProductAdapter(this);
+                    productAdapter.updateItems(new ArrayList<>(topProducts));
+                    rvYouMay.setAdapter(productAdapter);
+
+                    rvYouMay.addItemDecoration(new RecyclerView.ItemDecoration() {
+                        @Override
+                        public void getItemOffsets(@NonNull android.graphics.Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                            outRect.set(1, 8, 1, 8);
+                        }
+                    });
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("ProductDetailsActivity", "Error fetching top-rated products: " + e.getMessage());
+                    rvYouMay.setAdapter(null);
+                });
     }
 
     @Override

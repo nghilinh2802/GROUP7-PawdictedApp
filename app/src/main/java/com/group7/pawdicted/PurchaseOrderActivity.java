@@ -89,7 +89,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     }
 
     private void addEvents() {
-        btn_back.setOnClickListener(v -> onBackPressed());
+        btn_back.setOnClickListener(v -> finish());
         btn_confirm.setOnClickListener(v -> loadOrdersByStatus("Pending Payment"));
         btn_to_pickup.setOnClickListener(v -> loadOrdersByStatus("Shipped"));
         btn_received.setOnClickListener(v -> loadOrdersByStatus("Delivered"));

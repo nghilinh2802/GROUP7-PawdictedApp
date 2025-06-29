@@ -172,7 +172,6 @@
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp">
 
-
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -270,7 +269,6 @@
                     android:textSize="14sp" />
             </LinearLayout>
 
-            <!-- Buttons -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="6dp"
@@ -369,6 +367,102 @@
                         android:textSize="14sp" />
                 </LinearLayout>
             </LinearLayout>
+
+            <!-- Inserted content from activity_rating.xml starting from divider -->
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?android:attr/listDivider" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_review"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                android:paddingBottom="8dp" />
+
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="?android:attr/listDivider" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:minHeight="150dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_bold"
+                    android:paddingVertical="8dp"
+                    android:text="@string/title_related_product"
+                    android:textColor="@color/main_color"
+                    android:textSize="20sp" />
+
+                <RelativeLayout
+                    android:id="@+id/reLayout_related"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="-10dp"
+                    android:minHeight="120dp"
+                    android:paddingBottom="10dp">
+
+                    <HorizontalScrollView
+                        android:id="@+id/horizontalScrollView_related"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:nestedScrollingEnabled="false">
+
+                        <LinearLayout
+                            android:id="@+id/lv_related_product"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:orientation="horizontal" />
+                    </HorizontalScrollView>
+                </RelativeLayout>
+            </LinearLayout>
+
+            <View
+                android:id="@+id/divider3"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="?android:attr/listDivider" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_bold"
+                android:paddingVertical="8dp"
+                android:text="@string/title_you_may"
+                android:textAlignment="center"
+                android:textColor="@color/main_color"
+                android:textSize="20sp" />
+
+            <View
+                android:id="@+id/divider4"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="?android:attr/listDivider" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_you_may"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="10dp"
+                android:paddingTop="10dp"
+                android:background="@color/light_background"
+                android:nestedScrollingEnabled="false" />
         </LinearLayout>
     </ScrollView>
 
