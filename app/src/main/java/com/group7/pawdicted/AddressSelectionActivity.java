@@ -1,12 +1,9 @@
 package com.group7.pawdicted;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +23,7 @@ public class AddressSelectionActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private List<AddressItem> addressList = new ArrayList<>();
     private AddressAdapter addressAdapter;
+    private String selectedAddressId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +36,8 @@ public class AddressSelectionActivity extends AppCompatActivity {
         addressAdapter = new AddressAdapter(addressList, this, this);
         recyclerView.setAdapter(addressAdapter);
 
+        selectedAddressId = getIntent().getStringExtra("selectedAddressId");
+
         loadAddressesFromFirestore();
     }
 
@@ -46,7 +46,10 @@ public class AddressSelectionActivity extends AppCompatActivity {
                 ? FirebaseAuth.getInstance().getCurrentUser().getUid()
                 : null;
 
-        if (customerId == null) return;
+        if (customerId == null) {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         FirebaseFirestore.getInstance()
                 .collection("addresses")
@@ -62,27 +65,26 @@ public class AddressSelectionActivity extends AppCompatActivity {
                         addressList.add(item);
                     }
 
-                    if (addressList.size() == 1) {
-                        addressList.get(0).setDefault(true);
-                    }
-
                     addressAdapter.notifyDataSetChanged();
 
-                    String selectedAddressId = getIntent().getStringExtra("selectedAddressId");
-                    int selectedPos = -1;
+                    // Ưu tiên chọn địa chỉ có ID khớp với selectedAddressId
                     if (selectedAddressId != null) {
                         for (int i = 0; i < addressList.size(); i++) {
                             if (addressList.get(i).getId().equals(selectedAddressId)) {
-                                selectedPos = i;
-                                break;
+                                addressAdapter.setSelectedPosition(i);
+                                return; // Thoát sau khi tìm thấy và chọn
                             }
                         }
                     }
-                    if (selectedPos == -1) {
-                        selectedPos = getDefaultAddressPosition();
-                    }
-                    if (selectedPos != -1) {
-                        addressAdapter.setSelectedPosition(selectedPos);
+
+                    // Nếu không tìm thấy selectedAddressId, chọn địa chỉ mặc định
+                    int defaultPos = getDefaultAddressPosition();
+                    if (defaultPos != -1) {
+                        addressAdapter.setSelectedPosition(defaultPos);
+                    } else if (!addressList.isEmpty()) {
+                        addressAdapter.setSelectedPosition(0); // Chọn địa chỉ đầu tiên nếu không có mặc định
+                    } else {
+                        Toast.makeText(this, "No addresses found", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(e -> {

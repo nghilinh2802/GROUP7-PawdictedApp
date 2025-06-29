@@ -41,6 +41,7 @@ public class CheckoutActivity extends AppCompatActivity {
     private Button btnPlaceOrder;
     private ShippingOption selectedShippingOption;
     private PaymentMethod selectedPaymentMethod;
+    private AddressItem currentAddress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,8 +90,6 @@ public class CheckoutActivity extends AppCompatActivity {
                 "Delivery fee 45K (only available in HCMC); order before 5pm will be delivered the same day.",
                 45000
         ));
-        Log.d("CheckoutActivity", "Shipping options size: " + shippingOptions.size());
-
         selectedShippingOption = shippingOptions.get(0); // Default to Standard Delivery
 
         ShippingOptionAdapter shippingOptionAdapter = new ShippingOptionAdapter(this, shippingOptions, option -> {
@@ -106,8 +105,6 @@ public class CheckoutActivity extends AppCompatActivity {
         paymentMethods.add(new PaymentMethod("QR Code - VNPay", R.mipmap.ic_vnpay));
         paymentMethods.add(new PaymentMethod("ZaloPay", R.mipmap.ic_zalopay));
         paymentMethods.add(new PaymentMethod("MoMo Wallet", R.mipmap.ic_momo));
-        Log.d("CheckoutActivity", "Payment methods size: " + paymentMethods.size());
-
         selectedPaymentMethod = paymentMethods.get(3); // Default to MoMo Wallet
 
         PaymentMethodAdapter paymentMethodAdapter = new PaymentMethodAdapter(this, paymentMethods, method -> {
@@ -124,13 +121,8 @@ public class CheckoutActivity extends AppCompatActivity {
             Toast.makeText(CheckoutActivity.this, "Order Placed with " + selectedPaymentMethod.getName() + "!", Toast.LENGTH_SHORT).show();
         });
 
-        // Load selected or default address on start
-        String selectedAddressId = getSelectedAddressId();
-        if (selectedAddressId != null) {
-            loadSelectedAddressFromFirestore(selectedAddressId);
-        } else {
-            loadDefaultAddressFromFirestore();
-        }
+        // Always load the default address on create
+        loadDefaultAddressFromFirestore();
     }
 
     private void calculateAndUpdateTotals() {
@@ -140,7 +132,6 @@ public class CheckoutActivity extends AppCompatActivity {
                 merchandiseSubtotal += item.price * item.quantity;
             }
         }
-
         int shippingSubtotal = selectedShippingOption != null ? selectedShippingOption.getCost() : 0;
         int merchandiseDiscountSubtotal = 0;
         int shippingDiscountSubtotal = 0;
@@ -169,9 +160,8 @@ public class CheckoutActivity extends AppCompatActivity {
 
     public void open_address_selection_activity(View view) {
         Intent intent = new Intent(this, AddressSelectionActivity.class);
-        String selectedAddressId = getSelectedAddressId();
-        if (selectedAddressId != null) {
-            intent.putExtra("selectedAddressId", selectedAddressId);
+        if (currentAddress != null) {
+            intent.putExtra("selectedAddressId", currentAddress.getId());
         }
         startActivityForResult(intent, 200);
     }
@@ -180,41 +170,23 @@ public class CheckoutActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 200 && resultCode == RESULT_OK && data != null) {
-            AddressItem selectedAddress = (AddressItem) data.getParcelableExtra("selectedAddress");
-            String selectedAddressId = data.getStringExtra("selectedAddressId");
-            if (selectedAddress != null && selectedAddressId != null) {
+            AddressItem selectedAddress = data.getParcelableExtra("selectedAddress");
+            if (selectedAddress != null) {
+                currentAddress = selectedAddress; // Cập nhật currentAddress
                 updateAddressUI(selectedAddress);
-                saveSelectedAddressId(selectedAddressId);
             }
         }
     }
 
-    private void loadSelectedAddressFromFirestore(String addressId) {
-        String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        FirebaseFirestore.getInstance()
-                .collection("addresses")
-                .document(customerId)
-                .collection("items")
-                .document(addressId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        AddressItem address = documentSnapshot.toObject(AddressItem.class);
-                        if (address != null) {
-                            updateAddressUI(address);
-                        }
-                    } else {
-                        loadDefaultAddressFromFirestore();
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("CheckoutActivity", "Error loading selected address", e);
-                    loadDefaultAddressFromFirestore();
-                });
-    }
-
     private void loadDefaultAddressFromFirestore() {
-        String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String customerId = FirebaseAuth.getInstance().getCurrentUser() != null
+                ? FirebaseAuth.getInstance().getCurrentUser().getUid()
+                : null;
+        if (customerId == null) {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         FirebaseFirestore.getInstance()
                 .collection("addresses")
                 .document(customerId)
@@ -225,24 +197,60 @@ public class CheckoutActivity extends AppCompatActivity {
                 .addOnSuccessListener(querySnapshot -> {
                     if (!querySnapshot.isEmpty()) {
                         AddressItem defaultAddress = querySnapshot.getDocuments().get(0).toObject(AddressItem.class);
+                        defaultAddress.setId(querySnapshot.getDocuments().get(0).getId()); // Đảm bảo set ID
                         if (defaultAddress != null) {
+                            currentAddress = defaultAddress; // Lưu vào currentAddress
                             updateAddressUI(defaultAddress);
-                            saveSelectedAddressId(defaultAddress.getId());
                         }
                     } else {
-                        Toast.makeText(this, "No default address found", Toast.LENGTH_SHORT).show();
+                        FirebaseFirestore.getInstance()
+                                .collection("addresses")
+                                .document(customerId)
+                                .collection("items")
+                                .orderBy("time")
+                                .limit(1)
+                                .get()
+                                .addOnSuccessListener(fallbackSnapshot -> {
+                                    if (!fallbackSnapshot.isEmpty()) {
+                                        AddressItem firstAddress = fallbackSnapshot.getDocuments().get(0).toObject(AddressItem.class);
+                                        firstAddress.setId(fallbackSnapshot.getDocuments().get(0).getId()); // Đảm bảo set ID
+                                        if (firstAddress != null) {
+                                            currentAddress = firstAddress; // Lưu vào currentAddress
+                                            updateAddressUI(firstAddress);
+                                        }
+                                    } else {
+                                        Toast.makeText(this, "No addresses found", Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.e("CheckoutActivity", "Error loading fallback address", e);
+                                });
                     }
                 })
                 .addOnFailureListener(e -> {
                     Log.e("CheckoutActivity", "Error loading default address", e);
-                    Toast.makeText(this, "Error loading default address", Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    private void updateDefaultAddressInFirestore(AddressItem address) {
+        String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseFirestore.getInstance()
+                .collection("addresses")
+                .document(customerId)
+                .collection("items")
+                .document(address.getId())
+                .set(address)
+                .addOnFailureListener(e -> Log.e("Firestore", "Error updating default address", e));
     }
 
     private void updateAddressUI(AddressItem address) {
         TextView nameTextView = findViewById(R.id.addressNameTextView);
         TextView phoneTextView = findViewById(R.id.addressPhoneTextView);
         TextView addressTextView = findViewById(R.id.addressDetailTextView);
+
+        SharedPreferences prefs = getSharedPreferences("CheckoutPrefs", MODE_PRIVATE);
+        prefs.edit().putString("selectedAddressId", address.getId()).apply();
+
         if (nameTextView != null && phoneTextView != null && addressTextView != null) {
             nameTextView.setText(address.getName());
             phoneTextView.setText(address.getPhone());
@@ -250,15 +258,13 @@ public class CheckoutActivity extends AppCompatActivity {
         }
     }
 
-    private String getSelectedAddressId() {
-        SharedPreferences prefs = getSharedPreferences("CheckoutPrefs", MODE_PRIVATE);
-        return prefs.getString("selectedAddressId", null);
-    }
-
-    private void saveSelectedAddressId(String addressId) {
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Clear any temporary address selection (optional, ensures reset on next entry)
         SharedPreferences prefs = getSharedPreferences("CheckoutPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("selectedAddressId", addressId);
+        editor.remove("selectedAddressId");
         editor.apply();
     }
 }

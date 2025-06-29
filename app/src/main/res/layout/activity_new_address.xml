@@ -9,43 +9,32 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="86dp"
-        android:paddingStart="8dp"
-        android:paddingTop="24dp"
-        android:paddingEnd="8dp"
+        android:layout_height="70dp"
         android:background="#B71C1C"
         app:layout_constraintTop_toTopOf="parent">
 
-
->
-
         <ImageView
-            android:id="@+id/imgBack"
+            android:id="@+id/backArrow"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_marginStart="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Back"
             android:src="@mipmap/ic_back_icon_white"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="16dp" />
 
         <TextView
-            android:id="@+id/txt_page_title"
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:fontFamily="@font/inter_bold"
-            android:maxLines="1"
-            android:text="@string/title_new_address_cap"
+            android:text="New Address"
             android:textColor="#FFFFFF"
-            android:textSize="22sp"
+            android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Scrollable Form Fields in CardView -->
@@ -154,14 +143,14 @@
                 <!-- District -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="55dp"
                     android:hint="District"
                     android:layout_marginBottom="16dp">
 
                     <Spinner
                         android:id="@+id/districtSpinner"
                         android:layout_width="match_parent"
-                        android:layout_height="55dp"
+                        android:layout_height="match_parent"
                         android:textColor="@color/black"
                         android:background="@drawable/rounded_spinner_background" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -215,7 +204,7 @@
         </ScrollView>
     </androidx.cardview.widget.CardView>
 
-    <!-- Set as Default Address Layout (Fixed at bottom) -->
+    <!-- Set as Default Address Layout -->
     <LinearLayout
         android:id="@+id/defaultLayout"
         android:layout_width="match_parent"
@@ -246,26 +235,19 @@
             app:trackTintMode="src_in" />
     </LinearLayout>
 
-    <!-- Submit Button (Fixed at bottom) -->
+    <!-- Submit Button -->
     <Button
         android:id="@+id/submitButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="SUBMIT"
+        android:layout_margin="16dp"
+        android:text="Submit"
+        android:textSize="18sp"
         android:background="@drawable/rounded_button_red"
         app:backgroundTint="@null"
         android:textColor="#FFFFFF"
-        android:enabled="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_margin="16dp" />
-
-    <ListView
-        android:id="@+id/addressListView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/submitButton"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
