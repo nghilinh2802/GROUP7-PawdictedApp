@@ -48,6 +48,20 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
 
         holder.radioButton.setChecked(position == selectedPosition);
 
+        holder.itemView.setOnClickListener(v -> {
+            int clickedPosition = holder.getAdapterPosition();
+            if (clickedPosition != RecyclerView.NO_POSITION) {
+                updateSelectedAddress(clickedPosition);
+            }
+        });
+
+        holder.radioButton.setOnClickListener(v -> {
+            int clickedPosition = holder.getAdapterPosition();
+            if (clickedPosition != RecyclerView.NO_POSITION) {
+                updateSelectedAddress(clickedPosition);
+            }
+        });
+
         holder.radioButton.setOnClickListener(v -> {
             int clickedPosition = holder.getAdapterPosition();
             if (clickedPosition != RecyclerView.NO_POSITION) {
@@ -124,4 +138,22 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
         if (previousSelected != -1) notifyItemChanged(previousSelected);
         if (selectedPosition != -1) notifyItemChanged(selectedPosition);
     }
+
+    private void updateSelectedAddress(int clickedPosition) {
+        int previousSelected = selectedPosition;
+        selectedPosition = clickedPosition;
+
+        if (previousSelected != -1) notifyItemChanged(previousSelected);
+        notifyItemChanged(selectedPosition);
+
+        if (addressList.size() > 1) {
+            AddressItem selectedItem = addressList.get(clickedPosition);
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("selectedAddress", selectedItem);
+            resultIntent.putExtra("lastSelectedPosition", clickedPosition);
+            activity.setResult(RESULT_OK, resultIntent);
+            activity.finish();
+        }
+    }
+
 }

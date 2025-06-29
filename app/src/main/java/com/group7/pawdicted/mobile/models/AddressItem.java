@@ -1,9 +1,11 @@
 package com.group7.pawdicted.mobile.models;
 
-import com.google.firebase.Timestamp;
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class AddressItem implements Serializable {
+import com.google.firebase.Timestamp;
+
+public class AddressItem implements Parcelable {
     private String id;
     private String name;
     private String phone;
@@ -11,9 +13,8 @@ public class AddressItem implements Serializable {
     private boolean isDefault;
     private Timestamp time;
 
-    public AddressItem() {} // Required by Firestore
+    public AddressItem() {}
 
-    // Full constructor
     public AddressItem(String id, String name, String phone, String address, boolean isDefault, Timestamp time) {
         this.id = id;
         this.name = name;
@@ -23,7 +24,6 @@ public class AddressItem implements Serializable {
         this.time = time;
     }
 
-    // Convenient constructor
     public AddressItem(String name, String phone, String address, boolean isDefault) {
         this.name = name;
         this.phone = phone;
@@ -32,7 +32,45 @@ public class AddressItem implements Serializable {
         this.time = Timestamp.now();
     }
 
-    // Getters and Setters
+    // Parcelable constructor
+    protected AddressItem(Parcel in) {
+        id = in.readString();
+        name = in.readString();
+        phone = in.readString();
+        address = in.readString();
+        isDefault = in.readByte() != 0;
+        long seconds = in.readLong();
+        time = new Timestamp(seconds, 0);
+    }
+
+    public static final Creator<AddressItem> CREATOR = new Creator<AddressItem>() {
+        @Override
+        public AddressItem createFromParcel(Parcel in) {
+            return new AddressItem(in);
+        }
+
+        @Override
+        public AddressItem[] newArray(int size) {
+            return new AddressItem[size];
+        }
+    };
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(name);
+        dest.writeString(phone);
+        dest.writeString(address);
+        dest.writeByte((byte) (isDefault ? 1 : 0));
+        dest.writeLong(time != null ? time.getSeconds() : 0);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    // Getters and setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
