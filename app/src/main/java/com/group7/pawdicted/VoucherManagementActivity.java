@@ -1,15 +1,12 @@
 package com.group7.pawdicted;
 
 import android.os.Bundle;
-import android.graphics.Color;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -30,7 +27,6 @@ public class VoucherManagementActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voucher_management);
 
-
         ImageView imgBack = findViewById(R.id.imgBack);
         if (imgBack != null) {
             imgBack.setOnClickListener(v -> finish());
@@ -48,26 +44,16 @@ public class VoucherManagementActivity extends AppCompatActivity {
         adapter.addFragment(new DiscountVoucherFragment(), "Discount");
         adapter.addFragment(new ShippingVoucherFragment(), "Shipping Voucher");
         viewPager.setAdapter(adapter);
-
         tabLayout.setupWithViewPager(viewPager);
 
-        // Thêm TextWatcher để kiểm tra nội dung của EditText
         voucherCodeInput.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // Kiểm tra nếu có nội dung nhập vào
-                if (s.length() > 0) {
-                    applyButton.setBackgroundResource(R.drawable.red_fill_rounded_background);
-                } else {
-                    applyButton.setBackgroundResource(R.drawable.dark_gray_fill_rounded_background);
-                }
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                applyButton.setBackgroundResource(s.length() > 0
+                        ? R.drawable.red_fill_rounded_background
+                        : R.drawable.dark_gray_fill_rounded_background);
             }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
+            @Override public void afterTextChanged(Editable s) {}
         });
     }
 
@@ -84,19 +70,8 @@ public class VoucherManagementActivity extends AppCompatActivity {
             fragmentTitles.add(title);
         }
 
-        @Override
-        public Fragment getItem(int position) {
-            return fragments.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return fragments.size();
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return fragmentTitles.get(position);
-        }
+        @Override public Fragment getItem(int position) { return fragments.get(position); }
+        @Override public int getCount() { return fragments.size(); }
+        @Override public CharSequence getPageTitle(int position) { return fragmentTitles.get(position); }
     }
 }
