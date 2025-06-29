@@ -59,7 +59,7 @@ public class ProfileManagementActivity extends AppCompatActivity {
         txtDob = findViewById(R.id.tvDob);
         txtPhone = findViewById(R.id.tvPhone);
         txtEmail = findViewById(R.id.tvEmail);
-        txtAddress = findViewById(R.id.tvAddress);
+//        txtAddress = findViewById(R.id.tvAddress);
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -107,7 +107,7 @@ public class ProfileManagementActivity extends AppCompatActivity {
                                 new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(dobDate) : "");
                         txtPhone.setText(phone != null ? phone : "");
                         txtEmail.setText(email != null ? email : "");
-                        txtAddress.setText(address != null ? address : "");
+//                        txtAddress.setText(address != null ? address : "");
 
                         if (avatar != null && !avatar.isEmpty()) {
                             Glide.with(this).load(avatar)

@@ -662,4 +662,18 @@ public class FlashSaleActivity extends AppCompatActivity {
             countdownHandler.removeCallbacks(countdownRunnable);
         }
     }
+
+    public void open_chat(View view) {
+        Intent intent=new Intent(FlashSaleActivity.this,ChatActivity.class);
+        startActivity(intent);
+    }
+
+    public void open_search(View view) {
+        Intent intent=new Intent(FlashSaleActivity.this,SearchActivity.class);
+        startActivity(intent);
+    }
+    public void open_cart(View view) {
+        Intent intent=new Intent(FlashSaleActivity.this,CartActivity.class);
+        startActivity(intent);
+    }
 }
