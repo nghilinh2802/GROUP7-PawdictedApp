@@ -318,7 +318,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
                             // Các thông tin khác của đơn hàng
-                            String orderCode = document.getString("order_code");
+                            String orderCode = orderId;
                             String orderTime = formatTimestamp(document.getTimestamp("order_time"));
                             String paymentMethod = document.getString("payment_method");
                             int orderValue = document.getLong("order_value").intValue();
@@ -554,32 +554,42 @@ public class OrderDetailActivity extends AppCompatActivity {
                         DocumentSnapshot orderDoc = task.getResult();
                         if (orderDoc.exists()) {
                             String customerId = orderDoc.getString("customer_id");
+                            String addressId = orderDoc.getString("address_id");
 
                             Log.d("DEBUG", "customerId: " + customerId);
+                            Log.d("DEBUG", "addressId: " + addressId);
 
                             if (customerId != null && !customerId.isEmpty()) {
-                                // Fetch customer data
-                                db.collection("customers").document(customerId)
-                                        .get()
-                                        .addOnCompleteListener(customerTask -> {
-                                            if (customerTask.isSuccessful()) {
-                                                DocumentSnapshot customerDoc = customerTask.getResult();
-                                                if (customerDoc.exists()) {
-                                                    String customerName = customerDoc.getString("customer_name");
-                                                    String phone = customerDoc.getString("phone_number");
-                                                    String address = customerDoc.getString("address");
+                                if (addressId != null && !addressId.isEmpty()) {
+                                    // Truy cập theo address_id từ bảng addresses
+                                    db.collection("addresses")
+                                            .document(customerId)
+                                            .collection("items")
+                                            .document(addressId)
+                                            .get()
+                                            .addOnSuccessListener(addressDoc -> {
+                                                if (addressDoc.exists()) {
+                                                    String name = addressDoc.getString("name");
+                                                    String phone = addressDoc.getString("phone");
+                                                    String address = addressDoc.getString("address");
 
-                                                    // Hiển thị thông tin khách hàng
-                                                    ((TextView) findViewById(R.id.tv_customer_name)).setText(customerName);
+                                                    // Hiển thị thông tin giao hàng
+                                                    ((TextView) findViewById(R.id.tv_customer_name)).setText(name);
                                                     ((TextView) findViewById(R.id.tv_phone)).setText(phone);
                                                     ((TextView) findViewById(R.id.tv_address)).setText(address);
                                                 } else {
-                                                    Log.w("DEBUG", "Customer data not found.");
+                                                    Log.w("DEBUG", "Address not found, fallback to customer data");
+                                                    loadCustomerFallback(customerId);
                                                 }
-                                            } else {
-                                                Log.e("DEBUG", "Error fetching customer data: " + customerTask.getException());
-                                            }
-                                        });
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                Log.e("DEBUG", "Error fetching address info: ", e);
+                                                loadCustomerFallback(customerId); // fallback nếu lỗi
+                                            });
+                                } else {
+                                    // Không có address_id → dùng thông tin từ customers
+                                    loadCustomerFallback(customerId);
+                                }
                             } else {
                                 Log.w("DEBUG", "No customer_id found in order: " + orderId);
                             }
@@ -589,6 +599,28 @@ public class OrderDetailActivity extends AppCompatActivity {
                     } else {
                         Log.e("DEBUG", "Error fetching order data: " + task.getException());
                     }
+                });
+    }
+
+    // Hàm hỗ trợ fallback truy xuất bảng customers
+    private void loadCustomerFallback(String customerId) {
+        db.collection("customers").document(customerId)
+                .get()
+                .addOnSuccessListener(customerDoc -> {
+                    if (customerDoc.exists()) {
+                        String customerName = customerDoc.getString("customer_name");
+                        String phone = customerDoc.getString("phone_number");
+                        String address = customerDoc.getString("address");
+
+                        ((TextView) findViewById(R.id.tv_customer_name)).setText(customerName);
+                        ((TextView) findViewById(R.id.tv_phone)).setText(phone);
+                        ((TextView) findViewById(R.id.tv_address)).setText(address);
+                    } else {
+                        Log.w("DEBUG", "Customer data not found.");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("DEBUG", "Error fetching customer data: ", e);
                 });
     }
 

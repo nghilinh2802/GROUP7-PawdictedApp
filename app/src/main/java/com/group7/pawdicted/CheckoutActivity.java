@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,7 +15,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -28,7 +31,9 @@ import com.group7.pawdicted.mobile.models.PaymentMethod;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CheckoutActivity extends AppCompatActivity {
 
@@ -41,12 +46,19 @@ public class CheckoutActivity extends AppCompatActivity {
     private Button btnPlaceOrder;
     private ShippingOption selectedShippingOption;
     private PaymentMethod selectedPaymentMethod;
+    private FirebaseFirestore db;
+    private TextView txtMessage;
+    private String finalAddressId = null;
+    ImageView imgBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_checkout);
+
+        addViews();
+        addEvents();
 
         // Initialize views
         recyclerViewOrderItems = findViewById(R.id.recyclerViewOrderItems);
@@ -60,6 +72,9 @@ public class CheckoutActivity extends AppCompatActivity {
         txtSavedFooter = findViewById(R.id.txtSavedFooter);
         txtTotalPayment = findViewById(R.id.txtTotalPayment);
         btnPlaceOrder = findViewById(R.id.btnPlaceOrder);
+        txtMessage = findViewById(R.id.txtMessage);
+
+        db = FirebaseFirestore.getInstance();
 
         // Get the selected cart items from the intent
         String cartJson = getIntent().getStringExtra("cartItems");
@@ -121,7 +136,74 @@ public class CheckoutActivity extends AppCompatActivity {
         calculateAndUpdateTotals();
 
         btnPlaceOrder.setOnClickListener(v -> {
-            Toast.makeText(CheckoutActivity.this, "Order Placed with " + selectedPaymentMethod.getName() + "!", Toast.LENGTH_SHORT).show();
+
+            if (finalAddressId == null) {
+                Toast.makeText(this, "Please choose the delivery address!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            FirebaseAuth auth = FirebaseAuth.getInstance();
+            String customerId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : "unknown";
+            String customerNote = txtMessage.getText().toString().trim();
+            int shippingFee = selectedShippingOption != null ? selectedShippingOption.getCost() : 0;
+            String paymentMethod = selectedPaymentMethod != null ? selectedPaymentMethod.getName() : "Unknown";
+            Timestamp orderTime = Timestamp.now();
+
+            // Tạo Map chứa product1, product2...
+            Map<String, Object> productMap = new HashMap<>();
+            int totalMerchandise = 0;
+            int index = 1;
+
+            for (CartItem item : cartItems) {
+                if (item.isSelected) {
+                    int cost = item.price * item.quantity;
+                    totalMerchandise += cost;
+
+                    Map<String, Object> productDetail = new HashMap<>();
+                    productDetail.put("product_id", item.productId);
+                    productDetail.put("quantity", item.quantity);
+                    productDetail.put("total_cost_of_goods", cost);
+
+                    productMap.put("product" + index, productDetail);
+                    index++;
+                }
+            }
+
+            int totalValue = totalMerchandise + shippingFee;
+
+            // Tạo document order_items
+            DocumentReference orderItemRef = db.collection("order_items").document();
+            String orderItemId = orderItemRef.getId();
+
+            orderItemRef.set(productMap)
+                    .addOnSuccessListener(unused -> {
+                        // Sau khi tạo order_items xong => tạo đơn hàng
+                        Map<String, Object> orderData = new HashMap<>();
+                        orderData.put("customer_id", customerId);
+                        orderData.put("address_id", finalAddressId);
+                        orderData.put("customer_note", customerNote);
+                        orderData.put("shipping_fee", shippingFee);
+                        orderData.put("payment_method", paymentMethod);
+                        orderData.put("order_time", orderTime);
+                        orderData.put("order_value", totalValue);
+                        orderData.put("order_status", "Pending Payment");
+                        orderData.put("order_item_id", orderItemId); // chỉ 1 ID, không đính kèm chi tiết
+
+                        db.collection("orders").add(orderData)
+                                .addOnSuccessListener(docRef -> {
+                                    Toast.makeText(CheckoutActivity.this, "Đặt hàng thành công!", Toast.LENGTH_SHORT).show();
+                                    finish();
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.e("Checkout", "Lỗi lưu đơn hàng", e);
+                                    Toast.makeText(CheckoutActivity.this, "Đặt hàng thất bại!", Toast.LENGTH_SHORT).show();
+                                });
+
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("Checkout", "Lỗi lưu order_items", e);
+                        Toast.makeText(CheckoutActivity.this, "Lỗi khi lưu sản phẩm", Toast.LENGTH_SHORT).show();
+                    });
         });
 
         // Load selected or default address on start
@@ -131,6 +213,14 @@ public class CheckoutActivity extends AppCompatActivity {
         } else {
             loadDefaultAddressFromFirestore();
         }
+    }
+
+    private void addEvents() {
+        imgBack.setOnClickListener(v -> finish());
+    }
+
+    private void addViews() {
+        imgBack = findViewById(R.id.imgBack);
     }
 
     private void calculateAndUpdateTotals() {
@@ -185,6 +275,7 @@ public class CheckoutActivity extends AppCompatActivity {
             if (selectedAddress != null && selectedAddressId != null) {
                 updateAddressUI(selectedAddress);
                 saveSelectedAddressId(selectedAddressId);
+                finalAddressId = selectedAddressId;
             }
         }
     }
@@ -202,6 +293,7 @@ public class CheckoutActivity extends AppCompatActivity {
                         AddressItem address = documentSnapshot.toObject(AddressItem.class);
                         if (address != null) {
                             updateAddressUI(address);
+                            finalAddressId = addressId;
                         }
                     } else {
                         loadDefaultAddressFromFirestore();
@@ -228,6 +320,7 @@ public class CheckoutActivity extends AppCompatActivity {
                         if (defaultAddress != null) {
                             updateAddressUI(defaultAddress);
                             saveSelectedAddressId(defaultAddress.getId());
+                            finalAddressId = defaultAddress.getId();
                         }
                     } else {
                         Toast.makeText(this, "No default address found", Toast.LENGTH_SHORT).show();

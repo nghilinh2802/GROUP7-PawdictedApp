@@ -4,7 +4,8 @@
     android:id="@+id/cart_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFF5F5">
+    android:background="#FFF5F5"
+    android:fitsSystemWindows="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolbar_checkout"

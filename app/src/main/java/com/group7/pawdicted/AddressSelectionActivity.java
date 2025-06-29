@@ -26,11 +26,18 @@ public class AddressSelectionActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private List<AddressItem> addressList = new ArrayList<>();
     private AddressAdapter addressAdapter;
+    ImageView imgBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_address_selection);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
+
+        addViews();
 
         recyclerView = findViewById(R.id.addressRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -39,6 +46,13 @@ public class AddressSelectionActivity extends AppCompatActivity {
         recyclerView.setAdapter(addressAdapter);
 
         loadAddressesFromFirestore();
+    }
+
+    private void addViews() {
+        imgBack = findViewById(R.id.imgBack);
+        imgBack.setOnClickListener(v -> {
+            finish();
+        });
     }
 
     private void loadAddressesFromFirestore() {
