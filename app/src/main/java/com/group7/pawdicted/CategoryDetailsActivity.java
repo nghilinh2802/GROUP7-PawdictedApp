@@ -1,6 +1,7 @@
 package com.group7.pawdicted;
 
 import android.content.Intent;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -18,6 +19,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.group7.pawdicted.mobile.adapters.ChildCategoryAdapter;
@@ -28,9 +30,12 @@ import com.group7.pawdicted.mobile.models.ListCategory;
 import com.group7.pawdicted.mobile.models.ListChildCategory;
 import com.group7.pawdicted.mobile.models.Product;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CategoryDetailsActivity extends AppCompatActivity {
 
@@ -50,6 +55,10 @@ public class CategoryDetailsActivity extends AppCompatActivity {
     private List<Product> filteredProducts;
     private boolean isPriceAscending = true;
     private String selectedFilter = "none";
+
+    // THÊM CÁC BIẾN FLASHSALE
+    private Map<String, Integer> productFlashsaleDiscounts = new HashMap<>();
+    private Map<String, String> productFlashsaleIds = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -239,6 +248,9 @@ public class CategoryDetailsActivity extends AppCompatActivity {
                     }
                     Log.d("CategoryDetailsActivity", "Products found: " + filteredProducts.size());
 
+                    // CHECK FLASHSALE AFTER LOADING PRODUCTS
+                    checkProductsInFlashsale();
+
                     switch (selectedFilter) {
                         case "best_seller":
                             sortProductsByBestSeller();
@@ -254,13 +266,92 @@ public class CategoryDetailsActivity extends AppCompatActivity {
                             break;
                     }
                     productAdapter.notifyDataSetChanged();
-                    updateProductContainer();
+                    // updateProductContainer() sẽ được gọi trong checkProductsInFlashsale()
                 })
                 .addOnFailureListener(e -> {
                     Log.e("CategoryDetailsActivity", "Error fetching products: " + e.getMessage());
                     filteredProducts.clear();
                     updateProductContainer();
                 });
+    }
+
+    // THÊM METHOD CHECK FLASHSALE
+    private void checkProductsInFlashsale() {
+        Log.d("CategoryDetailsActivity", "Checking products in flashsale...");
+
+        // Clear previous flashsale data
+        productFlashsaleDiscounts.clear();
+        productFlashsaleIds.clear();
+
+        // Get all product IDs from filtered products
+        List<String> productIds = new ArrayList<>();
+        for (Product product : filteredProducts) {
+            productIds.add(product.getProduct_id());
+        }
+
+        if (productIds.isEmpty()) {
+            Log.d("CategoryDetailsActivity", "No products to check for flashsale");
+            updateProductContainer();
+            return;
+        }
+
+        // Query flashsales collection
+        db.collection("flashsales")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    Log.d("CategoryDetailsActivity", "Found " + querySnapshot.size() + " flashsales");
+
+                    for (QueryDocumentSnapshot flashsaleDoc : querySnapshot) {
+                        String flashsaleId = flashsaleDoc.getString("flashSale_id");
+                        List<Map<String, Object>> products = (List<Map<String, Object>>) flashsaleDoc.get("products");
+
+                        if (products != null) {
+                            for (Map<String, Object> productMap : products) {
+                                String productId = (String) productMap.get("product_id");
+
+                                // Check if this product is in our filtered products
+                                if (productIds.contains(productId)) {
+                                    Object discountRateObj = productMap.get("discountRate");
+                                    int discountRate = 0;
+
+                                    if (discountRateObj instanceof Long) {
+                                        discountRate = ((Long) discountRateObj).intValue();
+                                    } else if (discountRateObj instanceof Integer) {
+                                        discountRate = (Integer) discountRateObj;
+                                    }
+
+                                    // Store flashsale info for this product
+                                    productFlashsaleDiscounts.put(productId, discountRate);
+                                    productFlashsaleIds.put(productId, flashsaleId);
+
+                                    Log.d("CategoryDetailsActivity", "Product " + productId +
+                                            " is in flashsale " + flashsaleId + " with discount " + discountRate + "%");
+                                }
+                            }
+                        }
+                    }
+
+                    // Update UI after checking flashsales
+                    updateProductContainer();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("CategoryDetailsActivity", "Error checking flashsales: " + e.getMessage());
+                    // Continue without flashsale data
+                    updateProductContainer();
+                });
+    }
+
+    // THÊM HELPER METHODS
+    public boolean isProductInFlashsale(String productId) {
+        return productFlashsaleDiscounts.containsKey(productId);
+    }
+
+    public int getProductFlashsaleDiscount(String productId) {
+        return productFlashsaleDiscounts.getOrDefault(productId, 0);
+    }
+
+    public String getProductFlashsaleId(String productId) {
+        return productFlashsaleIds.get(productId);
     }
 
     private void updateFilterUI() {
@@ -307,10 +398,21 @@ public class CategoryDetailsActivity extends AppCompatActivity {
 
     private void sortProductsByPrice() {
         Collections.sort(filteredProducts, (p1, p2) -> {
-            double price1 = p1.getPrice() * (1 - p1.getDiscount() / 100.0);
-            double price2 = p2.getPrice() * (1 - p2.getDiscount() / 100.0);
+            // SỬ DỤNG GIÁ FLASHSALE NẾU CÓ
+            double price1 = getEffectivePrice(p1);
+            double price2 = getEffectivePrice(p2);
             return isPriceAscending ? Double.compare(price1, price2) : Double.compare(price2, price1);
         });
+    }
+
+    // THÊM METHOD TÍNH GIÁ HIỆU QUẢ (FLASHSALE HOẶC BÌNH THƯỜNG)
+    private double getEffectivePrice(Product product) {
+        if (isProductInFlashsale(product.getProduct_id())) {
+            int flashsaleDiscount = getProductFlashsaleDiscount(product.getProduct_id());
+            return product.getPrice() * (1 - flashsaleDiscount / 100.0);
+        } else {
+            return product.getPrice() * (1 - product.getDiscount() / 100.0);
+        }
     }
 
     private void updateProductContainer() {
@@ -341,13 +443,97 @@ public class CategoryDetailsActivity extends AppCompatActivity {
                 rowLayout.setWeightSum(2f);
                 productContainer.addView(rowLayout);
             }
-            View productView = productAdapter.getView(i, null, rowLayout);
+
+            // THÊM LOGIC HIỂN THỊ GIÁ FLASHSALE
+            View productView = createProductView(filteredProducts.get(i));
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
             params.setMargins(4, 0, 4, 0);
             productView.setLayoutParams(params);
             rowLayout.addView(productView);
         }
+    }
+
+    // THÊM METHOD TẠO PRODUCT VIEW VỚI FLASHSALE
+    private View createProductView(Product product) {
+        View view = LayoutInflater.from(this).inflate(R.layout.item_product, null);
+
+        // Set product name, image, rating như bình thường
+        ImageView productImage = view.findViewById(R.id.img_child_cate_product);
+        TextView productName = view.findViewById(R.id.txt_child_cate_product_name);
+        TextView rating = view.findViewById(R.id.txt_rating);
+        TextView sold = view.findViewById(R.id.txt_child_cate_sold);
+        TextView originalPrice = view.findViewById(R.id.txt_child_cate_original_price);
+        TextView productPrice = view.findViewById(R.id.txt_child_cate_product_price);
+        TextView discountText = view.findViewById(R.id.txt_child_cate_product_discount);
+
+        DecimalFormat formatter = new DecimalFormat("#,###");
+
+        productName.setText(product.getProduct_name());
+        rating.setText(String.format("%.1f", product.getAverage_rating()));
+        sold.setText(product.getSold_quantity() + " sold");
+
+        // THÊM CODE LOAD IMAGE
+        if (productImage != null) {
+            Glide.with(this)
+                    .load(product.getProduct_image())
+                    .placeholder(R.mipmap.ic_logo)
+                    .error(R.mipmap.ic_logo)
+                    .into(productImage);
+        }
+
+        // LOGIC GIÁ FLASHSALE
+        if (isProductInFlashsale(product.getProduct_id())) {
+            // Có flashsale
+            int flashsaleDiscount = getProductFlashsaleDiscount(product.getProduct_id());
+            double flashsalePrice = product.getPrice() * (1 - flashsaleDiscount / 100.0);
+
+            // Hiển thị giá flashsale
+            productPrice.setText(formatter.format(flashsalePrice) + "đ");
+            originalPrice.setText(formatter.format(product.getPrice()) + "đ");
+            originalPrice.setPaintFlags(originalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            discountText.setText("-" + flashsaleDiscount + "%");
+            discountText.setVisibility(View.VISIBLE);
+
+            Log.d("CategoryDetailsActivity", "Flashsale product: " + product.getProduct_name() +
+                    " - Original: " + product.getPrice() + " - Flashsale: " + flashsalePrice);
+        } else {
+            // Không có flashsale - giá bình thường
+            double discountPrice = product.getPrice() * (1 - product.getDiscount() / 100.0);
+
+            if (product.getDiscount() > 0) {
+                // Có discount bình thường
+                productPrice.setText(formatter.format(discountPrice) + "đ");
+                originalPrice.setText(formatter.format(product.getPrice()) + "đ");
+                originalPrice.setPaintFlags(originalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                discountText.setText("-" + product.getDiscount() + "%");
+                discountText.setVisibility(View.VISIBLE);
+            } else {
+                // Không có discount
+                productPrice.setText(formatter.format(product.getPrice()) + "đ");
+                originalPrice.setText("");
+                discountText.setVisibility(View.GONE);
+            }
+        }
+
+        // Click listener để chuyển sang ProductDetailsActivity
+        view.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ProductDetailsActivity.class);
+            intent.putExtra("product_id", product.getProduct_id());
+
+            // Thêm thông tin flashsale nếu có
+            if (isProductInFlashsale(product.getProduct_id())) {
+                intent.putExtra("IS_FLASHSALE", true);
+                intent.putExtra("FLASHSALE_DISCOUNT_RATE", getProductFlashsaleDiscount(product.getProduct_id()));
+                intent.putExtra("FLASHSALE_ID", getProductFlashsaleId(product.getProduct_id()));
+                intent.putExtra("FLASHSALE_NAME", "Flash Sale");
+                intent.putExtra("FLASHSALE_END_TIME", System.currentTimeMillis() + 3600000); // 1 hour from now
+            }
+
+            startActivity(intent);
+        });
+
+        return view;
     }
 
     @Override
@@ -357,12 +543,12 @@ public class CategoryDetailsActivity extends AppCompatActivity {
     }
 
     public void open_search(View view) {
-        Intent intent=new Intent(CategoryDetailsActivity.this,SearchActivity.class);
+        Intent intent = new Intent(CategoryDetailsActivity.this, SearchActivity.class);
         startActivity(intent);
     }
+
     public void open_cart(View view) {
-        Intent intent=new Intent(CategoryDetailsActivity.this,CartActivity.class);
+        Intent intent = new Intent(CategoryDetailsActivity.this, CartActivity.class);
         startActivity(intent);
     }
 }
-

@@ -18,6 +18,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -88,7 +89,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     }
 
     private void addEvents() {
-        btn_back.setOnClickListener(v -> onBackPressed());
+        btn_back.setOnClickListener(v -> finish());
         btn_confirm.setOnClickListener(v -> loadOrdersByStatus("Pending Payment"));
         btn_to_pickup.setOnClickListener(v -> loadOrdersByStatus("Shipped"));
         btn_received.setOnClickListener(v -> loadOrdersByStatus("Delivered"));
@@ -101,7 +102,10 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         highlightSelectedStatus(status);
         orderListContainer.removeAllViews();  // Clear existing views
 
+        String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid(); // Lấy customer_id từ Firebase Auth
+
         ordersRef.whereEqualTo("order_status", status)
+                .whereEqualTo("customer_id", currentUserId)  // Thêm điều kiện lọc theo customer_id
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -115,7 +119,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                                 String orderId = orderSnap.getId();
                                 String orderTime = formatOrderTime(orderSnap);  // Lấy thời gian đơn hàng và định dạng
 
-                                Integer orderValue = orderSnap.getLong("order_value").intValue();
+                                Integer orderValue = orderSnap.getLong("order_value") != null ? orderSnap.getLong("order_value").intValue() : 0;
                                 String itemGroupId = orderSnap.getString("order_item_id");
 
                                 if (orderTime == null) orderTime = "Unknown Time";
@@ -129,6 +133,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
 
                             if (!foundAny) {
                                 Log.w("DEBUG_ORDER", "⚠️ No orders found for status = [" + status + "]");
+
                                 emptyView.setVisibility(View.VISIBLE);  // Show empty view when no orders are found
                                 orderScroll.setVisibility(View.GONE);  // Hide ScrollView
                             }
@@ -145,16 +150,15 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 });
     }
 
-    // Thêm phương thức formatOrderTime để trích xuất và định dạng thời gian đơn hàng
     private String formatOrderTime(QueryDocumentSnapshot orderSnap) {
         String orderTime = "";
         if (orderSnap.contains("order_time")) {
             Object orderTimeObj = orderSnap.get("order_time");
             if (orderTimeObj instanceof Timestamp) {
                 Timestamp timestamp = (Timestamp) orderTimeObj;
-                orderTime = formatTimestamp(timestamp);  // Format Timestamp
+                orderTime = formatTimestamp(timestamp);
             } else {
-                orderTime = orderSnap.getString("order_time");  // If it's a String, take it directly
+                orderTime = orderSnap.getString("order_time");
             }
         }
         return orderTime;
@@ -172,21 +176,35 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     private void loadOrderItems(String orderId, String itemGroupId, String orderTime, int totalPrice, String status) {
         Log.d("DEBUG_ORDER", "Truy vấn với order_item_id: " + itemGroupId);
 
+        // Lấy thông tin người dùng hiện tại
+        String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid(); // Lấy customer_id từ Firebase Auth
+
         if (status.equalsIgnoreCase("Return/Refund")) {
-            db.collection("orders").document(orderId).get().addOnSuccessListener(orderDoc -> {
-                if (orderDoc.exists()) {
-                    Integer returnAmount = orderDoc.getLong("return_amount") != null
-                            ? orderDoc.getLong("return_amount").intValue()
-                            : 0;
+            // Truy vấn đơn hàng theo orderId và customer_id cho trạng thái Return/Refund
+            db.collection("orders")
+                    .whereEqualTo("order_status", status)
+                    .whereEqualTo("customer_id", currentUserId)  // Thêm điều kiện lọc theo customer_id
+                    .get()  // Sử dụng get() thay vì document()
+                    .addOnSuccessListener(querySnapshot -> {
+                        if (!querySnapshot.isEmpty()) {
+                            // Duyệt qua các đơn hàng trả về
+                            for (DocumentSnapshot orderDoc : querySnapshot.getDocuments()) {
+                                Integer returnAmount = orderDoc.getLong("return_amount") != null
+                                        ? orderDoc.getLong("return_amount").intValue()
+                                        : 0;
 
-                    List<Map<String, String>> productReturnList = (List<Map<String, String>>) orderDoc.get("product_return");
+                                List<Map<String, String>> productReturnList = (List<Map<String, String>>) orderDoc.get("product_return");
 
-                    View orderView = createOrderView(orderId, orderTime, 0, status, null, null, returnAmount, productReturnList);
-                    orderListContainer.addView(orderView);
-                } else {
-                    Log.w("DEBUG_ORDER", "⚠️ Không tìm thấy đơn hàng với ID: " + orderId);
-                }
-            });
+                                View orderView = createOrderView(orderId, orderTime, 0, status, null, null, returnAmount, productReturnList);
+                                orderListContainer.addView(orderView);
+                            }
+                        } else {
+                            Log.w("DEBUG_ORDER", "⚠️ Không tìm thấy đơn hàng với ID: " + orderId);
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("DEBUG_ORDER", "Error fetching order: " + e.getMessage());
+                    });
         } else {
             // Trường hợp đơn hàng bình thường
             orderItemsRef.document(itemGroupId)

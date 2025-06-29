@@ -117,26 +117,6 @@
                     android:textColor="#9c162c"
                     android:textSize="16sp"
                     android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/txtViewPurchaseHistory"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:clickable="true"
-                    android:maxLines="1"
-                    android:text="@string/title_view_purchase_history"
-                    android:textColor="#757575"
-                    android:textSize="14sp"
-                    android:textStyle="italic" />
-
-                <ImageView
-                    android:id="@+id/imgViewPurchaseHistory"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_marginStart="4dp"
-                    android:src="@mipmap/ic_arrow_right" />
-
             </LinearLayout>
 
             <!-- Purchase Options -->
@@ -248,19 +228,19 @@
                     android:foreground="?attr/selectableItemBackground">
 
                     <ImageView
-                        android:id="@+id/imgEvaluateOrder"
+                        android:id="@+id/imgComplete"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:scaleType="centerInside"
-                        android:src="@mipmap/ic_to_evaluate" />
+                        android:src="@mipmap/ic_order" />
 
                     <TextView
-                        android:id="@+id/txtEvaluateOrder"
+                        android:id="@+id/txtComplete"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:maxLines="1"
-                        android:text="@string/title_evaluate_order"
+                        android:text="@string/title_completed"
                         android:textColor="#212121"
                         android:textSize="12sp" />
 

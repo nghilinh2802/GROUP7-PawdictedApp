@@ -47,6 +47,11 @@ public class ProfileManagementActivity extends AppCompatActivity {
             return insets;
         });
 
+        ImageView imgBack = findViewById(R.id.imgBack);
+        if (imgBack != null) {
+            imgBack.setOnClickListener(v -> finish());
+        }
+
         // Ánh xạ view
         imgAvatar = findViewById(R.id.imgAvatar);
         txtName = findViewById(R.id.tvName);

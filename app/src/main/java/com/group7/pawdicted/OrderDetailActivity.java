@@ -126,7 +126,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     }
 
     private void addEvents() {
-        btn_back.setOnClickListener(v -> onBackPressed());
+        btn_back.setOnClickListener(v -> finish());
         btn_cancel.setOnClickListener(v -> {
             showCancelConfirmationDialog();
         });
@@ -350,10 +350,10 @@ public class OrderDetailActivity extends AppCompatActivity {
                             String cancelRequestedAt = formatOptionalTimestamp(document.get("cancel_requested_at"));
                             String cancelRequestedBy = document.getString("cancel_requested_by");
 
-                            // Log để kiểm tra dữ liệu
-                            Log.d("DEBUG", "Cancel Reason: " + cancelReason);
-                            Log.d("DEBUG", "Cancel Requested At: " + cancelRequestedAt);
-                            Log.d("DEBUG", "Cancel Requested By: " + cancelRequestedBy);
+//                            // Log để kiểm tra dữ liệu
+//                            Log.d("DEBUG", "Cancel Reason: " + cancelReason);
+//                            Log.d("DEBUG", "Cancel Requested At: " + cancelRequestedAt);
+//                            Log.d("DEBUG", "Cancel Requested By: " + cancelRequestedBy);
 
                             // Kiểm tra trạng thái đơn hàng
                             if ("Cancelled".equals(document.getString("status"))) {
@@ -363,32 +363,14 @@ public class OrderDetailActivity extends AppCompatActivity {
                                 findViewById(R.id.layout_cancel_requested_by).setVisibility(View.VISIBLE);
 
                                 // Cập nhật thông tin hủy đơn
-                                TextView tvCancelReason = findViewById(R.id.tv_cancel_reason);
-                                TextView tvCancelRequestedAt = findViewById(R.id.tv_cancel_requested_at);
-                                TextView tvCancelRequestedBy = findViewById(R.id.tv_cancel_requested_by);
+//                                String cancelReason = document.getString("cancel_reason");
+//                                String cancelRequestedAt = formatOptionalTimestamp(document.get("cancel_requested_at"));
+//                                String cancelRequestedBy = document.getString("cancel_requested_by");
 
-                                if (cancelReason != null && !cancelReason.isEmpty()) {
-                                    tvCancelReason.setText(cancelReason);
-                                    tvCancelReason.setVisibility(View.VISIBLE);
-                                } else {
-                                    tvCancelReason.setVisibility(View.GONE);
-                                }
-
-                                if (cancelRequestedAt != null && !cancelRequestedAt.equals("Unknown Time") && !cancelRequestedAt.isEmpty()) {
-                                    tvCancelRequestedAt.setText(cancelRequestedAt);
-                                    tvCancelRequestedAt.setVisibility(View.VISIBLE);
-                                } else {
-                                    tvCancelRequestedAt.setVisibility(View.GONE);
-                                }
-
-                                if (cancelRequestedBy != null && !cancelRequestedBy.isEmpty()) {
-                                    tvCancelRequestedBy.setText(cancelRequestedBy);
-                                    tvCancelRequestedBy.setVisibility(View.VISIBLE);
-                                } else {
-                                    tvCancelRequestedBy.setVisibility(View.GONE);
-                                }
+                                // Gọi hàm hiển thị thông tin hủy đơn
+                                showCancelInfo(cancelReason, cancelRequestedAt, cancelRequestedBy);
                             } else {
-                                // Nếu không phải "Cancelled", ẩn các trường thông tin hủy đơn
+                                // Nếu không phải trạng thái "Cancelled", ẩn các trường thông tin hủy đơn
                                 findViewById(R.id.layout_cancel_reason).setVisibility(View.GONE);
                                 findViewById(R.id.layout_cancel_requested_at).setVisibility(View.GONE);
                                 findViewById(R.id.layout_cancel_requested_by).setVisibility(View.GONE);
@@ -480,6 +462,38 @@ public class OrderDetailActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    // Hàm hiển thị thông tin hủy đơn
+    private void showCancelInfo(String cancelReason, String cancelRequestedAt, String cancelRequestedBy) {
+        // Tìm các TextView liên quan đến thông tin hủy đơn
+        TextView tvCancelReason = findViewById(R.id.tv_cancel_reason);
+        TextView tvCancelRequestedAt = findViewById(R.id.tv_cancel_requested_at);
+        TextView tvCancelRequestedBy = findViewById(R.id.tv_cancel_requested_by);
+
+        // Hiển thị cancelReason nếu có
+        if (cancelReason != null && !cancelReason.isEmpty()) {
+            tvCancelReason.setText(cancelReason);
+            tvCancelReason.setVisibility(View.VISIBLE);
+        } else {
+            tvCancelReason.setVisibility(View.GONE);
+        }
+
+        // Hiển thị cancelRequestedAt nếu có
+        if (cancelRequestedAt != null && !cancelRequestedAt.equals("Unknown Time") && !cancelRequestedAt.isEmpty()) {
+            tvCancelRequestedAt.setText(cancelRequestedAt);
+            tvCancelRequestedAt.setVisibility(View.VISIBLE);
+        } else {
+            tvCancelRequestedAt.setVisibility(View.GONE);
+        }
+
+        // Hiển thị cancelRequestedBy nếu có
+        if (cancelRequestedBy != null && !cancelRequestedBy.isEmpty()) {
+            tvCancelRequestedBy.setText(cancelRequestedBy);
+            tvCancelRequestedBy.setVisibility(View.VISIBLE);
+        } else {
+            tvCancelRequestedBy.setVisibility(View.GONE);
+        }
     }
 
     private void handleVisibilityForTimeFields(String shipTime, String paymentTime, String completeTime) {

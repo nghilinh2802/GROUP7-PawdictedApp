@@ -19,8 +19,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Source;
 
 public class AccountManagementActivity extends AppCompatActivity {
-    ImageView ToConfirm, ToPickUp, ToShip, EvaluateOrder, imgViewPurchaseHistory, imgAvatar;
-    TextView txtToConfirm, txtToPickUp, txtToShip, txtEvaluateOrder, txtViewPurchaseHistory, txtUsername;
+    ImageView ToConfirm, ToPickUp, ToShip, imgComplete, imgAvatar;
+    TextView txtToConfirm, txtToPickUp, txtToShip, txtComplete, txtUsername;
     FirebaseAuth mAuth;
     FirebaseFirestore db;
     FooterManager footerManager;
@@ -50,14 +50,11 @@ public class AccountManagementActivity extends AppCompatActivity {
         ToConfirm = findViewById(R.id.imgToConfirm);
         ToPickUp = findViewById(R.id.imgToPickUp);
         ToShip = findViewById(R.id.imgToShip);
-        EvaluateOrder = findViewById(R.id.imgEvaluateOrder);
         txtToConfirm = findViewById(R.id.txtToConfirm);
         txtToPickUp = findViewById(R.id.txtToPickUp);
         txtToShip = findViewById(R.id.txtToShip);
-        txtEvaluateOrder = findViewById(R.id.txtEvaluateOrder);
-        txtViewPurchaseHistory = findViewById(R.id.txtViewPurchaseHistory);
-        imgViewPurchaseHistory = findViewById(R.id.imgViewPurchaseHistory);
-
+        imgComplete = findViewById(R.id.imgComplete);
+        txtComplete = findViewById(R.id.txtComplete);
         imgAvatar = findViewById(R.id.imgAvatar);
         txtUsername = findViewById(R.id.txtUsername);
     }
@@ -87,11 +84,11 @@ public class AccountManagementActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {openPurchaseOrderActivity("Delivered");}
         });
-        imgViewPurchaseHistory.setOnClickListener(new View.OnClickListener() {
+        imgComplete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {openPurchaseOrderActivity("Completed");}
         });
-        txtViewPurchaseHistory.setOnClickListener(new View.OnClickListener() {
+        txtComplete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {openPurchaseOrderActivity("Completed");}
         });
