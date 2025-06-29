@@ -67,6 +67,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private Product currentProduct;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
+
+    // FLASHSALE VARIABLES
     private boolean isFlashsale = false;
     private int flashsaleDiscountRate = 0;
     private double flashsalePrice = 0;
@@ -74,6 +76,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private String flashsaleName = "";
     private long flashsaleEndTime = 0;
     private double finalPrice = 0;
+
     private ListReview listReview;
 
     @Override
@@ -90,6 +93,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
+
         ImageView imgBack = findViewById(R.id.imgBack);
         if (imgBack != null) {
             imgBack.setOnClickListener(v -> finish());
@@ -125,7 +129,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
         horizontalScrollView = findViewById(R.id.horizontalScrollView_related);
         rvYouMay = findViewById(R.id.rv_you_may);
 
-        // Initialize review data (not used for Firestore fetching)
+        // Initialize review data
         listReview = new ListReview();
 
         viewAllDescription.setOnClickListener(v -> {
@@ -148,8 +152,85 @@ public class ProductDetailsActivity extends AppCompatActivity {
             }
         });
 
-        // Remove the viewAllRating click listener since RatingActivity is no longer needed
-        viewAllRating.setVisibility(View.GONE); // Optionally hide the "View All" link for ratings
+        // Hide view all rating since RatingActivity is no longer needed
+        viewAllRating.setVisibility(View.GONE);
+
+        // THÊM ADD TO CART LOGIC
+        btnAddToCart.setOnClickListener(v -> {
+            if (currentProduct == null) return;
+
+            db.collection("variants").whereEqualTo("product_id", currentProduct.getProduct_id()).get()
+                    .addOnSuccessListener(querySnapshot -> {
+                        List<String> variantNames = new ArrayList<>();
+                        Map<String, Integer> variantPriceMap = new HashMap<>();
+                        Map<String, String> variantImageMap = new HashMap<>();
+                        String selectedVariantName = "Default";
+                        String imageUrl = currentProduct.getProduct_image();
+
+                        // SỬ DỤNG finalPrice ĐÃ ĐƯỢC TÍNH
+                        double selectedPrice = finalPrice;
+                        Log.d("Cart", "Using finalPrice: " + finalPrice + " (isFlashsale: " + isFlashsale + ")");
+
+                        // Lấy dữ liệu từ Firestore
+                        for (QueryDocumentSnapshot doc : querySnapshot) {
+                            Variant var = doc.toObject(Variant.class);
+                            variantNames.add(var.getVariant_name());
+
+                            // Tính giá cho variant options
+                            int variantPrice;
+                            if (isFlashsale) {
+                                variantPrice = (int) (var.getVariant_price() * (1 - flashsaleDiscountRate / 100.0));
+                            } else {
+                                variantPrice = (int) (var.getVariant_price() * (1 - var.getVariant_discount() / 100.0));
+                            }
+                            variantPriceMap.put(var.getVariant_name(), variantPrice);
+
+                            variantImageMap.put(var.getVariant_name(),
+                                    var.getVariant_image() != null ? var.getVariant_image() : currentProduct.getProduct_image());
+
+                            if (var.getVariant_id().equals(selectedVariantId)) {
+                                selectedVariantName = var.getVariant_name();
+                                imageUrl = var.getVariant_image() != null ? var.getVariant_image() : imageUrl;
+                                selectedPrice = variantPrice;
+                            }
+                        }
+
+                        List<CartItem> cartItems = CartManager.getInstance().getCartItems();
+                        boolean alreadyExists = false;
+                        for (CartItem item : cartItems) {
+                            if (item.productId.equals(currentProduct.getProduct_id()) &&
+                                    item.selectedOption.equals(selectedVariantName)) {
+                                item.quantity += 1;
+                                alreadyExists = true;
+                                break;
+                            }
+                        }
+
+                        if (!alreadyExists) {
+                            CartItem newItem = new CartItem(
+                                    currentProduct.getProduct_id(),
+                                    currentProduct.getProduct_name(),
+                                    (int) selectedPrice,
+                                    imageUrl,
+                                    variantNames,
+                                    selectedVariantName
+                            );
+                            newItem.optionPrices = variantPriceMap;
+                            newItem.optionImageUrls = variantImageMap;
+                            CartManager.getInstance().addToCart(newItem);
+                        }
+
+                        String customerId = CartManager.getInstance().getCustomerId();
+                        if (customerId != null && !customerId.isEmpty()) {
+                            CartStorageHelper.saveCart(this, customerId, CartManager.getInstance().getCartItems());
+                        }
+
+                        String toastMessage = isFlashsale ?
+                                "Đã thêm vào giỏ hàng với giá flashsale!" :
+                                "Đã thêm vào giỏ hàng";
+                        Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show();
+                    });
+        });
     }
 
     private void loadProductDetails() {
@@ -168,9 +249,9 @@ public class ProductDetailsActivity extends AppCompatActivity {
                             defaultProductImage = product.getProduct_image();
                             displayProductDetails(product, null);
                             loadVariations(product.getVariant_id(), productId);
-                            loadReviews(); // Load reviews for the product
-                            loadRelatedProducts(product.getCategory_id()); // Load related products
-                            loadYouMayAlsoLike(); // Load "You May Also Like" products
+                            loadReviews();
+                            loadRelatedProducts(product.getCategory_id());
+                            loadYouMayAlsoLike();
                         }
                     } else {
                         finish();
@@ -183,10 +264,27 @@ public class ProductDetailsActivity extends AppCompatActivity {
         txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
 
         if (variant != null) {
-            double discountPrice = variant.getVariant_price() * (1 - variant.getVariant_discount() / 100.0);
-            txtDiscountPrice.setText(formatter.format(discountPrice));
-            txtProductPrice.setText(formatter.format(variant.getVariant_price()));
-            txtDiscountRate.setText(variant.getVariant_discount() > 0 ? "  -" + variant.getVariant_discount() + "%  " : "");
+            if (isFlashsale) {
+                // FLASHSALE CHO VARIANT
+                double flashsalePrice = variant.getVariant_price() * (1 - flashsaleDiscountRate / 100.0);
+                txtDiscountPrice.setText(formatter.format(flashsalePrice));
+                txtProductPrice.setText(formatter.format(variant.getVariant_price()));
+                txtDiscountRate.setText("  -" + flashsaleDiscountRate + "%  ");
+                txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                txtDiscountPrice.setTextColor(getColor(R.color.main_color));
+                finalPrice = flashsalePrice;
+            } else {
+                // GIÁ BÌNH THƯỜNG CHO VARIANT
+                double discountPrice = variant.getVariant_price() * (1 - variant.getVariant_discount() / 100.0);
+                txtDiscountPrice.setText(formatter.format(discountPrice));
+                txtProductPrice.setText(formatter.format(variant.getVariant_price()));
+                txtDiscountRate.setText(variant.getVariant_discount() > 0 ? "  -" + variant.getVariant_discount() + "%  " : "");
+                if (variant.getVariant_discount() > 0) {
+                    txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                }
+                finalPrice = discountPrice;
+            }
+
             txtSoldQuantity.setText(variant.getVariant_sold_quantity() + " sold");
             productRatingBar.setRating((float) variant.getVariant_rating());
             productRatingBar2.setRating((float) variant.getVariant_rating());
@@ -194,20 +292,29 @@ public class ProductDetailsActivity extends AppCompatActivity {
             txtRatingCount.setText("(" + variant.getVariant_rating_number() + " Reviews)");
             txtProductRatingCount.setText(variant.getVariant_rating_number() + " Reviews");
             loadImage(variant.getVariant_image() != null ? variant.getVariant_image() : defaultProductImage);
-            if (variant.getVariant_discount() > 0) {
-                txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            }
+        } else {
             if (isFlashsale) {
-                displayFlashsalePrice(variant.getVariant_price());
+                // FLASHSALE CHO PRODUCT
+                double flashsalePrice = product.getPrice() * (1 - flashsaleDiscountRate / 100.0);
+                txtDiscountPrice.setText(formatter.format(flashsalePrice));
+                txtProductPrice.setText(formatter.format(product.getPrice()));
+                txtDiscountRate.setText("  -" + flashsaleDiscountRate + "%  ");
+                txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                txtDiscountPrice.setTextColor(getColor(R.color.main_color));
                 finalPrice = flashsalePrice;
             } else {
+                // GIÁ BÌNH THƯỜNG CHO PRODUCT
+                double discountPrice = product.getPrice() * (1 - product.getDiscount() / 100.0);
+                txtDiscountPrice.setText(formatter.format(discountPrice));
+                txtProductPrice.setText(formatter.format(product.getPrice()));
+                txtDiscountRate.setText(product.getDiscount() > 0 ? "  -" + product.getDiscount() + "%  " : "");
+                if (product.getDiscount() > 0) {
+                    txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                }
                 finalPrice = discountPrice;
             }
-        } else {
-            double discountPrice = product.getPrice() * (1 - product.getDiscount() / 100.0);
-            txtDiscountPrice.setText(formatter.format(discountPrice));
-            txtProductPrice.setText(formatter.format(product.getPrice()));
-            txtDiscountRate.setText(product.getDiscount() > 0 ? "-" + product.getDiscount() + "%" : "");
+
+            defaultProductImage = product.getProduct_image();
             txtSoldQuantity.setText(product.getSold_quantity() + " sold");
             productRatingBar.setRating((float) product.getAverage_rating());
             productRatingBar2.setRating((float) product.getAverage_rating());
@@ -215,15 +322,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
             txtRatingCount.setText("(" + product.getRating_number() + " Reviews)");
             txtProductRatingCount.setText(product.getRating_number() + " Reviews");
             loadImage(defaultProductImage);
-            if (product.getDiscount() > 0) {
-                txtProductPrice.setPaintFlags(txtProductPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);            }
-            if (isFlashsale) {
-                displayFlashsalePrice(product.getPrice());
-                finalPrice = flashsalePrice;
-            } else {
-                finalPrice = discountPrice;
-            }
         }
+
         Log.d("ProductDetailsActivity", "💰 Final price set to: " + finalPrice);
         txtProductName.setText(product.getProduct_name());
         txtProductDescription.setText(product.getDescription());
@@ -311,6 +411,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
         return (int) (dp * getResources().getDisplayMetrics().density + 0.5f);
     }
 
+    // CHỈ NHẬN DỮ LIỆU FLASHSALE TỪ INTENT
     private void receiveFlashsaleData() {
         Intent intent = getIntent();
         if (intent != null) {
@@ -319,6 +420,12 @@ public class ProductDetailsActivity extends AppCompatActivity {
             flashsaleId = intent.getStringExtra("FLASHSALE_ID");
             flashsaleName = intent.getStringExtra("FLASHSALE_NAME");
             flashsaleEndTime = intent.getLongExtra("FLASHSALE_END_TIME", 0);
+
+            if (isFlashsale) {
+                Log.d("ProductDetailsActivity", "=== FLASHSALE MODE ACTIVATED ===");
+                Log.d("ProductDetailsActivity", "Flashsale: " + flashsaleName);
+                Log.d("ProductDetailsActivity", "Discount: " + flashsaleDiscountRate + "%");
+            }
         }
     }
 
