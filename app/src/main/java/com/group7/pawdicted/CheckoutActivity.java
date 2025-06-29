@@ -1,5 +1,6 @@
 package com.group7.pawdicted;
 
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,10 +11,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,13 +32,16 @@ import com.group7.pawdicted.mobile.models.CartItem;
 import com.group7.pawdicted.mobile.models.ShippingOption;
 import com.group7.pawdicted.mobile.models.PaymentMethod;
 
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class CheckoutActivity extends AppCompatActivity {
+
 
     private RecyclerView recyclerViewOrderItems;
     private RecyclerView recyclerViewShippingOptions;
@@ -51,14 +57,17 @@ public class CheckoutActivity extends AppCompatActivity {
     private String finalAddressId = null;
     ImageView imgBack;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_checkout);
 
+
         addViews();
         addEvents();
+
 
         // Initialize views
         recyclerViewOrderItems = findViewById(R.id.recyclerViewOrderItems);
@@ -74,7 +83,9 @@ public class CheckoutActivity extends AppCompatActivity {
         btnPlaceOrder = findViewById(R.id.btnPlaceOrder);
         txtMessage = findViewById(R.id.txtMessage);
 
+
         db = FirebaseFirestore.getInstance();
+
 
         // Get the selected cart items from the intent
         String cartJson = getIntent().getStringExtra("cartItems");
@@ -87,10 +98,12 @@ public class CheckoutActivity extends AppCompatActivity {
             Log.e("CheckoutActivity", "No cart items received");
         }
 
+
         // Set up the RecyclerView for order items
         OrderItemAdapter orderItemAdapter = new OrderItemAdapter(this, cartItems);
         recyclerViewOrderItems.setAdapter(orderItemAdapter);
         recyclerViewOrderItems.setLayoutManager(new LinearLayoutManager(this));
+
 
         // Set up the RecyclerView for shipping options
         List<ShippingOption> shippingOptions = new ArrayList<>();
@@ -106,7 +119,9 @@ public class CheckoutActivity extends AppCompatActivity {
         ));
         Log.d("CheckoutActivity", "Shipping options size: " + shippingOptions.size());
 
+
         selectedShippingOption = shippingOptions.get(0); // Default to Standard Delivery
+
 
         ShippingOptionAdapter shippingOptionAdapter = new ShippingOptionAdapter(this, shippingOptions, option -> {
             selectedShippingOption = option;
@@ -114,6 +129,7 @@ public class CheckoutActivity extends AppCompatActivity {
         });
         recyclerViewShippingOptions.setAdapter(shippingOptionAdapter);
         recyclerViewShippingOptions.setLayoutManager(new LinearLayoutManager(this));
+
 
         // Set up the RecyclerView for payment methods
         List<PaymentMethod> paymentMethods = new ArrayList<>();
@@ -123,7 +139,9 @@ public class CheckoutActivity extends AppCompatActivity {
         paymentMethods.add(new PaymentMethod("MoMo Wallet", R.mipmap.ic_momo));
         Log.d("CheckoutActivity", "Payment methods size: " + paymentMethods.size());
 
+
         selectedPaymentMethod = paymentMethods.get(3); // Default to MoMo Wallet
+
 
         PaymentMethodAdapter paymentMethodAdapter = new PaymentMethodAdapter(this, paymentMethods, method -> {
             selectedPaymentMethod = method;
@@ -132,15 +150,19 @@ public class CheckoutActivity extends AppCompatActivity {
         recyclerViewPaymentMethods.setAdapter(paymentMethodAdapter);
         recyclerViewPaymentMethods.setLayoutManager(new LinearLayoutManager(this));
 
+
         // Calculate and update total payment
         calculateAndUpdateTotals();
 
+
         btnPlaceOrder.setOnClickListener(v -> {
+
 
             if (finalAddressId == null) {
                 Toast.makeText(this, "Please choose the delivery address!", Toast.LENGTH_SHORT).show();
                 return;
             }
+
 
             FirebaseAuth auth = FirebaseAuth.getInstance();
             String customerId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : "unknown";
@@ -149,31 +171,38 @@ public class CheckoutActivity extends AppCompatActivity {
             String paymentMethod = selectedPaymentMethod != null ? selectedPaymentMethod.getName() : "Unknown";
             Timestamp orderTime = Timestamp.now();
 
+
             // Tạo Map chứa product1, product2...
             Map<String, Object> productMap = new HashMap<>();
             int totalMerchandise = 0;
             int index = 1;
+
 
             for (CartItem item : cartItems) {
                 if (item.isSelected) {
                     int cost = item.price * item.quantity;
                     totalMerchandise += cost;
 
+
                     Map<String, Object> productDetail = new HashMap<>();
                     productDetail.put("product_id", item.productId);
                     productDetail.put("quantity", item.quantity);
                     productDetail.put("total_cost_of_goods", cost);
+
 
                     productMap.put("product" + index, productDetail);
                     index++;
                 }
             }
 
+
             int totalValue = totalMerchandise + shippingFee;
+
 
             // Tạo document order_items
             DocumentReference orderItemRef = db.collection("order_items").document();
             String orderItemId = orderItemRef.getId();
+
 
             orderItemRef.set(productMap)
                     .addOnSuccessListener(unused -> {
@@ -189,6 +218,7 @@ public class CheckoutActivity extends AppCompatActivity {
                         orderData.put("order_status", "Pending Payment");
                         orderData.put("order_item_id", orderItemId); // chỉ 1 ID, không đính kèm chi tiết
 
+
                         db.collection("orders").add(orderData)
                                 .addOnSuccessListener(docRef -> {
                                     Toast.makeText(CheckoutActivity.this, "Đặt hàng thành công!", Toast.LENGTH_SHORT).show();
@@ -199,12 +229,14 @@ public class CheckoutActivity extends AppCompatActivity {
                                     Toast.makeText(CheckoutActivity.this, "Đặt hàng thất bại!", Toast.LENGTH_SHORT).show();
                                 });
 
+
                     })
                     .addOnFailureListener(e -> {
                         Log.e("Checkout", "Lỗi lưu order_items", e);
                         Toast.makeText(CheckoutActivity.this, "Lỗi khi lưu sản phẩm", Toast.LENGTH_SHORT).show();
                     });
         });
+
 
         // Load selected or default address on start
         String selectedAddressId = getSelectedAddressId();
@@ -215,13 +247,16 @@ public class CheckoutActivity extends AppCompatActivity {
         }
     }
 
+
     private void addEvents() {
         imgBack.setOnClickListener(v -> finish());
     }
 
+
     private void addViews() {
         imgBack = findViewById(R.id.imgBack);
     }
+
 
     private void calculateAndUpdateTotals() {
         int merchandiseSubtotal = 0;
@@ -231,11 +266,13 @@ public class CheckoutActivity extends AppCompatActivity {
             }
         }
 
+
         int shippingSubtotal = selectedShippingOption != null ? selectedShippingOption.getCost() : 0;
         int merchandiseDiscountSubtotal = 0;
         int shippingDiscountSubtotal = 0;
         int totalPayment = merchandiseSubtotal + shippingSubtotal - shippingDiscountSubtotal - merchandiseDiscountSubtotal;
         int savedAmount = merchandiseDiscountSubtotal + shippingDiscountSubtotal;
+
 
         txtMerchandiseSubtotal.setText(String.format("đ%s", formatCurrency(merchandiseSubtotal)));
         txtShippingSubtotal.setText(String.format("đ%s", formatCurrency(shippingSubtotal)));
@@ -243,19 +280,23 @@ public class CheckoutActivity extends AppCompatActivity {
         txtMerchandiseDiscountSubtotal.setText(String.format("đ%s", formatCurrency(merchandiseDiscountSubtotal)));
         txtTotalPayment.setText(String.format("đ%s", formatCurrency(totalPayment)));
 
+
         txtTotalFooter.setText(String.format("Total đ%s", formatCurrency(totalPayment)));
         txtSavedFooter.setText(String.format("Saved đ%s", formatCurrency(savedAmount)));
         txtSavedFooter.setVisibility(savedAmount > 0 ? View.VISIBLE : View.GONE);
     }
 
+
     private String formatCurrency(int value) {
         return String.format("%,d", value);
     }
+
 
     public void open_voucher_activity(View view) {
         Intent intent = new Intent(this, VoucherManagementActivity.class);
         startActivity(intent);
     }
+
 
     public void open_address_selection_activity(View view) {
         Intent intent = new Intent(this, AddressSelectionActivity.class);
@@ -265,6 +306,7 @@ public class CheckoutActivity extends AppCompatActivity {
         }
         startActivityForResult(intent, 200);
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -279,6 +321,7 @@ public class CheckoutActivity extends AppCompatActivity {
             }
         }
     }
+
 
     private void loadSelectedAddressFromFirestore(String addressId) {
         String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -304,6 +347,7 @@ public class CheckoutActivity extends AppCompatActivity {
                     loadDefaultAddressFromFirestore();
                 });
     }
+
 
     private void loadDefaultAddressFromFirestore() {
         String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -332,6 +376,7 @@ public class CheckoutActivity extends AppCompatActivity {
                 });
     }
 
+
     private void updateAddressUI(AddressItem address) {
         TextView nameTextView = findViewById(R.id.addressNameTextView);
         TextView phoneTextView = findViewById(R.id.addressPhoneTextView);
@@ -343,10 +388,12 @@ public class CheckoutActivity extends AppCompatActivity {
         }
     }
 
+
     private String getSelectedAddressId() {
         SharedPreferences prefs = getSharedPreferences("CheckoutPrefs", MODE_PRIVATE);
         return prefs.getString("selectedAddressId", null);
     }
+
 
     private void saveSelectedAddressId(String addressId) {
         SharedPreferences prefs = getSharedPreferences("CheckoutPrefs", MODE_PRIVATE);
