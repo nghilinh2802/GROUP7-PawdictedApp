@@ -14,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.group7.pawdicted.mobile.adapters.OrderItemAdapter;
@@ -110,7 +112,6 @@ public class CheckoutActivity extends AppCompatActivity {
 
         PaymentMethodAdapter paymentMethodAdapter = new PaymentMethodAdapter(this, paymentMethods, method -> {
             selectedPaymentMethod = method;
-            // Optionally update UI or logic based on selected payment method
             Log.d("CheckoutActivity", "Selected payment method: " + method.getName());
         });
         recyclerViewPaymentMethods.setAdapter(paymentMethodAdapter);
@@ -123,15 +124,16 @@ public class CheckoutActivity extends AppCompatActivity {
             Toast.makeText(CheckoutActivity.this, "Order Placed with " + selectedPaymentMethod.getName() + "!", Toast.LENGTH_SHORT).show();
         });
 
-        // Hiển thị địa chỉ mặc định khi khởi tạo
-        AddressItem defaultAddress = getDefaultAddress();
-        if (defaultAddress != null) {
-            updateAddressUI(defaultAddress);
+        // Load selected or default address on start
+        String selectedAddressId = getSelectedAddressId();
+        if (selectedAddressId != null) {
+            loadSelectedAddressFromFirestore(selectedAddressId);
+        } else {
+            loadDefaultAddressFromFirestore();
         }
     }
 
     private void calculateAndUpdateTotals() {
-        // Merchandise Subtotal
         int merchandiseSubtotal = 0;
         for (CartItem item : cartItems) {
             if (item.isSelected) {
@@ -139,29 +141,18 @@ public class CheckoutActivity extends AppCompatActivity {
             }
         }
 
-        // Shipping Subtotal
         int shippingSubtotal = selectedShippingOption != null ? selectedShippingOption.getCost() : 0;
-
-        // Merchandise Discount Subtotal (currently set to 0, update as needed)
         int merchandiseDiscountSubtotal = 0;
-
-        // Shipping Discount Subtotal (currently set to 0, update as needed)
         int shippingDiscountSubtotal = 0;
-
-        // Total Payment Calculation
         int totalPayment = merchandiseSubtotal + shippingSubtotal - shippingDiscountSubtotal - merchandiseDiscountSubtotal;
-
-        // Saved Amount Calculation
         int savedAmount = merchandiseDiscountSubtotal + shippingDiscountSubtotal;
 
-        // Update the UI with calculated values
         txtMerchandiseSubtotal.setText(String.format("đ%s", formatCurrency(merchandiseSubtotal)));
         txtShippingSubtotal.setText(String.format("đ%s", formatCurrency(shippingSubtotal)));
         txtShippingDiscountSubtotal.setText(String.format("đ%s", formatCurrency(shippingDiscountSubtotal)));
         txtMerchandiseDiscountSubtotal.setText(String.format("đ%s", formatCurrency(merchandiseDiscountSubtotal)));
         txtTotalPayment.setText(String.format("đ%s", formatCurrency(totalPayment)));
 
-        // Update footer
         txtTotalFooter.setText(String.format("Total đ%s", formatCurrency(totalPayment)));
         txtSavedFooter.setText(String.format("Saved đ%s", formatCurrency(savedAmount)));
         txtSavedFooter.setVisibility(savedAmount > 0 ? View.VISIBLE : View.GONE);
@@ -171,12 +162,6 @@ public class CheckoutActivity extends AppCompatActivity {
         return String.format("%,d", value);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        saveLastSelectedPosition(-1);
-    }
-
     public void open_voucher_activity(View view) {
         Intent intent = new Intent(this, VoucherManagementActivity.class);
         startActivity(intent);
@@ -184,9 +169,9 @@ public class CheckoutActivity extends AppCompatActivity {
 
     public void open_address_selection_activity(View view) {
         Intent intent = new Intent(this, AddressSelectionActivity.class);
-        int lastSelected = getLastSelectedPosition();
-        if (lastSelected != -1) {
-            intent.putExtra("lastSelectedPosition", lastSelected);
+        String selectedAddressId = getSelectedAddressId();
+        if (selectedAddressId != null) {
+            intent.putExtra("selectedAddressId", selectedAddressId);
         }
         startActivityForResult(intent, 200);
     }
@@ -195,45 +180,63 @@ public class CheckoutActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 200 && resultCode == RESULT_OK && data != null) {
-            AddressItem selectedAddress = (AddressItem) data.getSerializableExtra("selectedAddress");
-            if (selectedAddress != null) {
+            AddressItem selectedAddress = (AddressItem) data.getParcelableExtra("selectedAddress");
+            String selectedAddressId = data.getStringExtra("selectedAddressId");
+            if (selectedAddress != null && selectedAddressId != null) {
                 updateAddressUI(selectedAddress);
-                int lastSelected = data.getIntExtra("lastSelectedPosition", -1);
-                if (lastSelected != -1) {
-                    saveLastSelectedPosition(lastSelected);
-                }
+                saveSelectedAddressId(selectedAddressId);
             }
         }
     }
 
-    private AddressItem getDefaultAddress() {
-        SharedPreferences prefs = getSharedPreferences("AddressPrefs", MODE_PRIVATE);
-        String json = prefs.getString("addressList", "[]");
-        Gson gson = new Gson();
-        Type type = new TypeToken<List<AddressItem>>(){}.getType();
-        List<AddressItem> addressList = gson.fromJson(json, type);
-        if (addressList != null && !addressList.isEmpty()) {
-            for (AddressItem address : addressList) {
-                if (address.isDefault()) {
-                    return address;
-                }
-            }
-            if (addressList.size() == 1) {
-                addressList.get(0).setDefault(true);
-                saveAddressList(addressList);
-                return addressList.get(0);
-            }
-        }
-        return null;
+    private void loadSelectedAddressFromFirestore(String addressId) {
+        String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseFirestore.getInstance()
+                .collection("addresses")
+                .document(customerId)
+                .collection("items")
+                .document(addressId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        AddressItem address = documentSnapshot.toObject(AddressItem.class);
+                        if (address != null) {
+                            updateAddressUI(address);
+                        }
+                    } else {
+                        loadDefaultAddressFromFirestore();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("CheckoutActivity", "Error loading selected address", e);
+                    loadDefaultAddressFromFirestore();
+                });
     }
 
-    private void saveAddressList(List<AddressItem> addressList) {
-        SharedPreferences prefs = getSharedPreferences("AddressPrefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(addressList);
-        editor.putString("addressList", json);
-        editor.commit();
+    private void loadDefaultAddressFromFirestore() {
+        String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseFirestore.getInstance()
+                .collection("addresses")
+                .document(customerId)
+                .collection("items")
+                .whereEqualTo("isDefault", true)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        AddressItem defaultAddress = querySnapshot.getDocuments().get(0).toObject(AddressItem.class);
+                        if (defaultAddress != null) {
+                            updateAddressUI(defaultAddress);
+                            saveSelectedAddressId(defaultAddress.getId());
+                        }
+                    } else {
+                        Toast.makeText(this, "No default address found", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("CheckoutActivity", "Error loading default address", e);
+                    Toast.makeText(this, "Error loading default address", Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void updateAddressUI(AddressItem address) {
@@ -247,15 +250,15 @@ public class CheckoutActivity extends AppCompatActivity {
         }
     }
 
-    private int getLastSelectedPosition() {
+    private String getSelectedAddressId() {
         SharedPreferences prefs = getSharedPreferences("CheckoutPrefs", MODE_PRIVATE);
-        return prefs.getInt("lastSelectedPosition", -1);
+        return prefs.getString("selectedAddressId", null);
     }
 
-    private void saveLastSelectedPosition(int position) {
+    private void saveSelectedAddressId(String addressId) {
         SharedPreferences prefs = getSharedPreferences("CheckoutPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt("lastSelectedPosition", position);
+        editor.putString("selectedAddressId", addressId);
         editor.apply();
     }
 }

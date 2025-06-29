@@ -67,7 +67,9 @@
             android:orientation="vertical"
             android:padding="12dp">
 
+            <!-- Delivery Address-->
             <LinearLayout
+                android:id="@+id/deliveryaddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -137,6 +139,7 @@
 
                     <!-- Order Items Title -->
                     <TextView
+
                         android:text="Order Items"
                         android:textColor="#000000"
                         android:textSize="18sp"
@@ -200,6 +203,7 @@
                         android:layout_height="wrap_content" />
 
                     <EditText
+                        android:id="@+id/txtMessage"
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
                         android:hint="Please leave a message"
@@ -232,6 +236,7 @@
 
             <!-- Payment Methods -->
             <LinearLayout
+                android:id="@+id/paymentmethods"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
