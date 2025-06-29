@@ -22,11 +22,19 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FieldValue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,6 +44,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import com.group7.pawdicted.mobile.models.AddressItem;
 
@@ -387,7 +396,6 @@ public class NewAddressActivity extends AppCompatActivity {
         String street = streetEditText.getText().toString().trim();
         boolean isDefault = defaultSwitch.isChecked();
 
-        // Basic validation
         if (fullName.isEmpty() || phone.isEmpty() || street.isEmpty() || city.equals("Select City") ||
                 district.equals("Select District") || ward.equals("Select Ward")) {
             Toast.makeText(this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show();
@@ -395,29 +403,68 @@ public class NewAddressActivity extends AppCompatActivity {
             return;
         }
 
-        // Create full address string
-        String addressDetail = street + ", " + ward + ", " + district + ", " + city;
+        String addressDetail = street + ", Phường " + ward + ", Quận " + district + ", " + city;
         AddressItem newAddress = new AddressItem(fullName, phone, addressDetail, isDefault);
 
-        // Load existing address list
-        addressList = loadAddressList();
-
-        // If new address is default, unset default for others
-        if (isDefault) {
-            for (AddressItem addr : addressList) {
-                addr.setDefault(false);
-            }
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Toast.makeText(this, "Người dùng chưa đăng nhập", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        // Add new address
-        addressList.add(newAddress);
-        saveAddressList(addressList);
-        addressAdapter.notifyDataSetChanged();
-        clearForm();
-        Log.d(TAG, "Address saved successfully");
+        String customerId = user.getUid();
+        String addressId = UUID.randomUUID().toString();
 
-        // Quay lại AddressSelectionActivity
-        finish();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Map<String, Object> data = new HashMap<>();
+        data.put("name", fullName);
+        data.put("phone", phone);
+        data.put("address", addressDetail);
+        data.put("isDefault", isDefault);
+        data.put("time", Timestamp.now());
+
+        if (isDefault) {
+            db.collection("addresses")
+                    .document(customerId)
+                    .collection("items")
+                    .whereEqualTo("isDefault", true)
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                            doc.getReference().update("isDefault", false);
+                        }
+
+                        // ✅ Lưu địa chỉ mới sau khi cập nhật xong
+                        db.collection("addresses")
+                                .document(customerId)
+                                .collection("items")
+                                .document(addressId)
+                                .set(data, SetOptions.merge())
+                                .addOnSuccessListener(unused -> {
+                                    Toast.makeText(this, "Đã lưu địa chỉ mới", Toast.LENGTH_SHORT).show();
+                                    finish();
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.e(TAG, "Lỗi khi lưu Firestore", e);
+                                    Toast.makeText(this, "Lỗi khi lưu địa chỉ!", Toast.LENGTH_SHORT).show();
+                                });
+                    });
+        } else {
+            // ✅ Trường hợp không mặc định: lưu ngay
+            db.collection("addresses")
+                    .document(customerId)
+                    .collection("items")
+                    .document(addressId)
+                    .set(data, SetOptions.merge())
+                    .addOnSuccessListener(unused -> {
+                        Toast.makeText(this, "Đã lưu địa chỉ mới", Toast.LENGTH_SHORT).show();
+                        finish();
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Lỗi khi lưu Firestore", e);
+                        Toast.makeText(this, "Lỗi khi lưu địa chỉ!", Toast.LENGTH_SHORT).show();
+                    });
+        }
     }
 
     private void showEditDeleteDialog(AddressItem address, final int position) {
