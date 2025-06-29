@@ -74,13 +74,12 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@mipmap/ic_language"
-                android:contentDescription="Language Icon"
                 android:layout_marginEnd="16dp" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Language"
+                android:text="@string/language"
                 android:textSize="16sp"
                 android:textColor="#9c162c"
                 android:layout_weight="1"
@@ -120,14 +119,13 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@mipmap/ic_password_setting"
-                android:contentDescription="Password Icon"
                 android:tint="#9c162c"
                 android:layout_marginEnd="16dp" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Change Password"
+                android:text="@string/change_password"
                 android:textSize="16sp"
                 android:textColor="#9c162c"
                 android:layout_weight="1"
@@ -147,8 +145,9 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp" />
 
-        <!-- Delete Account -->
+        <!-- Address -->
         <LinearLayout
+            android:onClick="open_address_selection_activity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
@@ -163,14 +162,14 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@mipmap/ic_trash"
+                android:src="@mipmap/ic_address"
                 android:contentDescription="Delete Icon"
                 android:layout_marginEnd="16dp" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Delete Account"
+                android:text="@string/address_management"
                 android:textSize="16sp"
                 android:textColor="#9c162c"
                 android:layout_weight="1"
@@ -212,7 +211,7 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Notification"
+                android:text="@string/notification"
                 android:textSize="16sp"
                 android:textColor="#9c162c"
                 android:layout_weight="1"
@@ -257,7 +256,7 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Log out"
+                android:text="@string/log_out"
                 android:textSize="16sp"
                 android:textColor="#9c162c"
                 android:layout_weight="1"

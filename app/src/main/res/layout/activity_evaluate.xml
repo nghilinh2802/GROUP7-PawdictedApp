@@ -11,8 +11,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="86dp"
+        android:layout_height="wrap_content"
         android:background="@color/main_color"
+        android:padding="16dp"
         android:paddingStart="8dp"
         android:paddingTop="24dp"
         android:paddingEnd="8dp">
@@ -37,7 +38,7 @@
             android:maxLines="1"
             android:text="@string/title_evaluate_cap"
             android:textColor="#FFFFFF"
-            android:textSize="22sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

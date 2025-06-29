@@ -52,12 +52,17 @@ public class SettingManagementActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void open_address_selection_activity(View view) {
+        Intent intent = new Intent(SettingManagementActivity.this, AddressSelectionActivity.class);
+        startActivity(intent);
+    }
+
     public void logout(View view) {
         // Hiển thị dialog xác nhận
         new AlertDialog.Builder(this)
                 .setTitle("Log out")
-                .setMessage("Do you want to log out?")
-                .setPositiveButton("Yes", (dialog, which) -> {
+                .setMessage(R.string.do_you_want_to_log_out)
+                .setPositiveButton(R.string.yes, (dialog, which) -> {
                     // Đăng xuất khỏi Firebase
                     mAuth.signOut();
 
@@ -67,7 +72,7 @@ public class SettingManagementActivity extends AppCompatActivity {
                     startActivity(intent);
 
                     // Hiển thị thông báo đăng xuất thành công
-                    Toast.makeText(this, "Đã đăng xuất", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.goodbye, Toast.LENGTH_SHORT).show();
 
                     // Kết thúc Activity hiện tại
                     finish();
@@ -76,4 +81,6 @@ public class SettingManagementActivity extends AppCompatActivity {
                 .setCancelable(true)
                 .show();
     }
+
+
 }

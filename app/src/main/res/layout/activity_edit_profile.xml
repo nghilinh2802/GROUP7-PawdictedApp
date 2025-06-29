@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:id="@+id/main"
+    android:background="@color/white"
     tools:context=".EditProfileActivity">
 
-    <!-- Thanh tiêu đề cố định -->
     <!-- Thanh tiêu đề cố định -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
         android:background="@color/main_color"
         android:paddingStart="8dp"
         android:paddingEnd="8dp">
 
         <ImageView
             android:id="@+id/imgBack"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:contentDescription="Back"
             android:src="@mipmap/ic_back_icon_white"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -112,7 +113,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Name"
+                    android:text="@string/name"
                     android:textSize="16sp"
                     android:textColor="#9c162c" />
 
@@ -131,7 +132,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Gender"
+                    android:text="@string/gender"
                     android:textSize="16sp"
                     android:textColor="#9c162c"
                     android:layout_marginTop="10dp" />
@@ -153,7 +154,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="D.O.B"
+                    android:text="@string/d_o_b"
                     android:textSize="16sp"
                     android:textColor="#9c162c"
                     android:layout_marginTop="10dp" />
@@ -174,7 +175,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Phone number"
+                    android:text="@string/phone_number"
                     android:textSize="16sp"
                     android:textColor="#9c162c"
                     android:layout_marginTop="10dp" />
@@ -193,7 +194,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="ⓘ To change information, please contact customer service department."
+                    android:text="@string/title_change_info_noti"
                     android:textSize="11sp"
                     android:textColor="#9c162c"
                     android:layout_marginTop="4dp" />
@@ -221,30 +222,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="ⓘ To change information, please contact customer service department."
+                    android:text="@string/title_change_info_noti"
                     android:textSize="11dp"
                     android:textColor="#9c162c"
                     android:layout_marginTop="4dp" />
-
-                <!-- Address Field -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Address"
-                    android:textSize="16sp"
-                    android:textColor="#9c162c"
-                    android:layout_marginTop="10dp" />
-
-                <EditText
-                    android:id="@+id/edtAddress"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/rounded_edittext_red"
-                    android:padding="12dp"
-                    android:layout_marginTop="3dp"
-                    android:text="1 Le Loi Street, Ward 10, Vung Tau city"
-                    android:textSize="16sp"
-                    android:textColor="#000000" />
             </LinearLayout>
 
             <!-- Nút CANCEL và SAVE -->
