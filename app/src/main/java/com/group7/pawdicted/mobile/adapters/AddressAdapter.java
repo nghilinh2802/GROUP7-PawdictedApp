@@ -10,11 +10,11 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.group7.pawdicted.AddressEditActivity;
 import com.group7.pawdicted.AddressSelectionActivity;
-import com.group7.pawdicted.CheckoutActivity;
 import com.group7.pawdicted.R;
 import com.group7.pawdicted.mobile.models.AddressItem;
 
@@ -22,9 +22,9 @@ import java.util.List;
 
 public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressViewHolder> {
     private List<AddressItem> addressList;
-    private int selectedPosition = -1; // Theo dõi vị trí được chọn tạm thời
     private Context context;
     private AddressSelectionActivity activity;
+    private int selectedPosition = -1;
 
     public AddressAdapter(List<AddressItem> addressList, Context context, AddressSelectionActivity activity) {
         this.addressList = addressList;
@@ -32,51 +32,49 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
         this.activity = activity;
     }
 
+    @NonNull
     @Override
-    public AddressViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public AddressViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_address, parent, false);
         return new AddressViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(AddressViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull AddressViewHolder holder, int position) {
         AddressItem addressItem = addressList.get(position);
         holder.name.setText(addressItem.getName());
         holder.phone.setText(addressItem.getPhone());
         holder.address.setText(addressItem.getAddress());
         holder.defaultAddress.setVisibility(addressItem.isDefault() ? View.VISIBLE : View.GONE);
-
-        // Đặt trạng thái checked cho RadioButton dựa trên selectedPosition
         holder.radioButton.setChecked(position == selectedPosition);
 
-        // Xử lý sự kiện click cho RadioButton để chọn tạm thời
+        // Handle radio button click
         holder.radioButton.setOnClickListener(v -> {
-            int previousSelected = selectedPosition;
-            selectedPosition = position;
-            if (previousSelected != -1) {
-                notifyItemChanged(previousSelected); // Cập nhật item cũ
-            }
-            notifyItemChanged(position); // Cập nhật item mới
+            int clickedPosition = holder.getAdapterPosition();
+            if (clickedPosition != RecyclerView.NO_POSITION) {
+                int previousSelected = selectedPosition;
+                selectedPosition = clickedPosition;
+                if (previousSelected != -1) notifyItemChanged(previousSelected);
+                notifyItemChanged(selectedPosition);
 
-            // Nếu có nhiều hơn 1 địa chỉ, quay về CheckoutActivity với địa chỉ được chọn
-            if (addressList.size() > 1) {
+                AddressItem selectedItem = addressList.get(clickedPosition);
                 Intent resultIntent = new Intent();
-                resultIntent.putExtra("selectedAddress", addressItem);
-                resultIntent.putExtra("lastSelectedPosition", position); // Lưu vị trí đã chọn
+                resultIntent.putExtra("selectedAddress", selectedItem);
+                resultIntent.putExtra("selectedAddressId", selectedItem.getId());
                 activity.setResult(RESULT_OK, resultIntent);
                 activity.finish();
             }
         });
 
-        // Xử lý sự kiện click cho editAddress
+        // Handle edit button click
         holder.editAddress.setOnClickListener(v -> {
-            Intent intent = new Intent(context, AddressEditActivity.class);
-            intent.putExtra("addressItem", addressList.get(holder.getAdapterPosition()));
-            intent.putExtra("position", holder.getAdapterPosition());
-            if (context instanceof AddressSelectionActivity) {
-                ((AddressSelectionActivity) context).startActivityForResult(intent, 100);
-            } else {
-                context.startActivity(intent);
+            int clickedPosition = holder.getAdapterPosition();
+            if (clickedPosition != RecyclerView.NO_POSITION) {
+                AddressItem itemToEdit = addressList.get(clickedPosition);
+                Intent intent = new Intent(context, AddressEditActivity.class);
+                intent.putExtra("addressItem", itemToEdit);
+                intent.putExtra("position", clickedPosition);
+                activity.startActivityForResult(intent, 100);
             }
         });
     }
@@ -86,11 +84,24 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
         return addressList.size();
     }
 
-    public class AddressViewHolder extends RecyclerView.ViewHolder {
+    public void setSelectedPosition(int position) {
+        int previousSelected = selectedPosition;
+        selectedPosition = position;
+        if (previousSelected != -1) notifyItemChanged(previousSelected);
+        if (selectedPosition != -1) notifyItemChanged(selectedPosition);
+    }
+
+    public void updateData(List<AddressItem> newList) {
+        this.addressList.clear();
+        this.addressList.addAll(newList);
+        notifyDataSetChanged();
+    }
+
+    public static class AddressViewHolder extends RecyclerView.ViewHolder {
         TextView name, phone, address, defaultAddress, editAddress;
         RadioButton radioButton;
 
-        public AddressViewHolder(View itemView) {
+        public AddressViewHolder(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.addressName);
             phone = itemView.findViewById(R.id.addressPhone);
@@ -98,24 +109,6 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
             defaultAddress = itemView.findViewById(R.id.defaultAddress);
             editAddress = itemView.findViewById(R.id.editAddress);
             radioButton = itemView.findViewById(R.id.addressRadioButton);
-        }
-    }
-
-    // Phương thức để cập nhật danh sách
-    public void updateData(List<AddressItem> newList) {
-        this.addressList = newList;
-        notifyDataSetChanged();
-    }
-
-    // Phương thức để thiết lập vị trí RadioButton được chọn
-    public void setSelectedPosition(int position) {
-        int previousSelected = selectedPosition;
-        selectedPosition = position;
-        if (previousSelected != -1) {
-            notifyItemChanged(previousSelected); // Cập nhật item cũ
-        }
-        if (selectedPosition != -1) {
-            notifyItemChanged(selectedPosition); // Cập nhật item mới
         }
     }
 }

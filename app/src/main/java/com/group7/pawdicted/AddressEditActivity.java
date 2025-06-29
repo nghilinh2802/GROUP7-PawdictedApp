@@ -1,9 +1,9 @@
 package com.group7.pawdicted;
 
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,28 +15,28 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.SetOptions;
+import com.group7.pawdicted.mobile.models.AddressItem;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.group7.pawdicted.mobile.models.AddressItem;
-
 public class AddressEditActivity extends AppCompatActivity {
-
     private EditText fullNameEditText, phoneNumberEditText, streetEditText;
     private Spinner citySpinner, districtSpinner, wardSpinner;
     private Button submitButton, deleteButton;
@@ -54,7 +54,7 @@ public class AddressEditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_address_edit);
 
-        // Khởi tạo các view
+        // Initialize views
         fullNameEditText = findViewById(R.id.fullNameEditText);
         phoneNumberEditText = findViewById(R.id.phoneNumberEditText);
         streetEditText = findViewById(R.id.streetEditText);
@@ -65,30 +65,57 @@ public class AddressEditActivity extends AppCompatActivity {
         deleteButton = findViewById(R.id.deleteButton);
         defaultSwitch = findViewById(R.id.defaultSwitch);
 
-        // Lấy dữ liệu từ Intent
+        // Get AddressItem and position from Intent
         Intent intent = getIntent();
-        addressItem = (AddressItem) intent.getSerializableExtra("addressItem");
+        addressItem = intent.getParcelableExtra("addressItem");
         position = intent.getIntExtra("position", -1);
 
-        // Hiển thị dữ liệu hiện có nếu đang chỉnh sửa
-        if (addressItem != null) {
-            fullNameEditText.setText(addressItem.getName());
-            phoneNumberEditText.setText(addressItem.getPhone());
-            defaultSwitch.setChecked(addressItem.isDefault());
-            String[] parts = addressItem.getAddress().split(", ");
-            if (parts.length >= 4) {
-                streetEditText.setText(parts[0].trim());
-            }
-        }
-
-        // Tải dữ liệu JSON
+        // Load JSON data
         loadCities();
         loadDistricts();
         loadWards();
 
-        // Thiết lập spinner city
+        // Setup spinners
+        setupSpinners();
+
+        // Pre-fill form with AddressItem data
+        if (addressItem != null) {
+            fullNameEditText.setText(addressItem.getName());
+            phoneNumberEditText.setText(addressItem.getPhone());
+            defaultSwitch.setChecked(addressItem.isDefault());
+            prefillAddressFields(addressItem.getAddress());
+        }
+
+        // Set listeners for form validation
+        View.OnFocusChangeListener focusChangeListener = (v, hasFocus) -> updateSubmitButtonState();
+        fullNameEditText.setOnFocusChangeListener(focusChangeListener);
+        phoneNumberEditText.setOnFocusChangeListener(focusChangeListener);
+        streetEditText.setOnFocusChangeListener(focusChangeListener);
+        streetEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                updateSubmitButtonState();
+            }
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        // Set click listeners
+        submitButton.setOnClickListener(v -> saveEditedAddress());
+        deleteButton.setOnClickListener(v -> deleteAddress());
+    }
+
+    private void setupSpinners() {
+        // Set city data to spinner
         List<String> cities = new ArrayList<>(cityToDistricts.keySet());
-        cities.add(0, "Select City");
+        if (cities.isEmpty()) {
+            Log.e(TAG, "No cities loaded from JSON!");
+            cities.add("Select City");
+        } else {
+            cities.add(0, "Select City");
+        }
         ArrayAdapter<String> cityAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, cities) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
@@ -111,15 +138,22 @@ public class AddressEditActivity extends AppCompatActivity {
         };
         cityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         citySpinner.setAdapter(cityAdapter);
+        citySpinner.setSelection(0);
 
-        // Listener cho city spinner
+        // Disable district and ward spinners initially
+        districtSpinner.setEnabled(false);
+        wardSpinner.setEnabled(false);
+
+        // City spinner listener
         citySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position > 0) {
                     String selectedCity = cities.get(position);
+                    districtSpinner.setEnabled(true);
                     List<String> districts = cityToDistricts.get(selectedCity);
                     if (districts != null && !districts.isEmpty()) {
+                        districts = new ArrayList<>(districts); // Create a new list to avoid modifying original
                         districts.add(0, "Select District");
                         ArrayAdapter<String> districtAdapter = new ArrayAdapter<String>(AddressEditActivity.this, android.R.layout.simple_spinner_item, districts) {
                             @Override
@@ -141,34 +175,39 @@ public class AddressEditActivity extends AppCompatActivity {
                                 return view;
                             }
                         };
+                        districtAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                         districtSpinner.setAdapter(districtAdapter);
                         districtSpinner.setSelection(0);
-                        // Chọn district hiện tại nếu có
-                        if (addressItem != null) {
-                            String[] parts = addressItem.getAddress().split(", ");
-                            if (parts.length >= 4) {
-                                setSpinnerSelection(districtSpinner, parts[2].trim());
-                            }
-                        }
+                    } else {
+                        Log.w(TAG, "No districts found for city: " + selectedCity);
+                        districtSpinner.setEnabled(false);
+                        districtSpinner.setAdapter(null);
+                        wardSpinner.setEnabled(false);
+                        wardSpinner.setAdapter(null);
                     }
                 } else {
+                    districtSpinner.setEnabled(false);
+                    wardSpinner.setEnabled(false);
                     districtSpinner.setAdapter(null);
                     wardSpinner.setAdapter(null);
                 }
+                updateSubmitButtonState();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        // Listener cho district spinner
+        // District spinner listener
         districtSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position > 0) {
                     String selectedDistrict = (String) districtSpinner.getSelectedItem();
+                    wardSpinner.setEnabled(true);
                     List<String> wards = districtToWards.get(selectedDistrict);
                     if (wards != null && !wards.isEmpty()) {
+                        wards = new ArrayList<>(wards); // Create a new list to avoid modifying original
                         wards.add(0, "Select Ward");
                         ArrayAdapter<String> wardAdapter = new ArrayAdapter<String>(AddressEditActivity.this, android.R.layout.simple_spinner_item, wards) {
                             @Override
@@ -190,49 +229,165 @@ public class AddressEditActivity extends AppCompatActivity {
                                 return view;
                             }
                         };
+                        wardAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                         wardSpinner.setAdapter(wardAdapter);
                         wardSpinner.setSelection(0);
-                        // Chọn ward hiện tại nếu có
-                        if (addressItem != null) {
-                            String[] parts = addressItem.getAddress().split(", ");
-                            if (parts.length >= 4) {
-                                setSpinnerSelection(wardSpinner, parts[1].trim());
-                            }
-                        }
+                    } else {
+                        Log.w(TAG, "No wards found for district: " + selectedDistrict);
+                        wardSpinner.setEnabled(false);
+                        wardSpinner.setAdapter(null);
                     }
                 } else {
+                    wardSpinner.setEnabled(false);
                     wardSpinner.setAdapter(null);
                 }
+                updateSubmitButtonState();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        // Thiết lập giá trị ban đầu cho spinner city
-        if (addressItem != null) {
-            String[] parts = addressItem.getAddress().split(", ");
-            if (parts.length >= 4) {
-                setSpinnerSelection(citySpinner, parts[3].trim());
+        // Ward spinner listener
+        wardSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                updateSubmitButtonState();
             }
-        }
 
-        // Listener cho nút submit
-        submitButton.setOnClickListener(v -> saveEditedAddress());
-
-        // Listener cho nút delete
-        deleteButton.setOnClickListener(v -> deleteAddress());
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
     }
 
-    private void setSpinnerSelection(Spinner spinner, String value) {
-        ArrayAdapter<String> adapter = (ArrayAdapter<String>) spinner.getAdapter();
-        if (adapter != null) {
-            for (int i = 0; i < adapter.getCount(); i++) {
-                if (adapter.getItem(i).equals(value)) {
-                    spinner.setSelection(i);
-                    break;
+    private void prefillAddressFields(String address) {
+        // Parse address in format: "street, Phường ward, Quận district, city"
+        try {
+            String[] parts = address.split(", ");
+            if (parts.length >= 4) {
+                streetEditText.setText(parts[0].trim());
+                String ward = parts[1].replace("Phường ", "").trim();
+                String district = parts[2].replace("Quận ", "").trim();
+                String city = parts[3].trim();
+
+                // Set city spinner
+                ArrayAdapter<String> cityAdapter = (ArrayAdapter<String>) citySpinner.getAdapter();
+                int cityPos = cityAdapter.getPosition(city);
+                if (cityPos >= 0) {
+                    citySpinner.setSelection(cityPos);
+                } else {
+                    Log.w(TAG, "City not found in spinner: " + city);
                 }
+
+                // Trigger district spinner population
+                if (cityPos > 0) {
+                    List<String> districts = cityToDistricts.get(city);
+                    if (districts != null && !districts.isEmpty()) {
+                        districts = new ArrayList<>(districts);
+                        districts.add(0, "Select District");
+                        ArrayAdapter<String> districtAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, districts) {
+                            @Override
+                            public View getView(int position, View convertView, ViewGroup parent) {
+                                View view = super.getView(position, convertView, parent);
+                                if (view instanceof TextView) {
+                                    ((TextView) view).setTextColor(getResources().getColor(android.R.color.black));
+                                }
+                                return view;
+                            }
+
+                            @Override
+                            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                                View view = super.getDropDownView(position, convertView, parent);
+                                if (view instanceof TextView) {
+                                    ((TextView) view).setTextColor(getResources().getColor(android.R.color.black));
+                                    view.setBackgroundColor(getResources().getColor(android.R.color.white));
+                                }
+                                return view;
+                            }
+                        };
+                        districtAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        districtSpinner.setAdapter(districtAdapter);
+
+                        // Set district spinner
+                        int districtPos = districtAdapter.getPosition(district);
+                        if (districtPos >= 0) {
+                            districtSpinner.setSelection(districtPos);
+                        } else {
+                            Log.w(TAG, "District not found in spinner: " + district);
+                        }
+
+                        // Trigger ward spinner population
+                        if (districtPos > 0) {
+                            List<String> wards = districtToWards.get(district);
+                            if (wards != null && !wards.isEmpty()) {
+                                wards = new ArrayList<>(wards);
+                                wards.add(0, "Select Ward");
+                                ArrayAdapter<String> wardAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, wards) {
+                                    @Override
+                                    public View getView(int position, View convertView, ViewGroup parent) {
+                                        View view = super.getView(position, convertView, parent);
+                                        if (view instanceof TextView) {
+                                            ((TextView) view).setTextColor(getResources().getColor(android.R.color.black));
+                                        }
+                                        return view;
+                                    }
+
+                                    @Override
+                                    public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                                        View view = super.getDropDownView(position, convertView, parent);
+                                        if (view instanceof TextView) {
+                                            ((TextView) view).setTextColor(getResources().getColor(android.R.color.black));
+                                            view.setBackgroundColor(getResources().getColor(android.R.color.white));
+                                        }
+                                        return view;
+                                    }
+                                };
+                                wardAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                                wardSpinner.setAdapter(wardAdapter);
+
+                                // Set ward spinner
+                                int wardPos = wardAdapter.getPosition(ward);
+                                if (wardPos >= 0) {
+                                    wardSpinner.setSelection(wardPos);
+                                } else {
+                                    Log.w(TAG, "Ward not found in spinner: " + ward);
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                Log.e(TAG, "Invalid address format: " + address);
+                Toast.makeText(this, "Định dạng địa chỉ không hợp lệ!", Toast.LENGTH_SHORT).show();
             }
+        } catch (Exception e) {
+            Log.e(TAG, "Error parsing address: " + address, e);
+            Toast.makeText(this, "Lỗi khi phân tích địa chỉ!", Toast.LENGTH_SHORT).show();
+        }
+        updateSubmitButtonState();
+    }
+
+    private void updateSubmitButtonState() {
+        String fullName = fullNameEditText.getText().toString().trim();
+        String phone = phoneNumberEditText.getText().toString().trim();
+        String street = streetEditText.getText().toString().trim();
+        String city = citySpinner.getSelectedItem() != null ? citySpinner.getSelectedItem().toString() : "Select City";
+        String district = districtSpinner.getSelectedItem() != null ? districtSpinner.getSelectedItem().toString() : "Select District";
+        String ward = wardSpinner.getSelectedItem() != null ? wardSpinner.getSelectedItem().toString() : "Select Ward";
+
+        boolean isValid = !fullName.isEmpty() && !phone.isEmpty() && !street.isEmpty() &&
+                !city.equals("Select City") && !district.equals("Select District") && !ward.equals("Select Ward");
+
+        submitButton.setEnabled(isValid);
+        Log.d(TAG, "Submit button enabled: " + isValid +
+                ", FullName: '" + fullName + "', Phone: '" + phone + "', Street: '" + street +
+                "', City: '" + city + "', District: '" + district + "', Ward: '" + ward + "'");
+
+        if (!isValid && street.isEmpty()) {
+            streetEditText.setError("Vui lòng nhập địa chỉ cụ thể!");
+            Toast.makeText(this, "Vui lòng nhập địa chỉ cụ thể!", Toast.LENGTH_SHORT).show();
+        } else if (!isValid) {
+            Toast.makeText(this, "Vui lòng điền đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -241,8 +396,8 @@ public class AddressEditActivity extends AppCompatActivity {
         String phone = phoneNumberEditText.getText().toString().trim();
         String street = streetEditText.getText().toString().trim();
         String city = citySpinner.getSelectedItem().toString();
-        String district = districtSpinner.getSelectedItem() != null ? districtSpinner.getSelectedItem().toString() : "Select District";
-        String ward = wardSpinner.getSelectedItem() != null ? wardSpinner.getSelectedItem().toString() : "Select Ward";
+        String district = districtSpinner.getSelectedItem().toString();
+        String ward = wardSpinner.getSelectedItem().toString();
         boolean isDefault = defaultSwitch.isChecked();
 
         if (fullName.isEmpty() || phone.isEmpty() || street.isEmpty() || city.equals("Select City") ||
@@ -251,102 +406,102 @@ public class AddressEditActivity extends AppCompatActivity {
             return;
         }
 
-        String addressDetail = street + ", " + ward + ", " + district + ", " + city;
-        addressItem.setName(fullName);
-        addressItem.setPhone(phone);
-        addressItem.setAddress(addressDetail);
-        addressItem.setDefault(isDefault);
-
-        // Load existing address list from SharedPreferences
-        SharedPreferences prefs = getSharedPreferences("AddressPrefs", MODE_PRIVATE);
-        String json = prefs.getString("addressList", "[]");
-        Gson gson = new Gson();
-        Type type = new TypeToken<List<AddressItem>>(){}.getType();
-        List<AddressItem> addressList = gson.fromJson(json, type);
-        if (addressList == null) {
-            addressList = new ArrayList<>();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Toast.makeText(this, "Bạn chưa đăng nhập", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        // Log trạng thái trước khi thay đổi
-        Log.d(TAG, "Before update - Address list: " + addressList);
-        Log.d(TAG, "Before update - Default addresses: " + getDefaultAddresses(addressList));
+        String customerId = user.getUid();
+        String addressDetail = street + ", Phường " + ward + ", Quận " + district + ", " + city;
 
-        // Unset all other addresses if this one is set as default (similar to NewAddressActivity)
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Map<String, Object> data = new HashMap<>();
+        data.put("name", fullName);
+        data.put("phone", phone);
+        data.put("address", addressDetail);
+        data.put("isDefault", isDefault);
+        data.put("time", com.google.firebase.Timestamp.now());
+
         if (isDefault) {
-            for (AddressItem addr : addressList) {
-                addr.setDefault(false);
-            }
-            addressItem.setDefault(true); // Set current address as default
-        }
-
-        // Update the edited address
-        if (position >= 0 && position < addressList.size()) {
-            addressList.set(position, addressItem);
+            // Clear existing default address
+            db.collection("addresses")
+                    .document(customerId)
+                    .collection("items")
+                    .whereEqualTo("isDefault", true)
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                            doc.getReference().update("isDefault", false);
+                        }
+                        // Save updated address
+                        db.collection("addresses")
+                                .document(customerId)
+                                .collection("items")
+                                .document(addressItem.getId())
+                                .set(data, SetOptions.merge())
+                                .addOnSuccessListener(unused -> {
+                                    Toast.makeText(this, "Cập nhật địa chỉ thành công", Toast.LENGTH_SHORT).show();
+                                    Intent resultIntent = new Intent();
+                                    resultIntent.putExtra("updatedPosition", position);
+                                    setResult(RESULT_OK, resultIntent);
+                                    finish();
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.e(TAG, "Lỗi khi lưu Firestore", e);
+                                    Toast.makeText(this, "Lỗi khi lưu địa chỉ: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Lỗi khi tìm địa chỉ mặc định", e);
+                        Toast.makeText(this, "Lỗi khi kiểm tra địa chỉ mặc định!", Toast.LENGTH_SHORT).show();
+                    });
         } else {
-            addressList.add(addressItem); // Case for new address if position is invalid
-            position = addressList.size() - 1;
+            // Save updated address directly
+            db.collection("addresses")
+                    .document(customerId)
+                    .collection("items")
+                    .document(addressItem.getId())
+                    .set(data, SetOptions.merge())
+                    .addOnSuccessListener(unused -> {
+                        Toast.makeText(this, "Cập nhật địa chỉ thành công", Toast.LENGTH_SHORT).show();
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("updatedPosition", position);
+                        setResult(RESULT_OK, resultIntent);
+                        finish();
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Lỗi khi lưu Firestore", e);
+                        Toast.makeText(this, "Lỗi khi lưu địa chỉ: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
         }
-
-        // Log trạng thái sau khi thay đổi
-        Log.d(TAG, "After update - Address list: " + addressList);
-        Log.d(TAG, "After update - Default addresses: " + getDefaultAddresses(addressList));
-
-        // Save the updated list back to SharedPreferences
-        String updatedJson = gson.toJson(addressList);
-        prefs.edit().putString("addressList", updatedJson).commit(); // Sử dụng commit để đảm bảo lưu ngay
-
-        // Trả về kết quả và quay lại AddressSelectionActivity
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra("editedAddress", addressItem);
-        resultIntent.putExtra("position", position);
-        setResult(RESULT_OK, resultIntent);
-        finish(); // Quay lại AddressSelectionActivity
-    }
-
-    private String getDefaultAddresses(List<AddressItem> list) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).isDefault()) {
-                sb.append("Position ").append(i).append(": ").append(list.get(i).getAddress()).append(", isDefault=").append(list.get(i).isDefault()).append("; ");
-            }
-        }
-        return sb.toString();
     }
 
     private void deleteAddress() {
-        if (addressItem != null && position >= 0) {
-            // Hiển thị dialog xác nhận xóa
-            new AlertDialog.Builder(this)
-                    .setTitle("Xác nhận xóa")
-                    .setMessage("Bạn có chắc chắn muốn xóa địa chỉ này?")
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Load existing address list to remove the item
-                            SharedPreferences prefs = getSharedPreferences("AddressPrefs", MODE_PRIVATE);
-                            String json = prefs.getString("addressList", "[]");
-                            Gson gson = new Gson();
-                            Type type = new TypeToken<List<AddressItem>>(){}.getType();
-                            List<AddressItem> addressList = gson.fromJson(json, type);
-                            if (addressList != null && position < addressList.size()) {
-                                addressList.remove(position);
-                                String updatedJson = gson.toJson(addressList);
-                                prefs.edit().putString("addressList", updatedJson).commit(); // Sử dụng commit
-                                setResult(RESULT_OK, new Intent().putExtra("position", position)); // Notify deletion
-                                finish();
-                            } else {
-                                Toast.makeText(AddressEditActivity.this, "Không thể xóa địa chỉ", Toast.LENGTH_SHORT).show();
-                            }
-                        }
+        if (addressItem != null && addressItem.getId() != null) {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user == null) {
+                Toast.makeText(this, "Bạn chưa đăng nhập", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String customerId = user.getUid();
+            FirebaseFirestore.getInstance()
+                    .collection("addresses")
+                    .document(customerId)
+                    .collection("items")
+                    .document(addressItem.getId())
+                    .delete()
+                    .addOnSuccessListener(unused -> {
+                        Toast.makeText(this, "Đã xóa địa chỉ", Toast.LENGTH_SHORT).show();
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("deletedPosition", position);
+                        setResult(RESULT_OK, resultIntent);
+                        finish();
                     })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss(); // Đóng dialog nếu chọn No
-                        }
-                    })
-                    .setCancelable(true)
-                    .show();
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Lỗi khi xóa Firestore", e);
+                        Toast.makeText(this, "Lỗi khi xóa địa chỉ: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
         }
     }
 

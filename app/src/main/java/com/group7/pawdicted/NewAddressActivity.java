@@ -1,9 +1,6 @@
 package com.group7.pawdicted;
 
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,29 +10,31 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import com.group7.pawdicted.mobile.models.AddressItem;
 
@@ -45,17 +44,11 @@ public class NewAddressActivity extends AppCompatActivity {
     private Spinner citySpinner, districtSpinner, wardSpinner;
     private SwitchCompat defaultSwitch;
     private Button submitButton;
-    private ListView addressListView;
 
-    private Map<String, String> cityCodes = new HashMap<>(); // Map city name to code
-    private Map<String, List<String>> cityToDistricts = new HashMap<>(); // Map city to districts
-    private Map<String, List<String>> districtToWards = new HashMap<>(); // Map district to wards
-    private Map<String, String> districtCodes = new HashMap<>(); // Map district name to code
-    private List<AddressItem> addressList = new ArrayList<>();
-    private ArrayAdapter<AddressItem> addressAdapter;
-
-    private static final String PREF_NAME = "AddressPrefs";
-    private static final String KEY_ADDRESS_LIST = "addressList";
+    private Map<String, String> cityCodes = new HashMap<>();
+    private Map<String, List<String>> cityToDistricts = new HashMap<>();
+    private Map<String, List<String>> districtToWards = new HashMap<>();
+    private Map<String, String> districtCodes = new HashMap<>();
     private static final String TAG = "NewAddressActivity";
 
     @Override
@@ -63,12 +56,8 @@ public class NewAddressActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_address);
 
-        ImageView imgBack = findViewById(R.id.imgBack);
-        if (imgBack != null) {
-            imgBack.setOnClickListener(v -> finish());
-        }
-
         // Initialize views
+        ImageView imgBack = findViewById(R.id.backArrow);
         fullNameEditText = findViewById(R.id.fullNameEditText);
         phoneNumberEditText = findViewById(R.id.phoneNumberEditText);
         streetEditText = findViewById(R.id.streetEditText);
@@ -77,35 +66,25 @@ public class NewAddressActivity extends AppCompatActivity {
         wardSpinner = findViewById(R.id.wardSpinner);
         defaultSwitch = findViewById(R.id.defaultSwitch);
         submitButton = findViewById(R.id.submitButton);
-        addressListView = findViewById(R.id.addressListView);
 
-        // Log to verify button initialization
-        Log.d(TAG, "Submit button initialized: " + (submitButton != null));
+        // Log initialization
+        Log.d(TAG, "Views initialized: submitButton=" + (submitButton != null));
 
-        // Load all JSON data
+        // Back button
+        if (imgBack != null) {
+            imgBack.setOnClickListener(v -> finish());
+        }
+
+        // Load JSON data
         loadCities();
         loadDistricts();
         loadWards();
 
-        // Load existing address list
-        addressList = loadAddressList();
-        addressAdapter = new ArrayAdapter<AddressItem>(this, android.R.layout.simple_list_item_1, addressList) {
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
-                if (view instanceof TextView) {
-                    ((TextView) view).setText(addressList.get(position).toString());
-                }
-                return view;
-            }
-        };
-        addressListView.setAdapter(addressAdapter);
-
-        // Set city data to spinner with custom adapter
+        // Set city data to spinner
         List<String> cities = new ArrayList<>(cityToDistricts.keySet());
         if (cities.isEmpty()) {
             Log.e(TAG, "No cities loaded from JSON!");
-            cities.add("Select City"); // Fallback if JSON fails
+            cities.add("Select City");
         } else {
             cities.add(0, "Select City");
         }
@@ -144,9 +123,7 @@ public class NewAddressActivity extends AppCompatActivity {
         });
 
         // Enable submit button when form is filled
-        View.OnFocusChangeListener focusChangeListener = (v, hasFocus) -> {
-            updateSubmitButtonState();
-        };
+        View.OnFocusChangeListener focusChangeListener = (v, hasFocus) -> updateSubmitButtonState();
         fullNameEditText.setOnFocusChangeListener(focusChangeListener);
         phoneNumberEditText.setOnFocusChangeListener(focusChangeListener);
         streetEditText.setOnFocusChangeListener(focusChangeListener);
@@ -267,12 +244,6 @@ public class NewAddressActivity extends AppCompatActivity {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
-
-        // Address list click listener for edit/delete
-        addressListView.setOnItemClickListener((parent, view, position, id) -> {
-            AddressItem selectedAddress = addressList.get(position);
-            showEditDeleteDialog(selectedAddress, position);
-        });
     }
 
     private void updateSubmitButtonState() {
@@ -287,17 +258,94 @@ public class NewAddressActivity extends AppCompatActivity {
                 !city.equals("Select City") && !district.equals("Select District") && !ward.equals("Select Ward");
 
         submitButton.setEnabled(isValid);
-        Log.d(TAG, "Submit button enabled: " + isValid +
-                ", FullName: '" + fullName + "', Phone: '" + phone + "', Street: '" + street +
-                "', City: '" + city + "', District: '" + district + "', Ward: '" + ward + "'");
+        Log.d(TAG, "Submit button state updated: isValid=" + isValid +
+                ", FullName='" + fullName + "', Phone='" + phone + "', Street='" + street +
+                "', City='" + city + "', District='" + district + "', Ward='" + ward + "'");
 
-        // Feedback if form is invalid
-        if (!isValid && street.isEmpty()) {
-            streetEditText.setError("Vui lòng nhập địa chỉ cụ thể!");
-            Toast.makeText(this, "Vui lòng nhập địa chỉ cụ thể!", Toast.LENGTH_SHORT).show();
-        } else if (!isValid) {
+        if (!isValid) {
             Toast.makeText(this, "Vui lòng điền đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void saveNewAddress() {
+        Log.d(TAG, "Saving new address...");
+        String fullName = fullNameEditText.getText().toString().trim();
+        String phone = phoneNumberEditText.getText().toString().trim();
+        String city = citySpinner.getSelectedItem().toString();
+        String district = districtSpinner.getSelectedItem() != null ? districtSpinner.getSelectedItem().toString() : "";
+        String ward = wardSpinner.getSelectedItem() != null ? wardSpinner.getSelectedItem().toString() : "";
+        String street = streetEditText.getText().toString().trim();
+        boolean isDefault = defaultSwitch.isChecked();
+
+        if (fullName.isEmpty() || phone.isEmpty() || street.isEmpty() || city.equals("Select City") ||
+                district.equals("Select District") || ward.equals("Select Ward")) {
+            Toast.makeText(this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "Validation failed, Fields: FullName='" + fullName + "', Phone='" + phone + "', Street='" + street +
+                    "', City='" + city + "', District='" + district + "', Ward='" + ward + "'");
+            return;
+        }
+
+        String addressDetail = street + ", Phường " + ward + ", Quận " + district + ", " + city;
+        AddressItem newAddress = new AddressItem(fullName, phone, addressDetail, isDefault, Timestamp.now());
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Toast.makeText(this, "Người dùng chưa đăng nhập", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "No user logged in");
+            return;
+        }
+
+        String customerId = user.getUid();
+        String addressId = UUID.randomUUID().toString();
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Map<String, Object> data = new HashMap<>();
+        data.put("name", fullName);
+        data.put("phone", phone);
+        data.put("address", addressDetail);
+        data.put("isDefault", isDefault);
+        data.put("time", Timestamp.now());
+
+        if (isDefault) {
+            db.collection("addresses")
+                    .document(customerId)
+                    .collection("items")
+                    .whereEqualTo("isDefault", true)
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                            doc.getReference().update("isDefault", false)
+                                    .addOnFailureListener(e -> Log.e(TAG, "Error clearing isDefault for address " + doc.getId(), e));
+                        }
+                        saveAddressToFirestore(db, customerId, addressId, data);
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Error fetching existing default addresses", e);
+                        Toast.makeText(this, "Lỗi khi kiểm tra địa chỉ mặc định", Toast.LENGTH_SHORT).show();
+                    });
+        } else {
+            saveAddressToFirestore(db, customerId, addressId, data);
+        }
+    }
+
+    private void saveAddressToFirestore(FirebaseFirestore db, String customerId, String addressId, Map<String, Object> data) {
+        db.collection("addresses")
+                .document(customerId)
+                .collection("items")
+                .document(addressId)
+                .set(data, SetOptions.merge())
+                .addOnSuccessListener(unused -> {
+                    Log.d(TAG, "Address saved successfully: " + addressId);
+                    Toast.makeText(this, "Đã lưu địa chỉ mới", Toast.LENGTH_SHORT).show();
+                    Intent resultIntent = new Intent();
+                    resultIntent.putExtra("addressId", addressId);
+                    setResult(RESULT_OK, resultIntent);
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error saving address to Firestore", e);
+                    Toast.makeText(this, "Lỗi khi lưu địa chỉ!", Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void loadCities() {
@@ -317,7 +365,6 @@ public class NewAddressActivity extends AppCompatActivity {
             }
             Log.d(TAG, "Cities loaded: " + cityToDistricts.keySet());
         } catch (IOException | JSONException e) {
-            e.printStackTrace();
             Log.e(TAG, "Error loading cities: " + e.getMessage());
         }
     }
@@ -345,7 +392,6 @@ public class NewAddressActivity extends AppCompatActivity {
             }
             Log.d(TAG, "Districts loaded for cities: " + cityToDistricts);
         } catch (IOException | JSONException e) {
-            e.printStackTrace();
             Log.e(TAG, "Error loading districts: " + e.getMessage());
         }
     }
@@ -372,126 +418,7 @@ public class NewAddressActivity extends AppCompatActivity {
             }
             Log.d(TAG, "Wards loaded: " + districtToWards);
         } catch (IOException | JSONException e) {
-            e.printStackTrace();
             Log.e(TAG, "Error loading wards: " + e.getMessage());
         }
-    }
-
-    private void saveNewAddress() {
-        Log.d(TAG, "Saving new address...");
-        String fullName = fullNameEditText.getText().toString().trim();
-        String phone = phoneNumberEditText.getText().toString().trim();
-        String city = citySpinner.getSelectedItem().toString();
-        String district = districtSpinner.getSelectedItem() != null ? districtSpinner.getSelectedItem().toString() : "";
-        String ward = wardSpinner.getSelectedItem() != null ? wardSpinner.getSelectedItem().toString() : "";
-        String street = streetEditText.getText().toString().trim();
-        boolean isDefault = defaultSwitch.isChecked();
-
-        // Basic validation
-        if (fullName.isEmpty() || phone.isEmpty() || street.isEmpty() || city.equals("Select City") ||
-                district.equals("Select District") || ward.equals("Select Ward")) {
-            Toast.makeText(this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "Validation failed, Fields: FullName='" + fullName + "', Phone='" + phone + "', Street='" + street + "', City='" + city + "', District='" + district + "', Ward='" + ward + "'");
-            return;
-        }
-
-        // Create full address string
-        String addressDetail = street + ", " + ward + ", " + district + ", " + city;
-        AddressItem newAddress = new AddressItem(fullName, phone, addressDetail, isDefault);
-
-        // Load existing address list
-        addressList = loadAddressList();
-
-        // If new address is default, unset default for others
-        if (isDefault) {
-            for (AddressItem addr : addressList) {
-                addr.setDefault(false);
-            }
-        }
-
-        // Add new address
-        addressList.add(newAddress);
-        saveAddressList(addressList);
-        addressAdapter.notifyDataSetChanged();
-        clearForm();
-        Log.d(TAG, "Address saved successfully");
-
-        // Quay lại AddressSelectionActivity
-        finish();
-    }
-
-    private void showEditDeleteDialog(AddressItem address, final int position) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Chọn hành động");
-        builder.setItems(new CharSequence[]{"Edit", "Delete"}, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case 0: // Edit
-                        editAddress(address, position);
-                        break;
-                    case 1: // Delete
-                        deleteAddress(position);
-                        break;
-                }
-            }
-        });
-        builder.show();
-    }
-
-    private void editAddress(AddressItem address, int position) {
-        // Parse address detail to fill form
-        String[] parts = address.getAddress().split(", ");
-        if (parts.length >= 4) {
-            streetEditText.setText(parts[0].trim());
-            // Note: Auto-selecting city, district, ward requires parsing logic based on JSON data
-            // This is a simplified version; you may need to map back to spinner values
-            fullNameEditText.setText(address.getName());
-            phoneNumberEditText.setText(address.getPhone());
-            defaultSwitch.setChecked(address.isDefault());
-            addressList.remove(position);
-            addressAdapter.notifyDataSetChanged();
-            Log.d(TAG, "Address edited and form filled for position: " + position);
-        } else {
-            Toast.makeText(this, "Định dạng địa chỉ không hợp lệ!", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void deleteAddress(int position) {
-        addressList.remove(position);
-        saveAddressList(addressList);
-        addressAdapter.notifyDataSetChanged();
-        Log.d(TAG, "Address deleted at position: " + position);
-        Toast.makeText(this, "Đã xóa địa chỉ!", Toast.LENGTH_SHORT).show();
-    }
-
-    private void clearForm() {
-        fullNameEditText.setText("");
-        phoneNumberEditText.setText("");
-        streetEditText.setText("");
-        citySpinner.setSelection(0);
-        districtSpinner.setEnabled(false);
-        districtSpinner.setAdapter(null);
-        wardSpinner.setEnabled(false);
-        wardSpinner.setAdapter(null);
-        defaultSwitch.setChecked(false);
-        updateSubmitButtonState();
-    }
-
-    private List<AddressItem> loadAddressList() {
-        SharedPreferences prefs = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        String json = prefs.getString(KEY_ADDRESS_LIST, "[]");
-        Gson gson = new Gson();
-        Type type = new TypeToken<List<AddressItem>>(){}.getType();
-        return gson.fromJson(json, type);
-    }
-
-    private void saveAddressList(List<AddressItem> addressList) {
-        SharedPreferences prefs = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(addressList);
-        editor.putString(KEY_ADDRESS_LIST, json);
-        editor.apply();
     }
 }
