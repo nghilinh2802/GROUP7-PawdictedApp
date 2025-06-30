@@ -15,6 +15,7 @@
         android:id="@+id/TopCategory"
         android:layout_width="match_parent"
         android:layout_height="54dp"
+        android:background="@color/white"
         android:orientation="horizontal"
         android:padding="8dp">
 
@@ -76,6 +77,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:textColor="@color/black"
+        android:background="@color/white"
         android:orientation="horizontal">
 
         <!-- SideCategory -->
