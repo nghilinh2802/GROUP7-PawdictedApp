@@ -1,6 +1,7 @@
 package com.group7.pawdicted;
 
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -23,7 +24,14 @@ public class PolicynSecurityActivity extends AppCompatActivity {
             return insets;
         });
         addViews();
+
+        ImageView imgBack = findViewById(R.id.imgBack);
+        if (imgBack != null) {
+            imgBack.setOnClickListener(v -> finish());
+        }
     }
+
+
 
     private void addViews() {
         TextView policyText = findViewById(R.id.txtpolicy);

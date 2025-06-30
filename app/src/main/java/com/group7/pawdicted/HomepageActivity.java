@@ -607,4 +607,9 @@ public class HomepageActivity extends AppCompatActivity {
         }
         clearRecommendationCache();
     }
+
+    public void open_voucher_activity(View view) {
+        Intent intent=new Intent(HomepageActivity.this,VoucherManagementActivity.class);
+        startActivity(intent);
+    }
 }

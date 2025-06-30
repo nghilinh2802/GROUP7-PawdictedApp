@@ -240,14 +240,14 @@
                     android:id="@+id/btnCancel"
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:text="CANCEL"
-                    android:onClick="go_back"
-                    android:textSize="16dp"
-                    android:textColor="#9c162c"
+                    android:layout_marginEnd="50dp"
                     android:background="@drawable/rounded_cancel_button"
-                    app:backgroundTint="#9c162c"
+                    android:onClick="go_back"
                     android:padding="10dp"
-                    android:layout_marginEnd="50dp" />
+                    android:text="CANCEL"
+                    android:textColor="#9c162c"
+                    android:textSize="16dp"
+                    app:backgroundTint="#9c162c" />
 
                 <Button
                     android:id="@+id/btnSave"

@@ -267,10 +267,10 @@ If you have any questions or requests regarding our privacy and security policy,
     <string name="authentication_will_expire_after_180_seconds">Authentication will expire after 180 seconds</string>
     <string name="resend_recover_code">Resend recover code</string>
     <string name="great_your_password_has_been_changed">Great! Your password \n has been changed</string>
-    <string name="don_t_worry_we_ll_let_you_know_if_there_s_a_problem_with_your_account">Don\'t worry, we\'ll let you know \n if there\'s a problem with your account!</string>
+    <string name="don_t_worry_we_ll_let_you_know_if_there_s_a_problem_with_your_account">Don\'t worry, we\'ll let you know   if there\'s a problem with your account!</string>
     <string name="login_with_new_password">LOGIN WITH NEW PASSWORD</string>
     <string name="welcome_to_paw_dicted">Welcome to Paw\'dicted!</string>
-    <string name="your_account_set_up">Your account is all set up! \n Log in to begin shopping for your \n pets’ favorite toys, food, and more.</string>
+    <string name="your_account_set_up">Your account is all set up!   Log in to begin shopping for your   pets’ favorite toys, food, and more.</string>
     <string name="login_with_new_account">LOGIN WITH NEW ACCOUNT</string>
     <string name="title_enter_code">Select or enter code</string>
     <string name="title_nothing_love">You haven\'t anything in your heart yet</string>
@@ -282,5 +282,7 @@ If you have any questions or requests regarding our privacy and security policy,
     <string name="title_noti_add_cart">Added to cart</string>
     <string name="title_noti_add_cart_flashsale">Added to cart with flashsale price!</string>
     <string name="title_noti_related_products_error">Failed to load related products</string>
+    <string name="update_profile_successful">Updated profile successful!</string>
+    <string name="update_profile_failed">Update profile failed!</string>
 
 </resources>
