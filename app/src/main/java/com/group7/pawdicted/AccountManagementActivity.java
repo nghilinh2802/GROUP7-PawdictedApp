@@ -19,8 +19,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Source;
 
 public class AccountManagementActivity extends AppCompatActivity {
-    ImageView ToConfirm, ToPickUp, ToShip, imgComplete, imgAvatar, imgChat;
-    TextView txtToConfirm, txtToPickUp, txtToShip, txtComplete, txtUsername;
+    ImageView ToConfirm, ToPickUp, ToShip, imgComplete, imgAvatar, imgChat, imgHistory, imgWishlist;
+    TextView txtToConfirm, txtToPickUp, txtToShip, txtComplete, txtUsername, txtHistory, txtWishlist;
     FirebaseAuth mAuth;
     FirebaseFirestore db;
     FooterManager footerManager;
@@ -58,8 +58,11 @@ public class AccountManagementActivity extends AppCompatActivity {
         imgAvatar = findViewById(R.id.imgAvatar);
         txtUsername = findViewById(R.id.txtUsername);
         imgChat = findViewById(R.id.imgChat);
+        imgHistory=findViewById(R.id.imgHistory);
+        txtHistory=findViewById(R.id.txtHistory);
+        imgWishlist=findViewById(R.id.imgWishlist);
+        txtWishlist=findViewById(R.id.txtWishlist);
     }
-
     private void addEvents() {
         ToConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,6 +100,35 @@ public class AccountManagementActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(AccountManagementActivity.this, ChatActivity.class);
+                startActivity(intent);
+            }
+        });
+        imgHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(AccountManagementActivity.this, RecentlyViewedActivity.class);
+                startActivity(intent);
+            }
+        });
+        txtHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(AccountManagementActivity.this, RecentlyViewedActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        imgWishlist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(AccountManagementActivity.this, WishlistActivity.class);
+                startActivity(intent);
+            }
+        });
+        txtWishlist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(AccountManagementActivity.this, WishlistActivity.class);
                 startActivity(intent);
             }
         });

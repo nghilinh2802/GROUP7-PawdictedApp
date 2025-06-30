@@ -25,13 +25,14 @@
             android:orientation="vertical"
             android:padding="0dp">
 
-            <!-- Banner -->
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:scaleType="fitCenter"
+                android:layout_height="150dp"
+                android:layout_marginVertical="10dp"
+                android:layout_marginHorizontal="20dp"
+                android:scaleType="centerCrop"
+                android:background="@drawable/red_fill_rounded_background"
                 android:src="@mipmap/ic_banner" />
 
             <!-- TableLayout chứa icon -->
@@ -80,7 +81,7 @@
                             android:text="@string/title_homepage_category"
                             android:textAlignment="center"
                             android:textColor="#FFFDFD"
-                            android:textSize="14sp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -116,7 +117,7 @@
                             android:text="@string/title_homepage_flash_deals"
                             android:textAlignment="center"
                             android:textColor="#FFFDFD"
-                            android:textSize="14sp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -152,7 +153,7 @@
                             android:text="@string/title_homepage_new_arrival"
                             android:textAlignment="center"
                             android:textColor="#FFFDFD"
-                            android:textSize="14sp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -186,7 +187,7 @@
                             android:text="@string/title_voucher"
                             android:textAlignment="center"
                             android:textColor="#FFFDFD"
-                            android:textSize="14sp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
                 </TableRow>
 
@@ -226,7 +227,7 @@
                             android:text="@string/title_homepage_order"
                             android:textAlignment="center"
                             android:textColor="#FFFDFD"
-                            android:textSize="14sp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -264,7 +265,7 @@
                             android:onClick="open_blogs"
                             android:textAlignment="center"
                             android:textColor="#FFFDFD"
-                            android:textSize="14sp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -301,7 +302,7 @@
                             android:text="@string/title_faqs"
                             android:textAlignment="center"
                             android:textColor="#FFFDFD"
-                            android:textSize="14sp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -338,7 +339,7 @@
                             android:text="@string/title_homepage_policy"
                             android:textAlignment="center"
                             android:textColor="#FFFDFD"
-                            android:textSize="14sp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
                 </TableRow>
             </TableLayout>

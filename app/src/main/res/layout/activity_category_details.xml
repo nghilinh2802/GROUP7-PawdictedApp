@@ -75,7 +75,7 @@
         android:id="@+id/child_category_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/light_background"
+        android:background="@color/white"
         android:clipToPadding="false"
         android:padding="8dp"
         android:scrollbars="none" />
@@ -103,8 +103,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif"
-                android:text="@string/title_child_cate_best_seller"
-                android:textStyle="bold" />
+                android:text="@string/title_child_cate_best_seller" />
         </LinearLayout>
 
         <!-- Divider 1 -->
@@ -127,8 +126,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif"
-                android:text="@string/title_child_cate_newest"
-                android:textStyle="bold" />
+                android:text="@string/title_child_cate_newest" />
         </LinearLayout>
 
         <!-- Divider 2 -->
@@ -151,8 +149,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif"
-                android:text="@string/title_child_care_rating"
-                android:textStyle="bold" />
+                android:text="@string/title_child_care_rating" />
         </LinearLayout>
 
         <!-- Divider 3 -->
@@ -175,8 +172,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif"
-                android:text="@string/title_child_cate_price"
-                android:textStyle="bold" />
+                android:text="@string/title_child_cate_price" />
 
             <ImageView
                 android:id="@+id/img_ascend_arrows"

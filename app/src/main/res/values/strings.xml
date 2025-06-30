@@ -273,4 +273,14 @@ If you have any questions or requests regarding our privacy and security policy,
     <string name="welcome_to_paw_dicted">Welcome to Paw\'dicted!</string>
     <string name="your_account_set_up">Your account is all set up! \n Log in to begin shopping for your \n pets’ favorite toys, food, and more.</string>
     <string name="login_with_new_account">LOGIN WITH NEW ACCOUNT</string>
+    <string name="title_nothing_love">You haven\'t anything in your heart yet</string>
+    <string name="title_nothing_history">You haven\'t seen any product yet</string>
+    <string name="title_recently_viewed">RECENTLY VIEWED</string>
+    <string name="title_wishlist_cap">WISHLIST</string>
+    <string name="title_noti_add_wishlist">Added this product to your wishlist</string>
+    <string name="title_noti_remove_wishlist">Oh noooo! You removed this product out of your wishlist</string>
+    <string name="title_noti_add_cart">Added to cart</string>
+    <string name="title_noti_add_cart_flashsale">Added to cart with flashsale price!</string>
+    <string name="title_noti_related_products_error">Failed to load related products</string>
+
 </resources>
