@@ -2,12 +2,15 @@ package com.group7.pawdicted;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -17,6 +20,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -138,7 +142,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         Log.d("DEBUG", "Displaying Cancel Confirmation Dialog");
 
         // Tạo một đối tượng AlertDialog.Builder
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
 
         builder.setMessage("Do you want to cancel this order?")
                 .setCancelable(false)
@@ -148,45 +152,52 @@ public class OrderDetailActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("No", (dialog, which) -> dialog.dismiss());
 
-        // Tạo AlertDialog từ builder
         AlertDialog dialog = builder.create();
 
-        // Thiết lập sự kiện khi dialog được hiển thị
         dialog.setOnShowListener(dialogInterface -> {
             Button positiveButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
             Button negativeButton = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
 
-            // Cập nhật màu sắc cho các nút
-            positiveButton.setTextColor(Color.parseColor("#f8f1f1"));  // Màu chữ cho nút Yes
-            negativeButton.setTextColor(Color.parseColor("#f8f1f1"));  // Màu chữ cho nút No
+            GradientDrawable positiveDrawable = new GradientDrawable();
+            positiveDrawable.setColor(Color.WHITE);
+            positiveDrawable.setCornerRadius(20);
+            positiveDrawable.setStroke(3, Color.parseColor("#9C162C"));
+            positiveButton.setBackground(positiveDrawable);
+            positiveButton.setTextColor(Color.parseColor("#9C162C"));
 
-            // Đổi màu nền của các nút
-            positiveButton.setBackgroundColor(Color.parseColor("#9c162c"));  // Màu nền nút Yes
-            negativeButton.setBackgroundColor(Color.parseColor("#782421"));  // Màu nền nút No
+            GradientDrawable negativeDrawable = new GradientDrawable();
+            negativeDrawable.setColor(Color.WHITE);
+            negativeDrawable.setCornerRadius(20);
+            negativeDrawable.setStroke(3, Color.parseColor("#9C162C"));
+            negativeButton.setBackground(negativeDrawable);
+            negativeButton.setTextColor(Color.parseColor("#9C162C"));
 
-            // Cập nhật màu sắc cho nội dung popup
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#ec6a44")));  // Nền popup
+            GradientDrawable dialogBackground = new GradientDrawable();
+            dialogBackground.setColor(Color.WHITE);
+            dialogBackground.setCornerRadius(24);
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setBackgroundDrawable(dialogBackground);
+
+                WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+                layoutParams.copyFrom(dialog.getWindow().getAttributes());
+                layoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
+                layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+                dialog.getWindow().setAttributes(layoutParams);
+            }
         });
-
-        // Hiển thị dialog
         dialog.show();
     }
 
     private void cancelOrder(String cancelReason) {
-        // Kiểm tra nếu orderId là null hoặc rỗng
         if (orderId == null || orderId.isEmpty()) {
             Log.e("ERROR", "Order ID is null or empty! Cannot proceed with cancellation.");
             Toast.makeText(OrderDetailActivity.this, "Order ID is missing, please try again.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Lấy reference đến Firestore
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        // Lấy thời gian hiện tại
         Timestamp cancelRequestedAt = Timestamp.now();
 
-        // Cập nhật đơn hàng trong Firestore
         db.collection("orders").document(orderId)
                 .update(
                         "order_status", "Cancelled",
@@ -196,7 +207,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                 )
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(this, "Order has been cancelled", Toast.LENGTH_SHORT).show();
-                    finish();  // Quay lại màn trước
+                    finish();
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Failed to cancel order", Toast.LENGTH_SHORT).show();
@@ -303,7 +314,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
-                            String actualStatus = document.getString("status");
+                            String actualStatus = document.getString("order_status");
                             if (actualStatus != null && !actualStatus.isEmpty()) {
                                 updateStatusBarForTab(actualStatus);
                             }
@@ -348,31 +359,30 @@ public class OrderDetailActivity extends AppCompatActivity {
                             }
 
                             // Lấy thông tin hủy đơn
+                            String orderStatus = document.getString("order_status");
                             String cancelReason = document.getString("cancel_reason");
                             String cancelRequestedAt = formatOptionalTimestamp(document.get("cancel_requested_at"));
                             String cancelRequestedBy = document.getString("cancel_requested_by");
 
-//                            // Log để kiểm tra dữ liệu
-//                            Log.d("DEBUG", "Cancel Reason: " + cancelReason);
-//                            Log.d("DEBUG", "Cancel Requested At: " + cancelRequestedAt);
-//                            Log.d("DEBUG", "Cancel Requested By: " + cancelRequestedBy);
+                            Log.d("DEBUG", "Cancel Reason: " + cancelReason);
+                            Log.d("DEBUG", "Cancel Requested At: " + cancelRequestedAt);
+                            Log.d("DEBUG", "Cancel Requested By: " + cancelRequestedBy);
 
-                            // Kiểm tra trạng thái đơn hàng
-                            if ("Cancelled".equals(document.getString("status"))) {
-                                // Hiển thị các thông tin hủy đơn
+                            // Bổ sung log xác nhận luồng vào được
+                            Log.d("DEBUG_UI", "📌 Trạng thái đơn hàng: " + orderStatus);
+
+                            if ("Cancelled".equalsIgnoreCase(orderStatus)) {
+                                Log.d("DEBUG_UI", "✅ Đang hiển thị thông tin hủy đơn");
+
+                                // Hiện các dòng
                                 findViewById(R.id.layout_cancel_reason).setVisibility(View.VISIBLE);
                                 findViewById(R.id.layout_cancel_requested_at).setVisibility(View.VISIBLE);
                                 findViewById(R.id.layout_cancel_requested_by).setVisibility(View.VISIBLE);
 
-                                // Cập nhật thông tin hủy đơn
-//                                String cancelReason = document.getString("cancel_reason");
-//                                String cancelRequestedAt = formatOptionalTimestamp(document.get("cancel_requested_at"));
-//                                String cancelRequestedBy = document.getString("cancel_requested_by");
-
-                                // Gọi hàm hiển thị thông tin hủy đơn
+                                // Gọi hàm hiển thị
                                 showCancelInfo(cancelReason, cancelRequestedAt, cancelRequestedBy);
                             } else {
-                                // Nếu không phải trạng thái "Cancelled", ẩn các trường thông tin hủy đơn
+                                // Ẩn nếu không phải đơn hủy
                                 findViewById(R.id.layout_cancel_reason).setVisibility(View.GONE);
                                 findViewById(R.id.layout_cancel_requested_at).setVisibility(View.GONE);
                                 findViewById(R.id.layout_cancel_requested_by).setVisibility(View.GONE);
@@ -469,12 +479,13 @@ public class OrderDetailActivity extends AppCompatActivity {
                 });
     }
 
-    // Hàm hiển thị thông tin hủy đơn
     private void showCancelInfo(String cancelReason, String cancelRequestedAt, String cancelRequestedBy) {
         // Tìm các TextView liên quan đến thông tin hủy đơn
         TextView tvCancelReason = findViewById(R.id.tv_cancel_reason);
         TextView tvCancelRequestedAt = findViewById(R.id.tv_cancel_requested_at);
         TextView tvCancelRequestedBy = findViewById(R.id.tv_cancel_requested_by);
+
+        Log.d("DEBUG_UI", "✅ Hiển thị thông tin hủy đơn: " + cancelReason + " | " + cancelRequestedAt + " | " + cancelRequestedBy);
 
         // Hiển thị cancelReason nếu có
         if (cancelReason != null && !cancelReason.isEmpty()) {

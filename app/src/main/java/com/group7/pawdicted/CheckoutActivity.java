@@ -19,6 +19,7 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.group7.pawdicted.mobile.adapters.OrderItemAdapter;
@@ -55,11 +56,17 @@ public class CheckoutActivity extends AppCompatActivity {
     private String finalAddressId = null;
     ImageView imgBack;
 
+    // THÊM CÁC BIẾN FLASHSALE
+    private Map<String, Map<String, Object>> flashsaleProductInfo = new HashMap<>();
+    private boolean hasFlashsaleItems = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_checkout);
+
+        Log.d("CheckoutActivity", "=== CHECKOUT ACTIVITY STARTED ===");
 
         addViews();
         addEvents();
@@ -83,13 +90,26 @@ public class CheckoutActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         String cartJson = getIntent().getStringExtra("cartItems");
+        Log.d("CheckoutActivity", "Cart JSON received: " + (cartJson != null ? "Yes" : "No"));
+
         if (cartJson != null && !cartJson.isEmpty()) {
             Gson gson = new Gson();
             Type type = new TypeToken<List<CartItem>>(){}.getType();
             cartItems = gson.fromJson(cartJson, type);
+            Log.d("CheckoutActivity", "Cart items loaded: " + cartItems.size());
         } else {
             cartItems = new ArrayList<>();
             Log.e("CheckoutActivity", "No cart items received");
+        }
+
+        // Log cart items details
+        for (int i = 0; i < cartItems.size(); i++) {
+            CartItem item = cartItems.get(i);
+            Log.d("CheckoutActivity", "Cart item " + i + ": " + item.name +
+                    " | ProductID: " + item.productId +
+                    " | Quantity: " + item.quantity +
+                    " | Price: " + item.price +
+                    " | Selected: " + item.isSelected);
         }
 
         OrderItemAdapter orderItemAdapter = new OrderItemAdapter(this, cartItems);
@@ -123,8 +143,14 @@ public class CheckoutActivity extends AppCompatActivity {
 
         calculateAndUpdateTotals();
 
+        // THÊM KIỂM TRA FLASHSALE
+        checkFlashsaleValidation();
+
         btnPlaceOrder.setOnClickListener(v -> {
+            Log.d("CheckoutActivity", "=== PLACE ORDER CLICKED ===");
+
             if (finalAddressId == null) {
+                Log.w("CheckoutActivity", "No address selected");
                 Toast.makeText(this, "Please choose the delivery address!", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -135,6 +161,11 @@ public class CheckoutActivity extends AppCompatActivity {
             int shippingFee = selectedShippingOption != null ? selectedShippingOption.getCost() : 0;
             String paymentMethod = selectedPaymentMethod != null ? selectedPaymentMethod.getName() : "Unknown";
             Timestamp orderTime = Timestamp.now();
+
+            Log.d("CheckoutActivity", "Customer ID: " + customerId);
+            Log.d("CheckoutActivity", "Address ID: " + finalAddressId);
+            Log.d("CheckoutActivity", "Shipping fee: " + shippingFee);
+            Log.d("CheckoutActivity", "Payment method: " + paymentMethod);
 
             Map<String, Object> productMap = new HashMap<>();
             int totalMerchandise = 0;
@@ -153,6 +184,11 @@ public class CheckoutActivity extends AppCompatActivity {
                         productDetail.put("selected_option", item.selectedOption);
                     }
                     productMap.put("product" + index, productDetail);
+
+                    Log.d("CheckoutActivity", "Product " + index + ": " + item.name +
+                            " | Quantity: " + item.quantity +
+                            " | Unit price: " + item.price +
+                            " | Total cost: " + cost);
                     index++;
                 }
             }
@@ -163,12 +199,18 @@ public class CheckoutActivity extends AppCompatActivity {
             }
 
             int totalValue = totalMerchandise + shippingFee;
+            Log.d("CheckoutActivity", "Total merchandise: " + totalMerchandise);
+            Log.d("CheckoutActivity", "Total order value: " + totalValue);
 
             DocumentReference orderItemRef = db.collection("order_items").document();
             String orderItemId = orderItemRef.getId();
 
+            Log.d("CheckoutActivity", "Creating order item with ID: " + orderItemId);
+
             orderItemRef.set(productMap)
                     .addOnSuccessListener(unused -> {
+                        Log.d("CheckoutActivity", "✅ Order items saved successfully");
+
                         Map<String, Object> orderData = new HashMap<>();
                         orderData.put("customer_id", customerId);
                         orderData.put("address_id", finalAddressId);
@@ -180,16 +222,25 @@ public class CheckoutActivity extends AppCompatActivity {
                         orderData.put("order_status", "Pending Payment");
                         orderData.put("order_item_id", orderItemId);
 
+                        Log.d("CheckoutActivity", "Creating order with data: " + orderData.toString());
+
                         db.collection("orders").add(orderData)
                                 .addOnSuccessListener(docRef -> {
+                                    Log.d("CheckoutActivity", "✅ Order created successfully with ID: " + docRef.getId());
+
+                                    // CẬP NHẬT unitSold CHO CÁC SẢN PHẨM FLASHSALE
+                                    updateFlashsaleUnitSold();
+
                                     Toast.makeText(CheckoutActivity.this, "Đặt hàng thành công!", Toast.LENGTH_SHORT).show();
                                     finish();
                                 })
                                 .addOnFailureListener(e -> {
+                                    Log.e("CheckoutActivity", "❌ Error creating order: " + e.getMessage());
                                     Toast.makeText(CheckoutActivity.this, "Đặt hàng thất bại!", Toast.LENGTH_SHORT).show();
                                 });
                     })
                     .addOnFailureListener(e -> {
+                        Log.e("CheckoutActivity", "❌ Error saving order items: " + e.getMessage());
                         Toast.makeText(CheckoutActivity.this, "Lỗi khi lưu sản phẩm", Toast.LENGTH_SHORT).show();
                     });
         });
@@ -237,10 +288,13 @@ public class CheckoutActivity extends AppCompatActivity {
                 merchandiseSubtotal += item.price * item.quantity;
             }
         }
+        Log.d("CheckoutActivity", "Merchandise subtotal calculated: " + merchandiseSubtotal);
         return merchandiseSubtotal;
     }
 
     private void calculateAndUpdateTotals() {
+        Log.d("CheckoutActivity", "=== CALCULATING TOTALS ===");
+
         int merchandiseSubtotal = calculateMerchandiseSubtotal();
         int shippingSubtotal = selectedShippingOption != null ? selectedShippingOption.getCost() : 0;
         int merchandiseDiscountSubtotal = 0;
@@ -261,6 +315,13 @@ public class CheckoutActivity extends AppCompatActivity {
         int totalPayment = merchandiseSubtotal + shippingSubtotal - merchandiseDiscountSubtotal - shippingDiscountSubtotal;
         int savedAmount = merchandiseDiscountSubtotal + shippingDiscountSubtotal;
 
+        Log.d("CheckoutActivity", "Merchandise: " + merchandiseSubtotal);
+        Log.d("CheckoutActivity", "Shipping: " + shippingSubtotal);
+        Log.d("CheckoutActivity", "Merchandise discount: " + merchandiseDiscountSubtotal);
+        Log.d("CheckoutActivity", "Shipping discount: " + shippingDiscountSubtotal);
+        Log.d("CheckoutActivity", "Total payment: " + totalPayment);
+        Log.d("CheckoutActivity", "Saved amount: " + savedAmount);
+
         txtMerchandiseSubtotal.setText(String.format("đ%s", formatCurrency(merchandiseSubtotal)));
         txtShippingSubtotal.setText(String.format("đ%s", formatCurrency(shippingSubtotal)));
         txtShippingDiscountSubtotal.setText(String.format("đ%s", formatCurrency(shippingDiscountSubtotal)));
@@ -274,6 +335,245 @@ public class CheckoutActivity extends AppCompatActivity {
 
     private String formatCurrency(int value) {
         return String.format("%,d", value);
+    }
+
+    // THÊM METHOD KIỂM TRA FLASHSALE
+    private void checkFlashsaleValidation() {
+        Log.d("CheckoutActivity", "=== CHECKING FLASHSALE VALIDATION ===");
+
+        List<String> productIds = new ArrayList<>();
+        for (CartItem item : cartItems) {
+            if (item.isSelected) {
+                productIds.add(item.productId);
+                Log.d("CheckoutActivity", "Selected product ID: " + item.productId);
+            }
+        }
+
+        Log.d("CheckoutActivity", "Total selected products: " + productIds.size());
+
+        if (productIds.isEmpty()) {
+            Log.d("CheckoutActivity", "No selected products found");
+            return;
+        }
+
+        Log.d("CheckoutActivity", "Querying flashsales collection...");
+        db.collection("flashsales").get()
+                .addOnSuccessListener(querySnapshot -> {
+                    Log.d("CheckoutActivity", "Flashsales query successful - found " + querySnapshot.size() + " documents");
+
+                    flashsaleProductInfo.clear();
+                    for (QueryDocumentSnapshot flashsaleDoc : querySnapshot) {
+                        String flashsaleId = flashsaleDoc.getString("flashSale_id");
+                        Long startTime = flashsaleDoc.getLong("startTime");
+                        Long endTime = flashsaleDoc.getLong("endTime");
+                        List<Map<String, Object>> products = (List<Map<String, Object>>) flashsaleDoc.get("products");
+
+                        Log.d("CheckoutActivity", "Checking flashsale: " + flashsaleId);
+                        Log.d("CheckoutActivity", "Start time: " + startTime + ", End time: " + endTime);
+
+                        long currentTime = System.currentTimeMillis();
+                        Log.d("CheckoutActivity", "Current time: " + currentTime);
+
+                        boolean isActive = startTime != null && endTime != null && currentTime >= startTime && currentTime <= endTime;
+                        Log.d("CheckoutActivity", "Flashsale active: " + isActive);
+
+                        if (isActive) {
+                            if (products != null) {
+                                Log.d("CheckoutActivity", "Found " + products.size() + " products in flashsale");
+                                for (Map<String, Object> productMap : products) {
+                                    String productId = (String) productMap.get("product_id");
+                                    Log.d("CheckoutActivity", "Checking product: " + productId);
+
+                                    if (productIds.contains(productId)) {
+                                        Log.d("CheckoutActivity", "✅ Product " + productId + " is in cart and flashsale");
+                                        Map<String, Object> info = new HashMap<>();
+                                        info.put("flashsaleId", flashsaleId);
+                                        info.put("discountRate", productMap.get("discountRate"));
+                                        info.put("unitSold", productMap.get("unitSold"));
+                                        info.put("maxQuantity", productMap.get("maxQuantity"));
+                                        flashsaleProductInfo.put(productId, info);
+
+                                        Log.d("CheckoutActivity", "Stored flashsale info: " + info.toString());
+                                    }
+                                }
+                            } else {
+                                Log.d("CheckoutActivity", "No products found in flashsale");
+                            }
+                        }
+                    }
+
+                    Log.d("CheckoutActivity", "Total flashsale products stored: " + flashsaleProductInfo.size());
+                    validateFlashsaleQuantities();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("CheckoutActivity", "❌ Error checking flashsales: " + e.getMessage());
+                });
+    }
+
+    private void validateFlashsaleQuantities() {
+        Log.d("CheckoutActivity", "=== STARTING FLASHSALE VALIDATION ===");
+        Log.d("CheckoutActivity", "Total cart items: " + cartItems.size());
+        Log.d("CheckoutActivity", "Flashsale products found: " + flashsaleProductInfo.size());
+
+        boolean hasChanges = false;
+        List<CartItem> itemsToAdd = new ArrayList<>();
+
+        for (CartItem item : cartItems) {
+            Log.d("CheckoutActivity", "--- Checking item: " + item.name + " ---");
+            Log.d("CheckoutActivity", "Item selected: " + item.isSelected);
+            Log.d("CheckoutActivity", "Item quantity: " + item.quantity);
+            Log.d("CheckoutActivity", "Item productId: " + item.productId);
+
+            if (!item.isSelected) {
+                Log.d("CheckoutActivity", "Item not selected, skipping");
+                continue;
+            }
+
+            Map<String, Object> flashsaleInfo = flashsaleProductInfo.get(item.productId);
+            Log.d("CheckoutActivity", "Flashsale info found: " + (flashsaleInfo != null));
+
+            if (flashsaleInfo != null) {
+                Log.d("CheckoutActivity", "Flashsale info: " + flashsaleInfo.toString());
+
+                int unitSold = ((Long) flashsaleInfo.get("unitSold")).intValue();
+                int maxQuantity = ((Long) flashsaleInfo.get("maxQuantity")).intValue();
+                int discountRate = ((Long) flashsaleInfo.get("discountRate")).intValue();
+
+                Log.d("CheckoutActivity", "Current unitSold: " + unitSold);
+                Log.d("CheckoutActivity", "Max quantity: " + maxQuantity);
+                Log.d("CheckoutActivity", "Discount rate: " + discountRate + "%");
+                Log.d("CheckoutActivity", "Want to buy: " + item.quantity);
+
+                // KIỂM TRA TỔNG SỐ LƯỢNG SAU KHI MUA
+                int totalAfterPurchase = unitSold + item.quantity;
+                Log.d("CheckoutActivity", "Total after purchase: " + totalAfterPurchase);
+                Log.d("CheckoutActivity", "Will exceed limit: " + (totalAfterPurchase > maxQuantity));
+
+                if (unitSold >= maxQuantity) {
+                    Log.d("CheckoutActivity", "❌ Flashsale completely sold out");
+                    double originalPrice = item.price / (1 - discountRate / 100.0);
+                    Log.d("CheckoutActivity", "Converting to original price: " + item.price + " -> " + originalPrice);
+                    item.price = (int) originalPrice;
+                    hasChanges = true;
+                    Toast.makeText(this, "Flashsale cho " + item.name + " đã hết! Chuyển về giá gốc.", Toast.LENGTH_LONG).show();
+
+                } else if (totalAfterPurchase > maxQuantity) {
+                    Log.d("CheckoutActivity", "⚠️ Will exceed limit - splitting order");
+                    int availableFlashsaleQuantity = maxQuantity - unitSold;
+                    int regularQuantity = item.quantity - availableFlashsaleQuantity;
+
+                    Log.d("CheckoutActivity", "Available flashsale quantity: " + availableFlashsaleQuantity);
+                    Log.d("CheckoutActivity", "Regular price quantity: " + regularQuantity);
+
+                    if (availableFlashsaleQuantity <= 0) {
+                        Log.d("CheckoutActivity", "❌ No flashsale slots available");
+                        double originalPrice = item.price / (1 - discountRate / 100.0);
+                        item.price = (int) originalPrice;
+                        Toast.makeText(this, "Flashsale cho " + item.name + " đã hết! Chuyển về giá gốc.", Toast.LENGTH_LONG).show();
+                    } else {
+                        Log.d("CheckoutActivity", "✂️ Splitting into flashsale + regular price");
+                        double originalPrice = item.price / (1 - discountRate / 100.0);
+
+                        // Cập nhật item hiện tại thành phần flashsale
+                        Log.d("CheckoutActivity", "Updating current item quantity: " + item.quantity + " -> " + availableFlashsaleQuantity);
+                        item.quantity = availableFlashsaleQuantity;
+
+                        // Tạo item mới cho phần giá gốc
+                        CartItem regularPriceItem = new CartItem(
+                                item.productId, item.name + " (Giá gốc)", (int) originalPrice,
+                                item.imageUrl, item.options, item.selectedOption
+                        );
+                        regularPriceItem.quantity = regularQuantity;
+                        regularPriceItem.isSelected = item.isSelected;
+                        itemsToAdd.add(regularPriceItem);
+
+                        Log.d("CheckoutActivity", "Created regular price item: " + regularPriceItem.name +
+                                " x" + regularPriceItem.quantity + " at " + regularPriceItem.price);
+
+                        Toast.makeText(this, "Chỉ còn " + availableFlashsaleQuantity + " sản phẩm " + item.name +
+                                " với giá flashsale. " + regularQuantity + " sản phẩm còn lại tính giá gốc.", Toast.LENGTH_LONG).show();
+                    }
+                    hasChanges = true;
+                } else {
+                    Log.d("CheckoutActivity", "✅ Within flashsale limit - keeping flashsale price");
+                }
+            } else {
+                Log.d("CheckoutActivity", "No flashsale info found for this product");
+            }
+
+            Log.d("CheckoutActivity", "--- End checking item: " + item.name + " ---");
+        }
+
+        Log.d("CheckoutActivity", "Items to add: " + itemsToAdd.size());
+        cartItems.addAll(itemsToAdd);
+
+        if (hasChanges) {
+            Log.d("CheckoutActivity", "Changes detected - updating UI");
+            // Cập nhật adapter
+            OrderItemAdapter orderItemAdapter = new OrderItemAdapter(this, cartItems);
+            recyclerViewOrderItems.setAdapter(orderItemAdapter);
+            calculateAndUpdateTotals();
+        } else {
+            Log.d("CheckoutActivity", "No changes needed");
+        }
+
+        Log.d("CheckoutActivity", "=== FLASHSALE VALIDATION COMPLETED ===");
+    }
+
+    private void updateFlashsaleUnitSold() {
+        Log.d("CheckoutActivity", "=== UPDATING FLASHSALE UNIT SOLD ===");
+
+        for (CartItem item : cartItems) {
+            if (!item.isSelected) continue;
+
+            Map<String, Object> flashsaleInfo = flashsaleProductInfo.get(item.productId);
+            if (flashsaleInfo != null) {
+                String flashsaleId = (String) flashsaleInfo.get("flashsaleId");
+
+                Log.d("CheckoutActivity", "Updating unitSold for product: " + item.productId +
+                        " in flashsale: " + flashsaleId +
+                        " | Quantity purchased: " + item.quantity);
+
+                db.collection("flashsales")
+                        .whereEqualTo("flashSale_id", flashsaleId)
+                        .get()
+                        .addOnSuccessListener(querySnapshot -> {
+                            if (!querySnapshot.isEmpty()) {
+                                DocumentReference flashsaleDoc = querySnapshot.getDocuments().get(0).getReference();
+
+                                flashsaleDoc.get().addOnSuccessListener(documentSnapshot -> {
+                                    List<Map<String, Object>> products = (List<Map<String, Object>>) documentSnapshot.get("products");
+
+                                    if (products != null) {
+                                        for (Map<String, Object> productMap : products) {
+                                            if (item.productId.equals(productMap.get("product_id"))) {
+                                                int currentUnitSold = ((Long) productMap.get("unitSold")).intValue();
+                                                int newUnitSold = currentUnitSold + item.quantity;
+                                                productMap.put("unitSold", newUnitSold);
+
+                                                Log.d("CheckoutActivity", "✅ Updated unitSold for " + item.productId +
+                                                        " from " + currentUnitSold + " to " + newUnitSold);
+                                                break;
+                                            }
+                                        }
+
+                                        // Cập nhật lại document
+                                        flashsaleDoc.update("products", products)
+                                                .addOnSuccessListener(aVoid -> {
+                                                    Log.d("CheckoutActivity", "✅ Flashsale document updated successfully");
+                                                })
+                                                .addOnFailureListener(e -> {
+                                                    Log.e("CheckoutActivity", "❌ Error updating flashsale document: " + e.getMessage());
+                                                });
+                                    }
+                                });
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("CheckoutActivity", "❌ Error finding flashsale document: " + e.getMessage());
+                        });
+            }
+        }
     }
 
     public void open_voucher_activity(View view) {

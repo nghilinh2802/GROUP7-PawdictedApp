@@ -62,4 +62,8 @@
         <item name="android:minHeight">0dp</item>
     </style>
 
+    <style name="CustomAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="android:textColorPrimary">#9C162C</item>
+    </style>
+
 </resources>
