@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:background="@android:color/white"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:fitsSystemWindows="true">
 
     <!-- Header -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -16,7 +16,8 @@
         android:padding="16dp"
         android:background="@color/main_color"
         android:paddingStart="8dp"
-        android:paddingEnd="8dp">
+        android:paddingEnd="8dp"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/imgBack"
@@ -29,7 +30,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Tiêu đề căn giữa toàn bộ layout -->
         <TextView
             android:id="@+id/txt_page_title"
             android:layout_width="wrap_content"
@@ -48,7 +48,6 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Tabs -->
-    <!-- Tabs in rounded container -->
     <androidx.cardview.widget.CardView
         android:id="@+id/tab_card"
         android:layout_width="match_parent"
@@ -57,7 +56,8 @@
         app:cardCornerRadius="24dp"
         app:cardElevation="2dp"
         android:backgroundTint="#ffffff"
-        app:cardBackgroundColor="#ffffff">
+        app:cardBackgroundColor="#ffffff"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -90,15 +90,19 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-
     <!-- Content Frame -->
     <FrameLayout
         android:id="@+id/notification_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/tab_card"
+        app:layout_constraintBottom_toTopOf="@id/footer" />
 
+    <!-- Footer -->
     <include
+        android:id="@+id/footer"
         layout="@layout/activity_footer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-</LinearLayout>
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

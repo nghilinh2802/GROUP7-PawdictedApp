@@ -171,26 +171,39 @@
                             android:textColor="#000000"
                             android:textSize="18sp"
                             android:textStyle="bold"
-                            android:layout_marginEnd="8dp"
                             android:onClick="open_voucher_activity"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
 
-                        <TextView
-                            android:id="@+id/txtVoucherDetails"
-                            android:layout_width="185dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/title_enter_code"
-                            android:textColor="#808080"
-                            android:textSize="14sp" />
+                        <!-- View đệm để đẩy nhóm bên phải sang -->
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" />
 
-                        <ImageView
-                            android:id="@+id/imgVoucherDetails"
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:contentDescription="arrow"
-                            android:src="@mipmap/ic_arrow_right_grey" />
+                        <!-- Container gộp txtVoucherDetails + imgVoucherDetails và đẩy về phải -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <TextView
+                                android:id="@+id/txtVoucherDetails"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/title_enter_code"
+                                android:textColor="#808080"
+                                android:textSize="14sp"
+                                android:layout_marginEnd="8dp" />
+
+                            <ImageView
+                                android:id="@+id/imgVoucherDetails"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:contentDescription="arrow"
+                                android:src="@mipmap/ic_arrow_right_grey" />
+                        </LinearLayout>
                     </LinearLayout>
 
                     <!-- Message -->

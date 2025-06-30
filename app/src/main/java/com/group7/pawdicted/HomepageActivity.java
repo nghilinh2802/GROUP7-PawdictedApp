@@ -12,7 +12,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -103,20 +102,17 @@ public class HomepageActivity extends AppCompatActivity {
                                             setupFirestoreListener();
                                             loadDynamicLayouts();
                                         } else {
-                                            runOnUiThread(() -> Toast.makeText(this, "Không tìm thấy thông tin khách hàng", Toast.LENGTH_SHORT).show());
                                             customerId = null;
                                             loadDynamicLayouts();
                                         }
                                     })
                                     .addOnFailureListener(e -> {
-                                        runOnUiThread(() -> Toast.makeText(this, "Lỗi kết nối: " + e.getMessage(), Toast.LENGTH_SHORT).show());
                                         customerId = null;
                                         loadDynamicLayouts();
                                     });
                         }
                     })
                     .addOnFailureListener(e -> {
-                        runOnUiThread(() -> Toast.makeText(this, "Lỗi kết nối: " + e.getMessage(), Toast.LENGTH_SHORT).show());
                         customerId = null;
                         loadDynamicLayouts();
                     });
@@ -132,8 +128,10 @@ public class HomepageActivity extends AppCompatActivity {
         ImageView banner = findViewById(R.id.imageView);
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int screenHeight = displayMetrics.heightPixels;
-        banner.getLayoutParams().height = screenHeight / 3;
+        int screenWidth = displayMetrics.widthPixels;
+        int bannerHeight = (int) (screenWidth * 383.0 / 1000.0);
+        banner.getLayoutParams().height = bannerHeight;
+        banner.setScaleType(ImageView.ScaleType.CENTER_CROP);
         banner.requestLayout();
     }
 
@@ -143,8 +141,6 @@ public class HomepageActivity extends AppCompatActivity {
             LinearLayout layout = findViewById(resId);
             if (layout != null) {
                 layoutMap.put(layoutId, layout);
-            } else {
-                runOnUiThread(() -> Toast.makeText(this, "Không tìm thấy layout: " + layoutId, Toast.LENGTH_SHORT).show());
             }
         }
     }
@@ -197,8 +193,6 @@ public class HomepageActivity extends AppCompatActivity {
             if (layout != null) {
                 productList.addView(layout);
                 loadProductsForLayout(layoutId);
-            } else {
-                runOnUiThread(() -> Toast.makeText(this, "Bỏ qua layout không tìm thấy: " + layoutId, Toast.LENGTH_SHORT).show());
             }
         }
     }
@@ -208,8 +202,6 @@ public class HomepageActivity extends AppCompatActivity {
                 getResources().getIdentifier("lv_" + layoutId.replace("layout_", "") + "_product", "id", getPackageName())
         );
         if (productContainer == null) {
-            Log.e(TAG, "Container not found for layout: " + layoutId);
-            runOnUiThread(() -> Toast.makeText(this, "Không tìm thấy container cho layout: " + layoutId, Toast.LENGTH_SHORT).show());
             return;
         }
         productContainer.removeAllViews();
@@ -225,12 +217,8 @@ public class HomepageActivity extends AppCompatActivity {
                     public void onSuccess(List<String> productIds) {
                         runOnUiThread(() -> {
                             if (!productIds.isEmpty()) {
-                                Log.d(TAG, "Received " + productIds.size() + " recommendations: " + productIds);
-                                Toast.makeText(HomepageActivity.this, "Hiển thị đề xuất thông minh", Toast.LENGTH_SHORT).show();
                                 loadProductsByIds(productContainer, productIds, layoutId);
                             } else {
-                                Log.w(TAG, "No recommendations received, falling back to random products");
-                                Toast.makeText(HomepageActivity.this, "Không có đề xuất thông minh, hiển thị sản phẩm ngẫu nhiên", Toast.LENGTH_SHORT).show();
                                 loadRandomProducts(productContainer, 10);
                             }
                         });
@@ -239,15 +227,11 @@ public class HomepageActivity extends AppCompatActivity {
                     @Override
                     public void onError(String error) {
                         runOnUiThread(() -> {
-                            Log.e(TAG, "Recommendation error: " + error);
-                            Toast.makeText(HomepageActivity.this, "Không thể tải đề xuất thông minh: " + error, Toast.LENGTH_SHORT).show();
                             loadRandomProducts(productContainer, 10);
                         });
                     }
                 });
             } else {
-                Log.w(TAG, "No customerId, falling back to random products");
-                runOnUiThread(() -> Toast.makeText(this, "Không có ID khách hàng, hiển thị sản phẩm ngẫu nhiên", Toast.LENGTH_SHORT).show());
                 loadRandomProducts(productContainer, 10);
             }
         } else {
@@ -282,7 +266,7 @@ public class HomepageActivity extends AppCompatActivity {
                                         }
                                         completedChunks[0]++;
                                         if (completedChunks[0] == chunks.size()) {
-                                            displayProducts(container, allProducts, productIds, layoutId);
+                                            displayProducts(container, allProducts, productIds, layoutId); // Fixed typo: layoutnal -> layoutId
                                         }
                                     })
                                     .addOnFailureListener(e -> {
@@ -312,8 +296,6 @@ public class HomepageActivity extends AppCompatActivity {
 
     private void displayProducts(LinearLayout container, List<DocumentSnapshot> products, List<String> productIds, String layoutId) {
         if (products.isEmpty()) {
-            Log.w(TAG, "No products found for IDs: " + productIds);
-            runOnUiThread(() -> Toast.makeText(this, "Không tìm thấy sản phẩm, hiển thị sản phẩm ngẫu nhiên", Toast.LENGTH_SHORT).show());
             loadRandomProducts(container, 10);
             return;
         }
@@ -364,7 +346,6 @@ public class HomepageActivity extends AppCompatActivity {
                                 })
                                 .addOnFailureListener(e -> {
                                     runOnUiThread(() -> {
-                                        Toast.makeText(this, "Lỗi khi tải sản phẩm bán chạy: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                                         progressBar.setVisibility(View.GONE);
                                     });
                                 });
@@ -377,7 +358,6 @@ public class HomepageActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     runOnUiThread(() -> {
-                        Toast.makeText(this, "Lỗi khi tải sản phẩm bán chạy: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
                     });
                 });
@@ -400,7 +380,6 @@ public class HomepageActivity extends AppCompatActivity {
                                 })
                                 .addOnFailureListener(e -> {
                                     runOnUiThread(() -> {
-                                        Toast.makeText(this, "Lỗi khi tải sản phẩm đề xuất: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                                         progressBar.setVisibility(View.GONE);
                                     });
                                 });
@@ -415,7 +394,6 @@ public class HomepageActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     runOnUiThread(() -> {
-                        Toast.makeText(this, "Lỗi khi tải sản phẩm đề xuất: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
                     });
                 });
@@ -424,6 +402,7 @@ public class HomepageActivity extends AppCompatActivity {
     private void loadCategoryProducts(LinearLayout container, String categoryId) {
         List<DocumentSnapshot> selectedProducts = new ArrayList<>();
         if (customerId != null) {
+            // Step 1: Fetch all viewed-but-not-bought products
             db.collection("products")
                     .whereEqualTo("category_id", categoryId)
                     .whereArrayContains("also_view", customerId)
@@ -442,12 +421,11 @@ public class HomepageActivity extends AppCompatActivity {
                                                 viewedNotBought.add(doc);
                                             }
                                         }
-                                        for (int i = 0; i < Math.min(5, viewedNotBought.size()); i++) {
-                                            selectedProducts.add(viewedNotBought.get(i));
-                                        }
+                                        selectedProducts.addAll(viewedNotBought); // Add all viewed-not-bought products
                                         loadRemainingCategoryProducts(container, categoryId, selectedProducts);
                                     })
                                     .addOnFailureListener(e -> {
+                                        Log.w(TAG, "Failed to fetch viewed-not-bought products from server: " + e.getMessage());
                                         loadRemainingCategoryProducts(container, categoryId, selectedProducts);
                                     });
                         } else {
@@ -458,13 +436,12 @@ public class HomepageActivity extends AppCompatActivity {
                                     viewedNotBought.add(doc);
                                 }
                             }
-                            for (int i = 0; i < Math.min(5, viewedNotBought.size()); i++) {
-                                selectedProducts.add(viewedNotBought.get(i));
-                            }
+                            selectedProducts.addAll(viewedNotBought); // Add all viewed-not-bought products
                             loadRemainingCategoryProducts(container, categoryId, selectedProducts);
                         }
                     })
                     .addOnFailureListener(e -> {
+                        Log.w(TAG, "Failed to fetch viewed-not-bought products from cache: " + e.getMessage());
                         loadRemainingCategoryProducts(container, categoryId, selectedProducts);
                     });
         } else {
@@ -474,14 +451,20 @@ public class HomepageActivity extends AppCompatActivity {
 
     private void loadRemainingCategoryProducts(LinearLayout container, String categoryId, List<DocumentSnapshot> selectedProducts) {
         int remaining = 10 - selectedProducts.size();
+        String layoutId = "layout_" + categoryId.toLowerCase();
+
+        // Display viewed-not-bought products first
+        for (DocumentSnapshot doc : selectedProducts) {
+            addProductToContainer(container, doc, layoutId);
+        }
+
         if (remaining <= 0) {
-            for (DocumentSnapshot doc : selectedProducts) {
-                addProductToContainer(container, doc, "layout_" + categoryId.toLowerCase());
-            }
+            // If we already have 10 or more products, stop here
             runOnUiThread(() -> progressBar.setVisibility(View.GONE));
             return;
         }
 
+        // Step 2: Fetch top-selling products to fill remaining slots
         db.collection("products")
                 .whereEqualTo("category_id", categoryId)
                 .orderBy("sold_quantity", Query.Direction.DESCENDING)
@@ -496,42 +479,30 @@ public class HomepageActivity extends AppCompatActivity {
                                 .get(Source.SERVER)
                                 .addOnSuccessListener(serverSnapshot -> {
                                     for (DocumentSnapshot doc : serverSnapshot.getDocuments()) {
+                                        // Avoid duplicates by checking if product is already in selectedProducts
                                         if (!selectedProducts.contains(doc)) {
-                                            selectedProducts.add(doc);
+                                            addProductToContainer(container, doc, layoutId);
                                         }
-                                    }
-                                    for (DocumentSnapshot doc : selectedProducts) {
-                                        addProductToContainer(container, doc, "layout_" + categoryId.toLowerCase());
                                     }
                                     runOnUiThread(() -> progressBar.setVisibility(View.GONE));
                                 })
                                 .addOnFailureListener(e -> {
                                     runOnUiThread(() -> {
-                                        Toast.makeText(this, "Lỗi khi tải sản phẩm danh mục " + categoryId + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                        for (DocumentSnapshot doc : selectedProducts) {
-                                            addProductToContainer(container, doc, "layout_" + categoryId.toLowerCase());
-                                        }
                                         progressBar.setVisibility(View.GONE);
                                     });
                                 });
                     } else {
                         for (DocumentSnapshot doc : snapshot.getDocuments()) {
+                            // Avoid duplicates
                             if (!selectedProducts.contains(doc)) {
-                                selectedProducts.add(doc);
+                                addProductToContainer(container, doc, layoutId);
                             }
-                        }
-                        for (DocumentSnapshot doc : selectedProducts) {
-                            addProductToContainer(container, doc, "layout_" + categoryId.toLowerCase());
                         }
                         runOnUiThread(() -> progressBar.setVisibility(View.GONE));
                     }
                 })
                 .addOnFailureListener(e -> {
                     runOnUiThread(() -> {
-                        Toast.makeText(this, "Lỗi khi tải sản phẩm danh mục " + categoryId + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        for (DocumentSnapshot doc : selectedProducts) {
-                            addProductToContainer(container, doc, "layout_" + categoryId.toLowerCase());
-                        }
                         progressBar.setVisibility(View.GONE);
                     });
                 });
