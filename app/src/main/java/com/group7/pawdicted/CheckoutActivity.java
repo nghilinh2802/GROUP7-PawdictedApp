@@ -133,7 +133,7 @@ public class CheckoutActivity extends AppCompatActivity {
         paymentMethods.add(new PaymentMethod("QR Code - VNPay", R.mipmap.ic_vnpay));
         paymentMethods.add(new PaymentMethod("ZaloPay", R.mipmap.ic_zalopay));
         paymentMethods.add(new PaymentMethod("MoMo Wallet", R.mipmap.ic_momo));
-        selectedPaymentMethod = paymentMethods.get(0);
+        selectedPaymentMethod = paymentMethods.get(3);
 
         PaymentMethodAdapter paymentMethodAdapter = new PaymentMethodAdapter(this, paymentMethods, method -> {
             selectedPaymentMethod = method;
@@ -162,11 +162,15 @@ public class CheckoutActivity extends AppCompatActivity {
             String paymentMethod = selectedPaymentMethod != null ? selectedPaymentMethod.getName() : "Unknown";
             Timestamp orderTime = Timestamp.now();
 
+            Log.d("CheckoutActivity", "Customer ID: " + customerId);
+            Log.d("CheckoutActivity", "Address ID: " + finalAddressId);
+            Log.d("CheckoutActivity", "Shipping fee: " + shippingFee);
+            Log.d("CheckoutActivity", "Payment method: " + paymentMethod);
+
             Map<String, Object> productMap = new HashMap<>();
             int totalMerchandise = 0;
             int index = 1;
 
-            // Tính tổng giá trị của các sản phẩm được chọn
             for (CartItem item : cartItems) {
                 if (item.isSelected) {
                     int cost = item.price * item.quantity;
@@ -180,13 +184,15 @@ public class CheckoutActivity extends AppCompatActivity {
                         productDetail.put("selected_option", item.selectedOption);
                     }
                     productMap.put("product" + index, productDetail);
+
+                    Log.d("CheckoutActivity", "Product " + index + ": " + item.name +
+                            " | Quantity: " + item.quantity +
+                            " | Unit price: " + item.price +
+                            " | Total cost: " + cost);
                     index++;
                 }
             }
 
-            // Tính toán giảm giá cho merchandise và shipping
-            int[] merchandiseDiscount = new int[1];
-            int[] shippingDiscount = new int[1];
             Voucher voucherFromCart = (Voucher) getIntent().getSerializableExtra("selectedVoucher");
             if (voucherFromCart != null) {
                 applyVoucher(voucherFromCart);
@@ -196,23 +202,15 @@ public class CheckoutActivity extends AppCompatActivity {
             Log.d("CheckoutActivity", "Total merchandise: " + totalMerchandise);
             Log.d("CheckoutActivity", "Total order value: " + totalValue);
 
-            if (appliedVoucher != null) {
-                if ("merchandise".equals(appliedVoucher.getType()) && totalMerchandise >= appliedVoucher.getMinOrderValue()) {
-                    merchandiseDiscount[0] = appliedVoucher.getDiscountValue(totalMerchandise);
-                } else if ("shipping".equals(appliedVoucher.getType()) && shippingFee >= appliedVoucher.getMinOrderValue()) {
-                    shippingDiscount[0] = appliedVoucher.getDiscountValue(shippingFee);
-                }
-            }
-
-            int totalBeforeDiscount = totalMerchandise + shippingFee;
-            int totalPayment = totalBeforeDiscount - merchandiseDiscount[0] - shippingDiscount[0];
-
-            // Lưu các sản phẩm vào Firestore
             DocumentReference orderItemRef = db.collection("order_items").document();
             String orderItemId = orderItemRef.getId();
 
+            Log.d("CheckoutActivity", "Creating order item with ID: " + orderItemId);
+
             orderItemRef.set(productMap)
                     .addOnSuccessListener(unused -> {
+                        Log.d("CheckoutActivity", "✅ Order items saved successfully");
+
                         Map<String, Object> orderData = new HashMap<>();
                         orderData.put("customer_id", customerId);
                         orderData.put("address_id", finalAddressId);
@@ -220,34 +218,29 @@ public class CheckoutActivity extends AppCompatActivity {
                         orderData.put("shipping_fee", shippingFee);
                         orderData.put("payment_method", paymentMethod);
                         orderData.put("order_time", orderTime);
-                        orderData.put("order_value", totalPayment);
-                        orderData.put("total_before_discount", totalBeforeDiscount);
+                        orderData.put("order_value", totalValue);
                         orderData.put("order_status", "Pending Payment");
                         orderData.put("order_item_id", orderItemId);
 
-                        // Thêm giảm giá vào dữ liệu đơn hàng nếu có
-                        if (merchandiseDiscount[0] > 0) {
-                            orderData.put("merchandise_discount", merchandiseDiscount[0]);
-                        }
-                        if (shippingDiscount[0] > 0) {
-                            orderData.put("shipping_discount", shippingDiscount[0]);
-                        }
+                        Log.d("CheckoutActivity", "Creating order with data: " + orderData.toString());
 
-                        if (appliedVoucher != null && appliedVoucher.getId() != null) {
-                            orderData.put("voucher_id", appliedVoucher.getId());
-                        }
-
-                        // Lưu đơn hàng vào Firestore
                         db.collection("orders").add(orderData)
                                 .addOnSuccessListener(docRef -> {
+                                    Log.d("CheckoutActivity", "✅ Order created successfully with ID: " + docRef.getId());
+
+                                    // CẬP NHẬT unitSold CHO CÁC SẢN PHẨM FLASHSALE
+                                    updateFlashsaleUnitSold();
+
                                     Toast.makeText(CheckoutActivity.this, "Đặt hàng thành công!", Toast.LENGTH_SHORT).show();
                                     finish();
                                 })
                                 .addOnFailureListener(e -> {
+                                    Log.e("CheckoutActivity", "❌ Error creating order: " + e.getMessage());
                                     Toast.makeText(CheckoutActivity.this, "Đặt hàng thất bại!", Toast.LENGTH_SHORT).show();
                                 });
                     })
                     .addOnFailureListener(e -> {
+                        Log.e("CheckoutActivity", "❌ Error saving order items: " + e.getMessage());
                         Toast.makeText(CheckoutActivity.this, "Lỗi khi lưu sản phẩm", Toast.LENGTH_SHORT).show();
                     });
         });

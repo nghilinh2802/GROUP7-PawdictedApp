@@ -32,6 +32,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.gson.Gson;
 import com.group7.pawdicted.mobile.adapters.DividerItemDecoration;
 import com.group7.pawdicted.mobile.adapters.ProductAdapter;
 import com.group7.pawdicted.mobile.adapters.ReviewAdapter;
@@ -239,7 +240,162 @@ public class ProductDetailsActivity extends AppCompatActivity {
                         Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show();
                     });
         });
+
+//        btnBuyNow.setOnClickListener(v -> {
+//            if (currentProduct == null) return;
+//
+//            db.collection("variants").whereEqualTo("product_id", currentProduct.getProduct_id()).get()
+//                    .addOnSuccessListener(querySnapshot -> {
+//                        List<String> variantNames = new ArrayList<>();
+//                        Map<String, Integer> variantPriceMap = new HashMap<>();
+//                        Map<String, String> variantImageMap = new HashMap<>();
+//                        String selectedVariantName = "Default";
+//                        String imageUrl = currentProduct.getProduct_image();
+//                        double selectedPrice = finalPrice;
+//
+//                        for (QueryDocumentSnapshot doc : querySnapshot) {
+//                            Variant var = doc.toObject(Variant.class);
+//                            variantNames.add(var.getVariant_name());
+//
+//                            int variantPrice = isFlashsale ?
+//                                    (int) (var.getVariant_price() * (1 - flashsaleDiscountRate / 100.0)) :
+//                                    (int) (var.getVariant_price() * (1 - var.getVariant_discount() / 100.0));
+//
+//                            variantPriceMap.put(var.getVariant_name(), variantPrice);
+//                            variantImageMap.put(var.getVariant_name(), var.getVariant_image() != null ? var.getVariant_image() : imageUrl);
+//
+//                            if (var.getVariant_id().equals(selectedVariantId)) {
+//                                selectedVariantName = var.getVariant_name();
+//                                imageUrl = var.getVariant_image() != null ? var.getVariant_image() : imageUrl;
+//                                selectedPrice = variantPrice;
+//                            }
+//                        }
+//
+//                        CartItem buyNowItem = new CartItem(
+//                                currentProduct.getProduct_id(),
+//                                currentProduct.getProduct_name(),
+//                                (int) selectedPrice,
+//                                imageUrl,
+//                                variantNames,
+//                                selectedVariantName
+//                        );
+//                        buyNowItem.optionPrices = variantPriceMap;
+//                        buyNowItem.optionImageUrls = variantImageMap;
+//                        buyNowItem.quantity = 1;
+//                        buyNowItem.isSelected = true;
+//
+//                        ArrayList<CartItem> cartItems = new ArrayList<>();
+//                        cartItems.add(buyNowItem);
+//
+//                        Gson gson = new Gson();
+//                        String cartJson = gson.toJson(cartItems);
+//
+//                        Intent intent = new Intent(ProductDetailsActivity.this, CheckoutActivity.class);
+//                        intent.putExtra("cartItems", cartJson);
+//                        intent.putExtra("fromBuyNow", true);  // Optional: nếu bạn muốn xử lý riêng ở checkout
+//                        startActivity(intent);
+//                    });
+//        });
+
+        btnBuyNow.setOnClickListener(v -> {
+            if (currentProduct == null) {
+                Toast.makeText(this, "Product details not loaded", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Check user authentication
+            if (mAuth.getCurrentUser() == null) {
+                Toast.makeText(this, "Please log in to proceed", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, LoginActivity.class));
+                return;
+            }
+
+            // Get flash sale info from Intent
+            boolean isFlashsale = getIntent().getBooleanExtra("IS_FLASHSALE", false);
+            int flashsaleDiscountRate = getIntent().getIntExtra("FLASHSALE_DISCOUNT_RATE", 0);
+
+            db.collection("variants").whereEqualTo("product_id", currentProduct.getProduct_id()).get()
+                    .addOnSuccessListener(querySnapshot -> {
+                        List<String> variantNames = new ArrayList<>();
+                        Map<String, Integer> variantPriceMap = new HashMap<>();
+                        Map<String, String> variantImageMap = new HashMap<>();
+                        String selectedVariantName = "Default";
+                        String imageUrl = currentProduct.getProduct_image();
+                        double selectedPrice;
+
+                        if (querySnapshot.isEmpty()) {
+                            // No variants, use product price
+                            selectedPrice = isFlashsale ?
+                                    currentProduct.getPrice() * (1 - flashsaleDiscountRate / 100.0) :
+                                    currentProduct.getPrice() * (1 - currentProduct.getDiscount() / 100.0);
+                        } else {
+                            // Process variants
+                            for (QueryDocumentSnapshot doc : querySnapshot) {
+                                Variant var = doc.toObject(Variant.class);
+                                variantNames.add(var.getVariant_name());
+
+                                int variantPrice = isFlashsale ?
+                                        (int) (var.getVariant_price() * (1 - flashsaleDiscountRate / 100.0)) :
+                                        (int) (var.getVariant_price() * (1 - var.getVariant_discount() / 100.0));
+
+                                variantPriceMap.put(var.getVariant_name(), variantPrice);
+                                variantImageMap.put(var.getVariant_name(), var.getVariant_image() != null ? var.getVariant_image() : imageUrl);
+
+                                if (var.getVariant_id().equals(selectedVariantId)) {
+                                    selectedVariantName = var.getVariant_name();
+                                    imageUrl = var.getVariant_image() != null ? var.getVariant_image() : imageUrl;
+                                    selectedPrice = variantPrice;
+                                }
+                            }
+                            // Fallback to first variant if none selected
+                            if (selectedVariantId == null && !variantNames.isEmpty()) {
+                                selectedVariantName = variantNames.get(0);
+                                selectedPrice = variantPriceMap.get(selectedVariantName);
+                                imageUrl = variantImageMap.get(selectedVariantName);
+                            } else if (selectedVariantId != null) {
+                                selectedPrice = variantPriceMap.get(selectedVariantName);
+                            } else {
+                                selectedPrice = 0; // Handle error case
+                                Toast.makeText(this, "Error selecting variant", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                        }
+
+                        CartItem buyNowItem = new CartItem(
+                                currentProduct.getProduct_id(),
+                                currentProduct.getProduct_name(),
+                                (int) selectedPrice,
+                                imageUrl,
+                                variantNames,
+                                selectedVariantName
+                        );
+                        buyNowItem.optionPrices = variantPriceMap;
+                        buyNowItem.optionImageUrls = variantImageMap;
+                        buyNowItem.quantity = 1;
+                        buyNowItem.isSelected = true;
+
+                        ArrayList<CartItem> cartItems = new ArrayList<>();
+                        cartItems.add(buyNowItem);
+
+                        Gson gson = new Gson();
+                        String cartJson = gson.toJson(cartItems);
+
+                        Intent intent = new Intent(ProductDetailsActivity.this, CheckoutActivity.class);
+                        intent.putExtra("cartItems", cartJson);
+                        intent.putExtra("fromBuyNow", true);
+                        intent.putExtra("IS_FLASHSALE", isFlashsale); // Pass flash sale info to CheckoutActivity
+                        intent.putExtra("FLASHSALE_DISCOUNT_RATE", flashsaleDiscountRate);
+                        startActivity(intent);
+
+                        Toast.makeText(this, "Proceeding to checkout", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("ProductDetailsActivity", "Error loading variants for Buy Now", e);
+                        Toast.makeText(this, "Failed to load product variants", Toast.LENGTH_SHORT).show();
+                    });
+        });
     }
+
 
     private void toggleWishlist() {
         String productId = getIntent().getStringExtra("product_id");
@@ -389,8 +545,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
             }
 
             txtSoldQuantity.setText(variant.getVariant_sold_quantity() + " sold  ");
-            productRatingBar.setRating((float) variant.getVariant_rating());
-            productRatingBar2.setRating((float) variant.getVariant_rating());
+            productRatingBar.setRating((float) variant.getVariant_rating().doubleValue()); // Safe due to default 0.0
+            productRatingBar2.setRating((float) variant.getVariant_rating().doubleValue());
             txtAverageRating.setText(String.format("%.1f", variant.getVariant_rating()));
             txtRatingCount.setText("(" + variant.getVariant_rating_number() + " Reviews)");
             txtProductRatingCount.setText(variant.getVariant_rating_number() + " Reviews");
@@ -495,6 +651,11 @@ public class ProductDetailsActivity extends AppCompatActivity {
                     if (firstVariant != null) {
                         displayProductDetails(currentProduct, firstVariant);
                     }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("ProductDetailsActivity", "Error loading variants", e);
+                    txtNoVariants.setVisibility(View.VISIBLE);
+                    Toast.makeText(this, "Failed to load variants", Toast.LENGTH_SHORT).show();
                 });
     }
 
@@ -718,23 +879,13 @@ public class ProductDetailsActivity extends AppCompatActivity {
                 });
     }
 
+    public void open_chat(View view){
+        Intent intent = new Intent(this, ChatActivity.class);
+        startActivity(intent);
+    }
     @Override
     public boolean onSupportNavigateUp() {
         finish();
         return true;
-    }
-
-    public void open_search(View view) {
-        Intent intent = new Intent(ProductDetailsActivity.this, SearchActivity.class);
-        startActivity(intent);
-    }
-
-    public void open_cart(View view) {
-        Intent intent = new Intent(ProductDetailsActivity.this, CartActivity.class);
-        startActivity(intent);
-    }
-    public void open_chat(View view) {
-        Intent intent = new Intent(ProductDetailsActivity.this, ChatActivity.class);
-        startActivity(intent);
     }
 }

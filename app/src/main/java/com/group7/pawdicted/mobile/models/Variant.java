@@ -1,7 +1,6 @@
 package com.group7.pawdicted.mobile.models;
 
 import java.util.Date;
-import java.util.List;
 
 public class Variant {
     private String variant_id;
@@ -9,19 +8,20 @@ public class Variant {
     private String variant_image;
     private String product_id;
     private double variant_price;
-
-    private double variant_rating;
+    private Double variant_rating; // Changed from double to Double
     private int variant_rating_number;
-
     private int variant_quantity;
     private Date variant_date_listed;
     private int variant_discount;
-    private int variant_sold_quantity;
+    private Integer variant_sold_quantity;
 
     public Variant() {
     }
 
-    public Variant(String variant_id, String variant_name, String variant_image, String product_id, double variant_price, double variant_rating, int variant_rating_number, int variant_quantity, Date variant_date_listed, int variant_discount, int variant_sold_quantity) {
+    public Variant(String variant_id, String variant_name, String variant_image, String product_id,
+                   double variant_price, Double variant_rating, int variant_rating_number,
+                   int variant_quantity, Date variant_date_listed, int variant_discount,
+                   Integer variant_sold_quantity) {
         this.variant_id = variant_id;
         this.variant_name = variant_name;
         this.variant_image = variant_image;
@@ -34,7 +34,6 @@ public class Variant {
         this.variant_discount = variant_discount;
         this.variant_sold_quantity = variant_sold_quantity;
     }
-
 
     public String getVariant_id() {
         return variant_id;
@@ -76,11 +75,11 @@ public class Variant {
         this.variant_price = variant_price;
     }
 
-    public double getVariant_rating() {
-        return variant_rating;
+    public Double getVariant_rating() {
+        return variant_rating != null ? variant_rating : 0.0; // Default to 0.0 if null
     }
 
-    public void setVariant_rating(double variant_rating) {
+    public void setVariant_rating(Double variant_rating) {
         this.variant_rating = variant_rating;
     }
 
@@ -116,11 +115,11 @@ public class Variant {
         this.variant_discount = variant_discount;
     }
 
-    public int getVariant_sold_quantity() {
-        return variant_sold_quantity;
+    public Integer getVariant_sold_quantity() {
+        return variant_sold_quantity != null ? variant_sold_quantity : 0; // Default to 0 if null
     }
 
-    public void setVariant_sold_quantity(int variant_sold_quantity) {
+    public void setVariant_sold_quantity(Integer variant_sold_quantity) {
         this.variant_sold_quantity = variant_sold_quantity;
     }
 }
