@@ -170,7 +170,6 @@ If you have any questions or requests regarding our privacy and security policy,
     <string name="title_flash_deals">FLASH DEALS</string>
     <string name="title_apply">Apply</string>
     <string name="title_cart_cap">CART</string>
-    <string name="title_enter_code"><![CDATA[Select or enter code >]]></string>
     <string name="title_vouchers">Vouchers</string>
     <string name="title_checkout">CHECKOUT</string>
     <string name="title_notification_cap">NOTIFICATION</string>
@@ -273,4 +272,5 @@ If you have any questions or requests regarding our privacy and security policy,
     <string name="welcome_to_paw_dicted">Welcome to Paw\'dicted!</string>
     <string name="your_account_set_up">Your account is all set up! \n Log in to begin shopping for your \n pets’ favorite toys, food, and more.</string>
     <string name="login_with_new_account">LOGIN WITH NEW ACCOUNT</string>
+    <string name="title_enter_code">Select or enter code</string>
 </resources>
