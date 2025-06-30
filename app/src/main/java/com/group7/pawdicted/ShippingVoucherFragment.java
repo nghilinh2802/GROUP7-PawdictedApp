@@ -13,8 +13,11 @@ import com.group7.pawdicted.mobile.models.Voucher;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ShippingVoucherFragment extends Fragment {
 
@@ -42,12 +45,17 @@ public class ShippingVoucherFragment extends Fragment {
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         String type = doc.getString("type");
                         if ("shipping".equals(type)) {
+                            int discount = doc.getLong("discount").intValue();
+                            int minOrderValue = doc.getLong("minOrderValue").intValue();
+
                             Voucher v = new Voucher(
                                     doc.getString("code"),
-                                    "Min. Spend " + doc.get("minOrderValue"),
+                                    "Min. Spend đ" + NumberFormat.getInstance(Locale.US).format(minOrderValue),
                                     "Valid Period: " + formatDateRange(doc),
+                                    false,
                                     type,
-                                    false
+                                    discount,
+                                    minOrderValue
                             );
                             shippingVouchers.add(v);
                         }
@@ -61,8 +69,7 @@ public class ShippingVoucherFragment extends Fragment {
             com.google.firebase.Timestamp start = doc.getTimestamp("startDate");
             com.google.firebase.Timestamp end = doc.getTimestamp("endDate");
 
-            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy MMM dd HH:mm:ss", java.util.Locale.ENGLISH);
-
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy MMM dd HH:mm:ss", Locale.ENGLISH);
             return sdf.format(start.toDate()) + " - " + sdf.format(end.toDate());
         } catch (Exception e) {
             return "Unknown";

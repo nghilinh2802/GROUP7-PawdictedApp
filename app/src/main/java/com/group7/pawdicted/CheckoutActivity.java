@@ -25,6 +25,7 @@ import com.group7.pawdicted.mobile.models.AddressItem;
 import com.group7.pawdicted.mobile.models.CartItem;
 import com.group7.pawdicted.mobile.models.ShippingOption;
 import com.group7.pawdicted.mobile.models.PaymentMethod;
+import com.group7.pawdicted.mobile.models.Voucher;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -42,6 +43,8 @@ public class CheckoutActivity extends AppCompatActivity {
     private ShippingOption selectedShippingOption;
     private PaymentMethod selectedPaymentMethod;
     private AddressItem currentAddress;
+    private Voucher appliedVoucher;
+    private TextView txtVoucherDetails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,10 +56,13 @@ public class CheckoutActivity extends AppCompatActivity {
         recyclerViewOrderItems = findViewById(R.id.recyclerViewOrderItems);
         recyclerViewShippingOptions = findViewById(R.id.recyclerViewShippingOptions);
         recyclerViewPaymentMethods = findViewById(R.id.recyclerViewPaymentMethods);
+
         txtMerchandiseSubtotal = findViewById(R.id.txtMerchandiseSubtotal);
         txtShippingSubtotal = findViewById(R.id.txtShippingSubtotal);
         txtShippingDiscountSubtotal = findViewById(R.id.txtShippingDiscountSubtotal);
         txtMerchandiseDiscountSubtotal = findViewById(R.id.txtMerchandiseDiscountSubtotal);
+        txtVoucherDetails = findViewById(R.id.txtVoucherDetails);
+
         txtTotalFooter = findViewById(R.id.txtTotalFooter);
         txtSavedFooter = findViewById(R.id.txtSavedFooter);
         txtTotalPayment = findViewById(R.id.txtTotalPayment);
@@ -125,6 +131,15 @@ public class CheckoutActivity extends AppCompatActivity {
         loadDefaultAddressFromFirestore();
     }
 
+
+    private void applyVoucher(Voucher voucher) {
+        this.appliedVoucher = voucher;
+
+        txtVoucherDetails.setText(voucher.getCode()); // Hiển thị voucher đã chọn
+
+        calculateAndUpdateTotals(); // Cập nhật lại tổng tiền
+    }
+
     private void calculateAndUpdateTotals() {
         int merchandiseSubtotal = 0;
         for (CartItem item : cartItems) {
@@ -132,12 +147,28 @@ public class CheckoutActivity extends AppCompatActivity {
                 merchandiseSubtotal += item.price * item.quantity;
             }
         }
+
         int shippingSubtotal = selectedShippingOption != null ? selectedShippingOption.getCost() : 0;
         int merchandiseDiscountSubtotal = 0;
         int shippingDiscountSubtotal = 0;
-        int totalPayment = merchandiseSubtotal + shippingSubtotal - shippingDiscountSubtotal - merchandiseDiscountSubtotal;
+
+        if (appliedVoucher != null) {
+            if ("merchandise".equals(appliedVoucher.getType())) {
+                if (merchandiseSubtotal >= appliedVoucher.getMinOrderValue()) {
+                    merchandiseDiscountSubtotal = appliedVoucher.getDiscountValue(merchandiseSubtotal);
+                }
+            } else if ("shipping".equals(appliedVoucher.getType())) {
+                if (shippingSubtotal >= appliedVoucher.getMinOrderValue()) {
+                    shippingDiscountSubtotal = appliedVoucher.getDiscountValue(shippingSubtotal);
+                }
+            }
+        }
+
+        int totalPayment = merchandiseSubtotal + shippingSubtotal
+                - merchandiseDiscountSubtotal - shippingDiscountSubtotal;
         int savedAmount = merchandiseDiscountSubtotal + shippingDiscountSubtotal;
 
+        // Hiển thị lên UI
         txtMerchandiseSubtotal.setText(String.format("đ%s", formatCurrency(merchandiseSubtotal)));
         txtShippingSubtotal.setText(String.format("đ%s", formatCurrency(shippingSubtotal)));
         txtShippingDiscountSubtotal.setText(String.format("đ%s", formatCurrency(shippingDiscountSubtotal)));
@@ -149,13 +180,14 @@ public class CheckoutActivity extends AppCompatActivity {
         txtSavedFooter.setVisibility(savedAmount > 0 ? View.VISIBLE : View.GONE);
     }
 
+
     private String formatCurrency(int value) {
         return String.format("%,d", value);
     }
 
     public void open_voucher_activity(View view) {
         Intent intent = new Intent(this, VoucherManagementActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, 100);
     }
 
     public void open_address_selection_activity(View view) {
@@ -173,6 +205,19 @@ public class CheckoutActivity extends AppCompatActivity {
             AddressItem selectedAddress = data.getParcelableExtra("selectedAddress");
             if (selectedAddress != null) {
                 currentAddress = selectedAddress; // Cập nhật currentAddress
+                updateAddressUI(selectedAddress);
+            }
+        }
+
+        if (requestCode == 100 && resultCode == RESULT_OK && data != null) {
+            Voucher selectedVoucher = (Voucher) data.getSerializableExtra("selectedVoucher");
+            if (selectedVoucher != null) {
+                applyVoucher(selectedVoucher);
+            }
+        } else if (requestCode == 200 && resultCode == RESULT_OK && data != null) {
+            AddressItem selectedAddress = data.getParcelableExtra("selectedAddress");
+            if (selectedAddress != null) {
+                currentAddress = selectedAddress;
                 updateAddressUI(selectedAddress);
             }
         }

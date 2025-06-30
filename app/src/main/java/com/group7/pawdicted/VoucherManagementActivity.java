@@ -1,17 +1,24 @@
 package com.group7.pawdicted;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+
+import com.group7.pawdicted.mobile.models.Voucher;
 import com.google.android.material.tabs.TabLayout;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +28,9 @@ public class VoucherManagementActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private EditText voucherCodeInput;
     private Button applyButton;
+    private Button btnConfirmVoucher;
+
+    public static Voucher selectedVoucher = null; // make public static for access from fragments
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +46,7 @@ public class VoucherManagementActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.view_pager);
         voucherCodeInput = findViewById(R.id.voucher_code_input);
         applyButton = findViewById(R.id.apply_button);
+        btnConfirmVoucher = findViewById(R.id.btn_confirm_voucher);
 
         tabLayout.addTab(tabLayout.newTab().setText("Discount"));
         tabLayout.addTab(tabLayout.newTab().setText("Shipping Voucher"));
@@ -54,6 +65,17 @@ public class VoucherManagementActivity extends AppCompatActivity {
                         : R.drawable.dark_gray_fill_rounded_background);
             }
             @Override public void afterTextChanged(Editable s) {}
+        });
+
+        btnConfirmVoucher.setOnClickListener(v -> {
+            if (selectedVoucher != null) {
+                Intent intent = new Intent();
+                intent.putExtra("selectedVoucher", selectedVoucher);
+                setResult(RESULT_OK, intent);
+                finish();
+            } else {
+                Toast.makeText(this, "Please select a voucher", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
