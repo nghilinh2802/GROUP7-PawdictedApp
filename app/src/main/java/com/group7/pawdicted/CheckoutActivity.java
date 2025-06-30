@@ -1,6 +1,5 @@
 package com.group7.pawdicted;
 
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,17 +10,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -30,13 +26,9 @@ import com.group7.pawdicted.mobile.adapters.ShippingOptionAdapter;
 import com.group7.pawdicted.mobile.adapters.PaymentMethodAdapter;
 import com.group7.pawdicted.mobile.models.AddressItem;
 import com.group7.pawdicted.mobile.models.CartItem;
-import com.group7.pawdicted.mobile.models.CartManager;
 import com.group7.pawdicted.mobile.models.ShippingOption;
 import com.group7.pawdicted.mobile.models.PaymentMethod;
 import com.group7.pawdicted.mobile.models.Voucher;
-import com.group7.pawdicted.mobile.services.CartFirestoreService;
-import com.group7.pawdicted.mobile.services.CartStorageHelper;
-
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -44,9 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class CheckoutActivity extends AppCompatActivity {
-
 
     private RecyclerView recyclerViewOrderItems;
     private RecyclerView recyclerViewShippingOptions;
@@ -65,19 +55,15 @@ public class CheckoutActivity extends AppCompatActivity {
     private String finalAddressId = null;
     ImageView imgBack;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_checkout);
 
-
         addViews();
         addEvents();
 
-
-        // Initialize views
         recyclerViewOrderItems = findViewById(R.id.recyclerViewOrderItems);
         recyclerViewShippingOptions = findViewById(R.id.recyclerViewShippingOptions);
         recyclerViewPaymentMethods = findViewById(R.id.recyclerViewPaymentMethods);
@@ -94,11 +80,8 @@ public class CheckoutActivity extends AppCompatActivity {
         btnPlaceOrder = findViewById(R.id.btnPlaceOrder);
         txtMessage = findViewById(R.id.txtMessage);
 
-
         db = FirebaseFirestore.getInstance();
 
-
-        // Get the selected cart items from the intent
         String cartJson = getIntent().getStringExtra("cartItems");
         if (cartJson != null && !cartJson.isEmpty()) {
             Gson gson = new Gson();
@@ -109,30 +92,14 @@ public class CheckoutActivity extends AppCompatActivity {
             Log.e("CheckoutActivity", "No cart items received");
         }
 
-
-        // Set up the RecyclerView for order items
         OrderItemAdapter orderItemAdapter = new OrderItemAdapter(this, cartItems);
         recyclerViewOrderItems.setAdapter(orderItemAdapter);
         recyclerViewOrderItems.setLayoutManager(new LinearLayoutManager(this));
 
-
-        // Set up the RecyclerView for shipping options
         List<ShippingOption> shippingOptions = new ArrayList<>();
-        shippingOptions.add(new ShippingOption(
-                "STANDARD DELIVERY",
-                "Delivery fee 20K. Estimated delivery time is 2–5 days, excluding Sundays and holidays.",
-                20000
-        ));
-        shippingOptions.add(new ShippingOption(
-                "EXPRESS DELIVERY",
-                "Delivery fee 45K (only available in HCMC); order before 5pm will be delivered the same day.",
-                45000
-        ));
-        Log.d("CheckoutActivity", "Shipping options size: " + shippingOptions.size());
-
-
-        selectedShippingOption = shippingOptions.get(0); // Default to Standard Delivery
-
+        shippingOptions.add(new ShippingOption("STANDARD DELIVERY", "Delivery fee 20K...", 20000));
+        shippingOptions.add(new ShippingOption("EXPRESS DELIVERY", "Delivery fee 45K...", 45000));
+        selectedShippingOption = shippingOptions.get(0);
 
         ShippingOptionAdapter shippingOptionAdapter = new ShippingOptionAdapter(this, shippingOptions, option -> {
             selectedShippingOption = option;
@@ -141,39 +108,26 @@ public class CheckoutActivity extends AppCompatActivity {
         recyclerViewShippingOptions.setAdapter(shippingOptionAdapter);
         recyclerViewShippingOptions.setLayoutManager(new LinearLayoutManager(this));
 
-
-        // Set up the RecyclerView for payment methods
         List<PaymentMethod> paymentMethods = new ArrayList<>();
         paymentMethods.add(new PaymentMethod("Cash on Delivery", R.mipmap.ic_cod));
         paymentMethods.add(new PaymentMethod("QR Code - VNPay", R.mipmap.ic_vnpay));
         paymentMethods.add(new PaymentMethod("ZaloPay", R.mipmap.ic_zalopay));
         paymentMethods.add(new PaymentMethod("MoMo Wallet", R.mipmap.ic_momo));
-        Log.d("CheckoutActivity", "Payment methods size: " + paymentMethods.size());
-
-
-        selectedPaymentMethod = paymentMethods.get(3); // Default to MoMo Wallet
-
+        selectedPaymentMethod = paymentMethods.get(3);
 
         PaymentMethodAdapter paymentMethodAdapter = new PaymentMethodAdapter(this, paymentMethods, method -> {
             selectedPaymentMethod = method;
-            Log.d("CheckoutActivity", "Selected payment method: " + method.getName());
         });
         recyclerViewPaymentMethods.setAdapter(paymentMethodAdapter);
         recyclerViewPaymentMethods.setLayoutManager(new LinearLayoutManager(this));
 
-
-        // Calculate and update total payment
         calculateAndUpdateTotals();
 
-
         btnPlaceOrder.setOnClickListener(v -> {
-
-
             if (finalAddressId == null) {
                 Toast.makeText(this, "Please choose the delivery address!", Toast.LENGTH_SHORT).show();
                 return;
             }
-
 
             FirebaseAuth auth = FirebaseAuth.getInstance();
             String customerId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : "unknown";
@@ -182,18 +136,14 @@ public class CheckoutActivity extends AppCompatActivity {
             String paymentMethod = selectedPaymentMethod != null ? selectedPaymentMethod.getName() : "Unknown";
             Timestamp orderTime = Timestamp.now();
 
-
-            // Tạo Map chứa product1, product2...
             Map<String, Object> productMap = new HashMap<>();
             int totalMerchandise = 0;
             int index = 1;
-
 
             for (CartItem item : cartItems) {
                 if (item.isSelected) {
                     int cost = item.price * item.quantity;
                     totalMerchandise += cost;
-
 
                     Map<String, Object> productDetail = new HashMap<>();
                     productDetail.put("product_id", item.productId);
@@ -202,24 +152,18 @@ public class CheckoutActivity extends AppCompatActivity {
                     if (item.selectedOption != null && !item.selectedOption.isEmpty()) {
                         productDetail.put("selected_option", item.selectedOption);
                     }
-
                     productMap.put("product" + index, productDetail);
                     index++;
                 }
             }
 
-
             int totalValue = totalMerchandise + shippingFee;
 
-
-            // Tạo document order_items
             DocumentReference orderItemRef = db.collection("order_items").document();
             String orderItemId = orderItemRef.getId();
 
-
             orderItemRef.set(productMap)
                     .addOnSuccessListener(unused -> {
-                        // Sau khi tạo order_items xong => tạo đơn hàng
                         Map<String, Object> orderData = new HashMap<>();
                         orderData.put("customer_id", customerId);
                         orderData.put("address_id", finalAddressId);
@@ -229,31 +173,22 @@ public class CheckoutActivity extends AppCompatActivity {
                         orderData.put("order_time", orderTime);
                         orderData.put("order_value", totalValue);
                         orderData.put("order_status", "Pending Payment");
-                        orderData.put("order_item_id", orderItemId); // chỉ 1 ID, không đính kèm chi tiết
-
+                        orderData.put("order_item_id", orderItemId);
 
                         db.collection("orders").add(orderData)
                                 .addOnSuccessListener(docRef -> {
-                                    //removePurchasedItemsFromCart();
-                                    //removePurchasedItemsFromFirestore(customerId);
                                     Toast.makeText(CheckoutActivity.this, "Đặt hàng thành công!", Toast.LENGTH_SHORT).show();
                                     finish();
                                 })
                                 .addOnFailureListener(e -> {
-                                    Log.e("Checkout", "Lỗi lưu đơn hàng", e);
                                     Toast.makeText(CheckoutActivity.this, "Đặt hàng thất bại!", Toast.LENGTH_SHORT).show();
                                 });
-
-
                     })
                     .addOnFailureListener(e -> {
-                        Log.e("Checkout", "Lỗi lưu order_items", e);
                         Toast.makeText(CheckoutActivity.this, "Lỗi khi lưu sản phẩm", Toast.LENGTH_SHORT).show();
                     });
         });
 
-
-        // Load selected or default address on start
         String selectedAddressId = getSelectedAddressId();
         if (selectedAddressId != null) {
             loadSelectedAddressFromFirestore(selectedAddressId);
@@ -262,36 +197,46 @@ public class CheckoutActivity extends AppCompatActivity {
         }
     }
 
-
     private void addEvents() {
         imgBack.setOnClickListener(v -> finish());
     }
-
 
     private void addViews() {
         imgBack = findViewById(R.id.imgBack);
     }
 
-
-
     private void applyVoucher(Voucher voucher) {
-        this.appliedVoucher = voucher;
-
-        txtVoucherDetails.setText(voucher.getCode()); // Hiển thị voucher đã chọn
-
-        calculateAndUpdateTotals(); // Cập nhật lại tổng tiền
+        if (voucher != null) {
+            int baseAmount = "merchandise".equals(voucher.getType()) ? calculateMerchandiseSubtotal() : selectedShippingOption != null ? selectedShippingOption.getCost() : 0;
+            if (baseAmount >= voucher.getMinOrderValue()) {
+                this.appliedVoucher = voucher;
+                txtVoucherDetails.setText(voucher.getCode());
+                calculateAndUpdateTotals();
+            } else {
+                Toast.makeText(this, "Minimum order value not met", Toast.LENGTH_SHORT).show();
+                this.appliedVoucher = null;
+                txtVoucherDetails.setText("Enter Code");
+                calculateAndUpdateTotals();
+            }
+        } else {
+            this.appliedVoucher = null;
+            txtVoucherDetails.setText("Enter Code");
+            calculateAndUpdateTotals();
+        }
     }
 
-    private void calculateAndUpdateTotals() {
+    private int calculateMerchandiseSubtotal() {
         int merchandiseSubtotal = 0;
         for (CartItem item : cartItems) {
             if (item.isSelected) {
                 merchandiseSubtotal += item.price * item.quantity;
             }
         }
+        return merchandiseSubtotal;
+    }
 
-
-
+    private void calculateAndUpdateTotals() {
+        int merchandiseSubtotal = calculateMerchandiseSubtotal();
         int shippingSubtotal = selectedShippingOption != null ? selectedShippingOption.getCost() : 0;
         int merchandiseDiscountSubtotal = 0;
         int shippingDiscountSubtotal = 0;
@@ -308,35 +253,28 @@ public class CheckoutActivity extends AppCompatActivity {
             }
         }
 
-        int totalPayment = merchandiseSubtotal + shippingSubtotal
-                - merchandiseDiscountSubtotal - shippingDiscountSubtotal;
+        int totalPayment = merchandiseSubtotal + shippingSubtotal - merchandiseDiscountSubtotal - shippingDiscountSubtotal;
         int savedAmount = merchandiseDiscountSubtotal + shippingDiscountSubtotal;
 
-
-        // Hiển thị lên UI
         txtMerchandiseSubtotal.setText(String.format("đ%s", formatCurrency(merchandiseSubtotal)));
         txtShippingSubtotal.setText(String.format("đ%s", formatCurrency(shippingSubtotal)));
         txtShippingDiscountSubtotal.setText(String.format("đ%s", formatCurrency(shippingDiscountSubtotal)));
         txtMerchandiseDiscountSubtotal.setText(String.format("đ%s", formatCurrency(merchandiseDiscountSubtotal)));
         txtTotalPayment.setText(String.format("đ%s", formatCurrency(totalPayment)));
 
-
         txtTotalFooter.setText(String.format("Total đ%s", formatCurrency(totalPayment)));
         txtSavedFooter.setText(String.format("Saved đ%s", formatCurrency(savedAmount)));
         txtSavedFooter.setVisibility(savedAmount > 0 ? View.VISIBLE : View.GONE);
     }
 
-
     private String formatCurrency(int value) {
         return String.format("%,d", value);
     }
-
 
     public void open_voucher_activity(View view) {
         Intent intent = new Intent(this, VoucherManagementActivity.class);
         startActivityForResult(intent, 100);
     }
-
 
     public void open_address_selection_activity(View view) {
         Intent intent = new Intent(this, AddressSelectionActivity.class);
@@ -346,7 +284,6 @@ public class CheckoutActivity extends AppCompatActivity {
         }
         startActivityForResult(intent, 200);
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -363,18 +300,9 @@ public class CheckoutActivity extends AppCompatActivity {
 
         if (requestCode == 100 && resultCode == RESULT_OK && data != null) {
             Voucher selectedVoucher = (Voucher) data.getSerializableExtra("selectedVoucher");
-            if (selectedVoucher != null) {
-                applyVoucher(selectedVoucher);
-            }
-        } else if (requestCode == 200 && resultCode == RESULT_OK && data != null) {
-            AddressItem selectedAddress = data.getParcelableExtra("selectedAddress");
-            if (selectedAddress != null) {
-                currentAddress = selectedAddress;
-                updateAddressUI(selectedAddress);
-            }
+            applyVoucher(selectedVoucher);
         }
     }
-
 
     private void loadSelectedAddressFromFirestore(String addressId) {
         String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -400,7 +328,6 @@ public class CheckoutActivity extends AppCompatActivity {
                     loadDefaultAddressFromFirestore();
                 });
     }
-
 
     private void loadDefaultAddressFromFirestore() {
         String customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -429,7 +356,6 @@ public class CheckoutActivity extends AppCompatActivity {
                 });
     }
 
-
     private void updateAddressUI(AddressItem address) {
         TextView nameTextView = findViewById(R.id.addressNameTextView);
         TextView phoneTextView = findViewById(R.id.addressPhoneTextView);
@@ -441,12 +367,10 @@ public class CheckoutActivity extends AppCompatActivity {
         }
     }
 
-
     private String getSelectedAddressId() {
         SharedPreferences prefs = getSharedPreferences("CheckoutPrefs", MODE_PRIVATE);
         return prefs.getString("selectedAddressId", null);
     }
-
 
     private void saveSelectedAddressId(String addressId) {
         SharedPreferences prefs = getSharedPreferences("CheckoutPrefs", MODE_PRIVATE);
@@ -454,54 +378,4 @@ public class CheckoutActivity extends AppCompatActivity {
         editor.putString("selectedAddressId", addressId);
         editor.apply();
     }
-
-//    private void removePurchasedItemsFromCart() {
-//        SharedPreferences prefs = getSharedPreferences("CartPrefs", MODE_PRIVATE);
-//        String cartJson = prefs.getString("cart_items", null);
-//
-//        if (cartJson != null) {
-//            Gson gson = new Gson();
-//            Type type = new TypeToken<List<CartItem>>() {}.getType();
-//            List<CartItem> currentCart = gson.fromJson(cartJson, type);
-//
-//            List<CartItem> updatedCart = new ArrayList<>();
-//            for (CartItem item : currentCart) {
-//                if (!item.isSelected) {
-//                    updatedCart.add(item);
-//                }
-//            }
-//
-//            SharedPreferences.Editor editor = prefs.edit();
-//            editor.putString("cart_items", gson.toJson(updatedCart));
-//            editor.apply();
-//        }
-//    }
-
-//    private void removePurchasedItemsFromFirestore(String customerId) {
-//        List<CartItem> updatedList = new ArrayList<>();
-//
-//        for (CartItem item : cartItems) {
-//            String docId = item.productId + "_" + item.selectedOption;
-//
-//            if (item.isSelected) {
-//                // Xoá đúng documentId đang được dùng
-//                FirebaseFirestore.getInstance()
-//                        .collection("carts")
-//                        .document(customerId)
-//                        .collection("items")
-//                        .document(docId)
-//                        .delete()
-//                        .addOnSuccessListener(aVoid ->
-//                                Log.d("Firestore", "✅ Đã xoá sản phẩm khỏi giỏ hàng: " + docId))
-//                        .addOnFailureListener(e ->
-//                                Log.e("Firestore", "❌ Lỗi xoá sản phẩm: " + docId, e));
-//            } else {
-//                updatedList.add(item); // Giữ lại sản phẩm chưa mua
-//            }
-//        }
-//
-//        CartManager.getInstance().setCartItems(updatedList);
-//        CartStorageHelper.saveCart(this, customerId, updatedList);
-//        CartFirestoreService.syncCartToFirestore(customerId, updatedList);
-//    }
 }

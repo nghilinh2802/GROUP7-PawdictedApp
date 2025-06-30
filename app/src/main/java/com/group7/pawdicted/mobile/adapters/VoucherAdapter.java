@@ -33,6 +33,11 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
         }
     }
 
+    // Add getter for selectedPosition
+    public int getSelectedPosition() {
+        return selectedPosition;
+    }
+
     @Override
     public VoucherViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.voucher_item, parent, false);

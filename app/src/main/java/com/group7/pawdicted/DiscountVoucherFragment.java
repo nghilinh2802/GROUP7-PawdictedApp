@@ -8,14 +8,15 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.Timestamp;
 import com.group7.pawdicted.mobile.adapters.VoucherAdapter;
 import com.group7.pawdicted.mobile.models.Voucher;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -42,37 +43,39 @@ public class DiscountVoucherFragment extends Fragment {
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     discountVouchers.clear();
+                    Date now = new Date();
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         String type = doc.getString("type");
                         if ("merchandise".equals(type)) {
-                            int discount = doc.getLong("discount").intValue();
-                            int minOrderValue = doc.getLong("minOrderValue").intValue();
-
-                            Voucher v = new Voucher(
-                                    doc.getString("code"),
-                                    "Min. Spend đ" + NumberFormat.getInstance(Locale.US).format(minOrderValue),
-                                    "Valid Period: " + formatDateRange(doc),
-                                    false,
-                                    type,
-                                    discount,
-                                    minOrderValue
-                            );
-                            discountVouchers.add(v);
+                            Timestamp startDate = doc.getTimestamp("startDate");
+                            Timestamp endDate = doc.getTimestamp("endDate");
+                            if (startDate != null && endDate != null &&
+                                    now.after(startDate.toDate()) && now.before(endDate.toDate())) {
+                                int discount = doc.getLong("discount").intValue();
+                                int minOrderValue = doc.getLong("minOrderValue").intValue();
+                                Voucher v = new Voucher(
+                                        doc.getString("code"),
+                                        "Min. Spend đ" + NumberFormat.getInstance(Locale.US).format(minOrderValue),
+                                        startDate,
+                                        endDate,
+                                        false,
+                                        type,
+                                        discount,
+                                        minOrderValue
+                                );
+                                discountVouchers.add(v);
+                            }
                         }
                     }
                     adapter.notifyDataSetChanged();
                 });
     }
 
-    private String formatDateRange(QueryDocumentSnapshot doc) {
-        try {
-            com.google.firebase.Timestamp start = doc.getTimestamp("startDate");
-            com.google.firebase.Timestamp end = doc.getTimestamp("endDate");
-
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy MMM dd HH:mm:ss", Locale.ENGLISH);
-            return sdf.format(start.toDate()) + " - " + sdf.format(end.toDate());
-        } catch (Exception e) {
-            return "Unknown";
+    public Voucher getSelectedVoucher() {
+        int selectedPos = adapter.getSelectedPosition();
+        if (selectedPos != -1 && selectedPos < discountVouchers.size()) {
+            return discountVouchers.get(selectedPos);
         }
+        return null;
     }
 }
