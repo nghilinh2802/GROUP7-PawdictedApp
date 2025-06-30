@@ -1,5 +1,6 @@
 package com.group7.pawdicted.mobile.adapters;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,19 +22,28 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
     private List<Voucher> vouchers;
     private int type;
     private int selectedPosition = -1;
+    private OnVoucherSelectedListener listener;
 
-    public VoucherAdapter(List<Voucher> vouchers, int type) {
+    public interface OnVoucherSelectedListener {
+        void onVoucherSelected(Voucher voucher);
+    }
+
+    public VoucherAdapter(List<Voucher> vouchers, int type, OnVoucherSelectedListener listener) {
         this.vouchers = vouchers;
         this.type = type;
+        this.listener = listener;
         for (int i = 0; i < vouchers.size(); i++) {
             if (vouchers.get(i).isSelected()) {
                 selectedPosition = i;
+                if (listener != null) {
+                    listener.onVoucherSelected(vouchers.get(i));
+                }
+                Log.d("VoucherAdapter", "Initial selected position: " + selectedPosition + ", code: " + vouchers.get(i).getCode());
                 break;
             }
         }
     }
 
-    // Add getter for selectedPosition
     public int getSelectedPosition() {
         return selectedPosition;
     }
@@ -61,9 +71,17 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
         holder.radioButton.setOnClickListener(v -> {
             int previousSelected = selectedPosition;
             selectedPosition = holder.getAdapterPosition();
+            Log.d("VoucherAdapter", "RadioButton clicked, new selected position: " + selectedPosition + ", code: " + voucher.getCode());
             if (previousSelected != selectedPosition) {
-                notifyItemChanged(previousSelected);
+                if (previousSelected != -1 && previousSelected < vouchers.size()) {
+                    vouchers.get(previousSelected).setSelected(false);
+                    notifyItemChanged(previousSelected);
+                }
+                voucher.setSelected(true);
                 notifyItemChanged(selectedPosition);
+                if (listener != null) {
+                    listener.onVoucherSelected(voucher);
+                }
             }
         });
     }

@@ -1,6 +1,7 @@
 package com.group7.pawdicted;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +32,7 @@ public class ShippingVoucherFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_voucher, container, false);
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new VoucherAdapter(shippingVouchers, VoucherAdapter.TYPE_SHIPPING);
+        adapter = new VoucherAdapter(shippingVouchers, VoucherAdapter.TYPE_SHIPPING, (VoucherAdapter.OnVoucherSelectedListener) getActivity());
         recyclerView.setAdapter(adapter);
         loadShippingVouchers();
         return view;
@@ -74,8 +75,26 @@ public class ShippingVoucherFragment extends Fragment {
     public Voucher getSelectedVoucher() {
         int selectedPos = adapter.getSelectedPosition();
         if (selectedPos != -1 && selectedPos < shippingVouchers.size()) {
-            return shippingVouchers.get(selectedPos);
+            Voucher selected = shippingVouchers.get(selectedPos);
+            selected.setSelected(true);
+            return selected;
         }
         return null;
+    }
+
+    public void clearSelection() {
+        int previousSelected = adapter.getSelectedPosition();
+        if (previousSelected != -1) {
+            shippingVouchers.get(previousSelected).setSelected(false);
+            adapter.notifyItemChanged(previousSelected);
+        }
+        // Reset selected position in adapter
+        try {
+            java.lang.reflect.Field field = VoucherAdapter.class.getDeclaredField("selectedPosition");
+            field.setAccessible(true);
+            field.set(adapter, -1);
+        } catch (Exception e) {
+            Log.e("ShippingVoucherFragment", "Error clearing selection", e);
+        }
     }
 }
