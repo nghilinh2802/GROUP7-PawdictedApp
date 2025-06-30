@@ -27,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingHorizontal="16dp"
-                android:paddingBottom="16dp">
+                android:paddingBottom="8dp">
 
                 <ImageView
                     android:id="@+id/img_product_image"
@@ -74,9 +74,10 @@
                                 android:textSize="14sp" />
 
                             <ImageView
-                                android:id="@+id/imageView2"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:id="@+id/img_heart"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_marginStart="10dp"
                                 android:layout_weight="1"
                                 app:srcCompat="@mipmap/ic_heart" />
                         </LinearLayout>
@@ -493,7 +494,7 @@
             android:id="@+id/btnAddToCart"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:layout_marginStart="62dp"
+            android:layout_marginStart="42dp"
             android:backgroundTint="#FF9800"
             android:fontFamily="@font/inter_bold"
             android:text="ADD TO CART"
@@ -504,7 +505,7 @@
             android:id="@+id/btnBuyNow"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="8dp"
             android:backgroundTint="#ef1515"
             android:fontFamily="@font/inter_bold"
             android:text="BUY NOW"

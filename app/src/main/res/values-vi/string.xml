@@ -210,4 +210,14 @@ Nếu bạn có bất kỳ câu hỏi hoặc yêu cầu nào về chính sách b
     <string name="title_finding">Đang tìm...</string>
     <string name="title_n_products">" sản phẩm"</string>
     <string name="title_completed">Hoàn thành</string>
+    <string name="title_nothing_love">Bạn không thấy con chó trên dễ thương sao \n Nó đang đợi bạn thêm một sản phẩm \n yêu thích đấy</string>
+    <string name="title_nothing_history">Bạn không thấy con chó trên dễ thương sao \n Nó đang đợi bạn xem bất kì sản phẩm nào đấy</string>
+    <string name="title_recently_viewed">ĐÃ XEM</string>
+    <string name="title_wishlist_cap">YÊU THÍCH</string>
+    <string name="title_noti_add_wishlist">Đã thêm vào danh sách yêu thích</string>
+    <string name="title_noti_remove_wishlist">Đã xóa khỏi danh sách yêu thích</string>
+    <string name="title_noti_add_cart">Đã thêm vào giỏ hàng</string>
+    <string name="title_noti_add_cart_flashsale">Đã thêm vào giỏ hàng với giá flashsale!</string>
+    <string name="title_noti_related_products_error">Không thể tải sản phẩm liên quan</string>
+
 </resources>
