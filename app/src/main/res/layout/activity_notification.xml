@@ -9,7 +9,6 @@
     <!-- Header -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolbar"
-        android:title="Notification"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="24dp"
@@ -47,55 +46,12 @@
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Tabs -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/tab_card"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_margin="16dp"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="2dp"
-        android:backgroundTint="#ffffff"
-        app:cardBackgroundColor="#ffffff"
-        app:layout_constraintTop_toBottomOf="@id/toolbar">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btn_promotions"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Promotions"
-                android:background="@drawable/tab_selected_left"
-                app:backgroundTint="@null"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
-                android:textSize="15sp" />
-
-            <Button
-                android:id="@+id/btn_orders"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Orders"
-                android:background="@drawable/tab_unselected_right"
-                app:backgroundTint="@null"
-                android:textColor="#9C1B2C"
-                android:textStyle="bold"
-                android:textSize="15sp" />
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
     <!-- Content Frame -->
     <FrameLayout
         android:id="@+id/notification_content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/tab_card"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintBottom_toTopOf="@id/footer" />
 
     <!-- Footer -->
