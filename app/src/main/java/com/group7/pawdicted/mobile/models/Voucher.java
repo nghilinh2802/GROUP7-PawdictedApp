@@ -18,6 +18,13 @@ public class Voucher implements Serializable {
     private String type; // "merchandise" or "shipping"
     private int discountAmount; // Dưới 100 là %, ngược lại là tiền
     private int minOrderValue;
+    private String id;
+    public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public Voucher() {
         // Constructor mặc định cho Firestore

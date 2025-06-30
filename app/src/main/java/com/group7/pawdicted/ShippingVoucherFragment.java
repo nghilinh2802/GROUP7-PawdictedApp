@@ -64,6 +64,7 @@ public class ShippingVoucherFragment extends Fragment {
                                         discount,
                                         minOrderValue
                                 );
+                                v.setId(doc.getId());
                                 shippingVouchers.add(v);
                             }
                         }

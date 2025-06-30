@@ -101,6 +101,7 @@ public class VoucherManagementActivity extends AppCompatActivity implements Vouc
                                                 discount,
                                                 minOrderValue
                                         );
+                                        appliedVoucher.setId(doc.getId());
                                         Toast.makeText(this, "Voucher applied: " + code, Toast.LENGTH_SHORT).show();
                                         Log.d("VoucherManagement", "Applied voucher: " + code);
                                         // Clear fragment selections

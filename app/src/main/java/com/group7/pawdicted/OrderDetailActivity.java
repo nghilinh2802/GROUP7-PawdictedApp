@@ -344,18 +344,45 @@ public class OrderDetailActivity extends AppCompatActivity {
                             ((TextView) findViewById(R.id.tv_shipping_fee)).setText(formatCurrency(shippingFee) + " ₫");
                             ((TextView) findViewById(R.id.tv_final_price)).setText(formatCurrency(orderValue) + " ₫");
 
-                            // Lấy thông tin customer_note
-                            String customerNote = document.getString("customer_note");
-                            TextView tvCustomerNote = findViewById(R.id.tv_customer_note);
-                            // Đảm bảo ẩn TextView nếu không có dữ liệu
-                            tvCustomerNote.setVisibility(View.GONE);  // Mặc định ẩn trước
-                            if (customerNote != null && !customerNote.isEmpty()) {
-                                Log.d("DEBUG", "Customer Note: " + customerNote); // Log để kiểm tra dữ liệu
-                                tvCustomerNote.setText(customerNote);
-                                tvCustomerNote.setVisibility(View.VISIBLE);  // Hiển thị nếu có dữ liệu
+                            // Lấy giảm giá từ merchandise_discount trong đơn hàng
+                            long merchandiseDiscount = document.getLong("merchandise_discount") != null ? document.getLong("merchandise_discount") : 0;
+                            long totalBeforeDiscount = orderValue + shippingFee; // Tổng trước khi giảm giá
+                            long totalPayment = totalBeforeDiscount - merchandiseDiscount;
+
+                            // Hiển thị thông tin giảm giá
+                            TextView tvDiscount = findViewById(R.id.tv_discount_amount);
+                            LinearLayout layoutDiscount = findViewById(R.id.layout_discount);
+                            if (merchandiseDiscount > 0) {
+                                tvDiscount.setText("-" + formatCurrency((int) merchandiseDiscount) + " ₫");
+                                layoutDiscount.setVisibility(View.VISIBLE);
                             } else {
-                                Log.d("DEBUG", "No Customer Note available.");
-                                // Ở đây đã ẩn TextView rồi, không cần phải làm thêm gì
+                                layoutDiscount.setVisibility(View.GONE);
+                            }
+
+                            // Hiển thị tổng tiền sau khi giảm giá
+                            TextView tvTotalPayment = findViewById(R.id.tv_final_price);
+                            tvTotalPayment.setText(formatCurrency((int) totalPayment) + " ₫");
+
+
+                            // Hiển thị Voucher Name chỉ khi có mã giảm giá
+                            String voucherId = document.getString("voucher_id");
+                            if (voucherId != null && !voucherId.isEmpty()) {
+                                db.collection("vouchers").document(voucherId)
+                                        .get()
+                                        .addOnSuccessListener(voucherDoc -> {
+                                            if (voucherDoc.exists()) {
+                                                String voucherCode = voucherDoc.getString("code");
+
+                                                // Hiển thị Voucher Name chỉ khi có mã giảm giá
+                                                TextView tvVoucherCode = findViewById(R.id.tv_voucher_code);
+                                                LinearLayout layoutVoucherName = findViewById(R.id.layout_voucher_name);
+                                                tvVoucherCode.setText(voucherCode);
+                                                layoutVoucherName.setVisibility(View.VISIBLE);
+                                            }
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Log.e("OrderDetailActivity", "❌ Error fetching voucher: " + e.getMessage());
+                                        });
                             }
 
                             // Lấy thông tin hủy đơn

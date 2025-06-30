@@ -106,7 +106,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid(); // Lấy customer_id từ Firebase Auth
 
         ordersRef.whereEqualTo("order_status", status)
-                .whereEqualTo("customer_id", currentUserId)  // Thêm điều kiện lọc theo customer_id
+                .whereEqualTo("customer_id", currentUserId)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
