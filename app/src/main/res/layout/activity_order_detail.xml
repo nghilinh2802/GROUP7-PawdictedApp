@@ -90,28 +90,106 @@
                     android:id="@+id/status_bar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:background="#FFF7E8"
                     android:visibility="gone">
 
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:src="@mipmap/ic_completed_red"
-                        android:contentDescription="Cancellation Icon" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <!-- Dòng tiêu đề -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:text="Cancellation Completed"
-                        android:textColor="#9C162C"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@mipmap/ic_completed_red"
+                            android:contentDescription="Cancellation Icon" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:text="Cancellation Completed!"
+                            android:textColor="#9C162C"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Thông tin chi tiết hủy đơn -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginTop="12dp">
+
+                        <!-- Reason -->
+                        <LinearLayout
+                            android:id="@+id/layout_cancel_reason"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="4dp">
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="wrap_content"
+                                android:text="Reason"
+                                android:textColor="#000000"
+                                android:textSize="14sp" />
+                            <TextView
+                                android:id="@+id/tv_cancel_reason"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#000000"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <!-- Requested At -->
+                        <LinearLayout
+                            android:id="@+id/layout_cancel_requested_at"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="4dp">
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="wrap_content"
+                                android:text="Requested At"
+                                android:textColor="#000000"
+                                android:textSize="14sp" />
+                            <TextView
+                                android:id="@+id/tv_cancel_requested_at"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#000000"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <!-- Requested By -->
+                        <LinearLayout
+                            android:id="@+id/layout_cancel_requested_by"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="wrap_content"
+                                android:text="Requested By"
+                                android:textColor="#000000"
+                                android:textSize="14sp" />
+                            <TextView
+                                android:id="@+id/tv_cancel_requested_by"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#000000"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -459,74 +537,6 @@
 
                         <TextView
                             android:id="@+id/tv_complete_time"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="#000000"
-                            android:textSize="14sp" />
-                    </LinearLayout>
-                    <!-- Row: Cancel Reason -->
-                    <LinearLayout
-                        android:id="@+id/layout_cancel_reason"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:visibility="gone"
-                        android:layout_marginBottom="4dp">
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="wrap_content"
-                            android:text="Cancel Reason"
-                            android:textColor="#000000"
-                            android:textSize="14sp" />
-                        <TextView
-                            android:id="@+id/tv_cancel_reason"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="#000000"
-                            android:textSize="14sp" />
-                    </LinearLayout>
-
-                    <!-- Row: Cancel Requested At -->
-                    <LinearLayout
-                        android:id="@+id/layout_cancel_requested_at"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:visibility="gone"
-                        android:layout_marginBottom="4dp">
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="wrap_content"
-                            android:text="Cancel Requested At"
-                            android:textColor="#000000"
-                            android:textSize="14sp" />
-                        <TextView
-                            android:id="@+id/tv_cancel_requested_at"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="#000000"
-                            android:textSize="14sp" />
-                    </LinearLayout>
-
-                    <!-- Row: Cancel Requested By -->
-                    <LinearLayout
-                        android:id="@+id/layout_cancel_requested_by"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:visibility="gone"
-                        android:layout_marginBottom="4dp">
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="wrap_content"
-                            android:text="Cancel Requested By"
-                            android:textColor="#000000"
-                            android:textSize="14sp" />
-                        <TextView
-                            android:id="@+id/tv_cancel_requested_by"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="#000000"
