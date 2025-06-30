@@ -723,4 +723,18 @@ public class ProductDetailsActivity extends AppCompatActivity {
         finish();
         return true;
     }
+
+    public void open_search(View view) {
+        Intent intent = new Intent(ProductDetailsActivity.this, SearchActivity.class);
+        startActivity(intent);
+    }
+
+    public void open_cart(View view) {
+        Intent intent = new Intent(ProductDetailsActivity.this, CartActivity.class);
+        startActivity(intent);
+    }
+    public void open_chat(View view) {
+        Intent intent = new Intent(ProductDetailsActivity.this, ChatActivity.class);
+        startActivity(intent);
+    }
 }
