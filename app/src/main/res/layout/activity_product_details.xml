@@ -482,6 +482,7 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_margin="1dp"
+            android:onClick="open_chat"
             android:background="@drawable/rounded_circle_button"
             android:backgroundTint="#FDDDCB"
             android:backgroundTintMode="src_in"
