@@ -19,11 +19,13 @@ public class FAQAdapter extends BaseExpandableListAdapter {
     private Context context;
     private List<String> listDataHeader;
     private HashMap<String, List<FAQItem>> listDataChild;
+    private String lang;
 
-    public FAQAdapter(Context context, List<String> listDataHeader, HashMap<String, List<FAQItem>> listDataChild) {
+    public FAQAdapter(Context context, List<String> listDataHeader, HashMap<String, List<FAQItem>> listDataChild, String lang) {
         this.context = context;
         this.listDataHeader = listDataHeader;
         this.listDataChild = listDataChild;
+        this.lang = lang;
     }
 
     @Override
@@ -33,7 +35,7 @@ public class FAQAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        // Không cần child nữa vì đã gộp vào group view
+        // Không cần child riêng vì đã gộp câu hỏi và trả lời trong group view
         return 0;
     }
 
@@ -62,7 +64,7 @@ public class FAQAdapter extends BaseExpandableListAdapter {
         return false;
     }
 
-    // Gộp cả câu hỏi và câu trả lời vào group view
+    // Gộp câu hỏi và câu trả lời vào group view
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         FAQItem faqItem = listDataChild.get(listDataHeader.get(groupPosition)).get(0); // mỗi nhóm chỉ có 1 item
@@ -76,8 +78,8 @@ public class FAQAdapter extends BaseExpandableListAdapter {
         TextView tvAnswer = convertView.findViewById(R.id.tv_answer);
         ImageView imgExpand = convertView.findViewById(R.id.img_expand);
 
-        tvQuestion.setText(faqItem.getQuestion());
-        tvAnswer.setText(faqItem.getAnswer());
+        tvQuestion.setText(faqItem.getQuestion(lang));
+        tvAnswer.setText(faqItem.getAnswer(lang));
         imgExpand.setImageResource(isExpanded ? R.mipmap.ic_collapse : R.mipmap.ic_expand);
 
         // Hiển thị hoặc ẩn câu trả lời dựa vào trạng thái expand
@@ -86,10 +88,9 @@ public class FAQAdapter extends BaseExpandableListAdapter {
         return convertView;
     }
 
-    // Không dùng nữa
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        return null;
+        return null; // Không dùng child view riêng
     }
 
     @Override
