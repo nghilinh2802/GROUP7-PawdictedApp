@@ -191,4 +191,24 @@ public class AccountManagementActivity extends AppCompatActivity {
                     imgAvatar.setImageResource(R.mipmap.ic_logo);
                 });
     }
+
+    public void open_blogs(View view) {
+        Intent intent=new Intent(AccountManagementActivity.this,BlogActivity.class);
+        startActivity(intent);
+    }
+
+    public void open_faq(View view) {
+        Intent intent=new Intent(AccountManagementActivity.this,FAQActivity.class);
+        startActivity(intent);
+    }
+
+    public void open_policy(View view) {
+        Intent intent=new Intent(AccountManagementActivity.this,PolicynSecurityActivity.class);
+        startActivity(intent);
+    }
+
+    public void open_voucher_activity(View view) {
+        Intent intent=new Intent(AccountManagementActivity.this,VoucherManagementActivity.class);
+        startActivity(intent);
+    }
 }

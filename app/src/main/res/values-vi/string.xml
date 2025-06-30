@@ -274,6 +274,7 @@ Nếu bạn có bất kỳ câu hỏi hoặc yêu cầu nào về chính sách b
     <string name="title_check_email_error">Lỗi kiểm tra email: %1$s</string>
     <string name="title_check_phone_error">Lỗi kiểm tra số điện thoại: %1$s</string>
     <string name="signup_failed">Đăng ký thất bại: %1$s</string>
-    <string name="update_profile_successful">Cập nhật hồ sơ thành công</string>
+    <string name="update_profile_successful">Cập nhật hồ sơ thành công!</string>
+    <string name="update_profile_failed">Cập nhật hồ sơ thất bại!</string>
 
 </resources>

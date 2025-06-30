@@ -280,12 +280,12 @@ public class EditProfileActivity extends AppCompatActivity {
                 .update(updates)
                 .addOnSuccessListener(aVoid ->
                         runOnUiThread(() ->
-                                Toast.makeText(this, "Avatar đã được cập nhật!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, R.string.update_profile_successful, Toast.LENGTH_SHORT).show()
                         )
                 )
                 .addOnFailureListener(e ->
                         runOnUiThread(() ->
-                                Toast.makeText(this, "Lỗi cập nhật avatar", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, R.string.update_profile_failed, Toast.LENGTH_SHORT).show()
                         )
                 );
     }

@@ -283,5 +283,6 @@ If you have any questions or requests regarding our privacy and security policy,
     <string name="title_noti_add_cart_flashsale">Added to cart with flashsale price!</string>
     <string name="title_noti_related_products_error">Failed to load related products</string>
     <string name="update_profile_successful">Updated profile successful!</string>
+    <string name="update_profile_failed">Update profile failed!</string>
 
 </resources>
