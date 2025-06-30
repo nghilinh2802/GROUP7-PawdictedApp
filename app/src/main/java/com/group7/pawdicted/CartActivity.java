@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,11 +20,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
-import com.group7.pawdicted.CheckoutActivity;
-import com.group7.pawdicted.R;
 import com.group7.pawdicted.mobile.adapters.CartAdapter;
 import com.group7.pawdicted.mobile.models.CartItem;
 import com.group7.pawdicted.mobile.models.CartManager;
+import com.group7.pawdicted.mobile.models.Voucher;
 import com.group7.pawdicted.mobile.services.CartFirestoreService;
 import com.group7.pawdicted.mobile.services.CartStorageHelper;
 
@@ -42,7 +40,8 @@ public class CartActivity extends AppCompatActivity {
     private Button checkoutBtn;
     private CheckBox selectAllCheckbox;
     private static final int REQUEST_ADD_ADDRESS = 101;
-
+    private Voucher selectedVoucher;
+    private TextView txtVoucherDetails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +57,7 @@ public class CartActivity extends AppCompatActivity {
         totalText = findViewById(R.id.text_total_price);
         checkoutBtn = findViewById(R.id.btnCheckout);
         selectAllCheckbox = findViewById(R.id.select_all_checkbox);
+        txtVoucherDetails = findViewById(R.id.txtVoucherDetails);
 
         ImageView imgBack = findViewById(R.id.imgBack);
         if (imgBack != null) {
@@ -91,7 +91,6 @@ public class CartActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerAndEvents() {
-        // Khởi tạo adapter với toàn bộ danh sách sản phẩm trong giỏ hàng
         cartAdapter = new CartAdapter(this, cartItemList);
         recyclerView.setAdapter(cartAdapter);
 
@@ -105,14 +104,8 @@ public class CartActivity extends AppCompatActivity {
             }
         });
 
-        // Sự kiện khi nhấn nút Check Out
         checkoutBtn.setOnClickListener(v -> {
-            List<CartItem> selectedItems = new ArrayList<>();
-            for (CartItem item : cartItemList) {
-                if (item.isSelected) {
-                    selectedItems.add(item);
-                }
-            }
+            List<CartItem> selectedItems = getSelectedCartItems();
 
             if (selectedItems.isEmpty()) {
                 Toast.makeText(this, "Vui lòng chọn ít nhất một sản phẩm để thanh toán.", Toast.LENGTH_SHORT).show();
@@ -121,7 +114,7 @@ public class CartActivity extends AppCompatActivity {
 
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user == null) {
-                Toast.makeText(CartActivity.this, "Bạn cần đăng nhập để thanh toán!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Bạn cần đăng nhập để thanh toán!", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -133,16 +126,20 @@ public class CartActivity extends AppCompatActivity {
                     .collection("items")
                     .get()
                     .addOnSuccessListener(querySnapshot -> {
+                        Intent intent;
+
                         if (querySnapshot.isEmpty()) {
-                            // Chưa có địa chỉ → Mở NewAddressActivity trước
-                            Intent intent = new Intent(CartActivity.this, NewAddressActivity.class);
-                            intent.putExtra("fromCart", true); // Để biết quay lại
+                            intent = new Intent(CartActivity.this, NewAddressActivity.class);
+                            intent.putExtra("fromCart", true);
                             startActivityForResult(intent, REQUEST_ADD_ADDRESS);
                         } else {
-                            // Có địa chỉ rồi → Sang Checkout
-                            Intent intent = new Intent(CartActivity.this, CheckoutActivity.class);
-                            String cartJson = new Gson().toJson(selectedItems); // Pass only selected items
+                            intent = new Intent(CartActivity.this, CheckoutActivity.class);
+                            String cartJson = new Gson().toJson(selectedItems);
                             intent.putExtra("cartItems", cartJson);
+                            if (selectedVoucher != null) {
+                                intent.putExtra("selectedVoucher", selectedVoucher);
+                                intent.putExtra("voucherCode", txtVoucherDetails.getText().toString());
+                            }
                             startActivity(intent);
                         }
                     })
@@ -160,38 +157,63 @@ public class CartActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_ADD_ADDRESS && resultCode == RESULT_OK) {
-            // Sau khi thêm địa chỉ, chuyển tiếp sang Checkout
-            startActivity(new Intent(CartActivity.this, CheckoutActivity.class));
+            Intent checkoutIntent = new Intent(CartActivity.this, CheckoutActivity.class);
+            String cartJson = new Gson().toJson(getSelectedCartItems());
+            checkoutIntent.putExtra("cartItems", cartJson);
+            if (selectedVoucher != null) {
+                checkoutIntent.putExtra("selectedVoucher", selectedVoucher);
+                checkoutIntent.putExtra("voucherCode", txtVoucherDetails.getText().toString());
+            }
+            startActivity(checkoutIntent);
         }
+
+        if (requestCode == 100 && resultCode == RESULT_OK && data != null) {
+            selectedVoucher = (Voucher) data.getSerializableExtra("selectedVoucher");
+            if (selectedVoucher != null) {
+                txtVoucherDetails.setText(selectedVoucher.getCode());
+                updateTotal();
+            }
+        }
+    }
+
+    private List<CartItem> getSelectedCartItems() {
+        List<CartItem> selectedItems = new ArrayList<>();
+        for (CartItem item : cartItemList) {
+            if (item.isSelected) {
+                selectedItems.add(item);
+            }
+        }
+        return selectedItems;
     }
 
     private void updateTotal() {
         int total = 0;
+        int discount = 0;
         int selectedCount = 0;
+
         for (CartItem item : cartItemList) {
             if (item.isSelected) {
-                total += item.price * item.quantity; // Only add the price of selected items
+                total += item.price * item.quantity;
                 selectedCount++;
             }
         }
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            String customerId = user.getUid();
-            CartStorageHelper.saveCart(this, customerId, cartItemList);
-            CartFirestoreService.syncCartToFirestore(customerId, cartItemList);
+        if (selectedVoucher != null && "merchandise".equals(selectedVoucher.getType())) {
+            if (total >= selectedVoucher.getMinOrderValue()) {
+                discount = selectedVoucher.getDiscountValue(total);
+            }
         }
 
+        int finalTotal = total - discount;
+
         DecimalFormat formatter = new DecimalFormat("#,###đ");
-        totalText.setText(formatter.format(total)); // Update the total price
+        totalText.setText(formatter.format(finalTotal));
         checkoutBtn.setText("Check Out (" + selectedCount + ")");
-        checkoutBtn.setEnabled(selectedCount > 0); // Disable if no item is selected
+        checkoutBtn.setEnabled(selectedCount > 0);
         Drawable bg = ContextCompat.getDrawable(this,
                 selectedCount > 0 ? R.drawable.rounded_button_red : R.drawable.rounded_button_gray);
         checkoutBtn.setBackground(bg);
-
     }
-
 
     private void syncSelectAllCheckbox() {
         boolean allSelected = true;
@@ -211,5 +233,10 @@ public class CartActivity extends AppCompatActivity {
             cartAdapter.notifyDataSetChanged();
             updateTotal();
         });
+    }
+
+    public void open_voucher_activity(View view) {
+        Intent intent = new Intent(CartActivity.this, VoucherManagementActivity.class);
+        startActivityForResult(intent, 100);
     }
 }

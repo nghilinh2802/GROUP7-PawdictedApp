@@ -157,6 +157,11 @@ public class CheckoutActivity extends AppCompatActivity {
                 }
             }
 
+            Voucher voucherFromCart = (Voucher) getIntent().getSerializableExtra("selectedVoucher");
+            if (voucherFromCart != null) {
+                applyVoucher(voucherFromCart);
+            }
+
             int totalValue = totalMerchandise + shippingFee;
 
             DocumentReference orderItemRef = db.collection("order_items").document();
