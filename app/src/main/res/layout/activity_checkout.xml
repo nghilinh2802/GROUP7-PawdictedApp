@@ -17,9 +17,10 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/toolbar_checkout"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:background="@color/main_color"
+            android:layout_height="wrap_content"        android:background="@color/main_color"
+            android:padding="16dp"
             android:paddingStart="8dp"
+            android:paddingTop="24dp"
             android:paddingEnd="8dp">
 
             <ImageView
@@ -67,7 +68,9 @@
             android:orientation="vertical"
             android:padding="12dp">
 
+            <!-- Delivery Address-->
             <LinearLayout
+                android:id="@+id/deliveryaddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -137,7 +140,8 @@
 
                     <!-- Order Items Title -->
                     <TextView
-                        android:text="Order Items"
+
+                        android:text="@string/order_items"
                         android:textColor="#000000"
                         android:textSize="18sp"
                         android:textStyle="bold"
@@ -163,7 +167,7 @@
                         android:layout_marginBottom="16dp">
 
                         <TextView
-                            android:text="Vouchers"
+                            android:text="@string/title_voucher"
                             android:textColor="#000000"
                             android:textSize="18sp"
                             android:textStyle="bold"
@@ -177,7 +181,7 @@
                             android:layout_width="185dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Select or enter code"
+                            android:text="@string/title_enter_code"
                             android:textColor="#808080"
                             android:textSize="14sp" />
 
@@ -191,7 +195,7 @@
 
                     <!-- Message -->
                     <TextView
-                        android:text="Message"
+                        android:text="@string/message"
                         android:textColor="#000000"
                         android:textSize="18sp"
                         android:textStyle="bold"
@@ -200,9 +204,10 @@
                         android:layout_height="wrap_content" />
 
                     <EditText
+                        android:id="@+id/txtMessage"
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
-                        android:hint="Please leave a message"
+                        android:hint="@string/please_leave_a_message"
                         android:textColorHint="#808080"
                         android:textSize="14sp"
                         android:background="@drawable/gray_rounded_background"
@@ -211,7 +216,7 @@
 
                     <!-- Shipping Option -->
                     <TextView
-                        android:text="Shipping Option"
+                        android:text="@string/shipping_option"
                         android:textColor="#000000"
                         android:textSize="18sp"
                         android:textStyle="bold"
@@ -232,6 +237,7 @@
 
             <!-- Payment Methods -->
             <LinearLayout
+                android:id="@+id/paymentmethods"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -436,7 +442,7 @@
             android:paddingTop="12dp"
             android:paddingEnd="24dp"
             android:paddingBottom="12dp"
-            android:text="PLACE ORDER"
+            android:text="@string/place_order"
             android:textAllCaps="false"
             app:backgroundTint="@null"
             android:textColor="#FFFFFF"

@@ -28,11 +28,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.gson.Gson;
 import com.group7.pawdicted.mobile.adapters.DividerItemDecoration;
 import com.group7.pawdicted.mobile.adapters.ProductAdapter;
 import com.group7.pawdicted.mobile.adapters.ReviewAdapter;
@@ -40,9 +38,11 @@ import com.group7.pawdicted.mobile.models.CartItem;
 import com.group7.pawdicted.mobile.models.CartManager;
 import com.group7.pawdicted.mobile.models.ListReview;
 import com.group7.pawdicted.mobile.models.Product;
+import com.group7.pawdicted.mobile.models.Recommendation;
 import com.group7.pawdicted.mobile.models.Review;
 import com.group7.pawdicted.mobile.models.Variant;
 import com.group7.pawdicted.mobile.services.CartStorageHelper;
+import com.group7.pawdicted.mobile.services.SimilarService;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,7 +55,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private TextView txtDiscountPrice, txtSoldQuantity, txtProductPrice, txtDiscountRate;
     private TextView txtProductName, txtProductRatingCount, txtProductDescription;
     private TextView txtAverageRating, txtRatingCount, txtNoVariants;
-    private android.widget.RatingBar productRatingBar, productRatingBar2;
+    private RatingBar productRatingBar, productRatingBar2;
     private ImageButton btnChat;
     private Button btnAddToCart, btnBuyNow;
     private LinearLayout lvVariation, viewAllDescription, viewAllRating;
@@ -67,6 +67,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private Product currentProduct;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
+    private SimilarService similarService;
 
     // FLASHSALE VARIABLES
     private boolean isFlashsale = false;
@@ -93,6 +94,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
+        similarService = new SimilarService();
 
         ImageView imgBack = findViewById(R.id.imgBack);
         if (imgBack != null) {
@@ -250,7 +252,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
                             displayProductDetails(product, null);
                             loadVariations(product.getVariant_id(), productId);
                             loadReviews();
-                            loadRelatedProducts(product.getCategory_id());
+                            loadRelatedProducts(productId); // Use productId instead of categoryId
                             loadYouMayAlsoLike();
                         }
                     } else {
@@ -481,89 +483,110 @@ public class ProductDetailsActivity extends AppCompatActivity {
                 });
     }
 
-    private void loadRelatedProducts(String categoryId) {
+    private void loadRelatedProducts(String productId) {
         if (relatedProductContainer == null) {
             Log.e("ProductDetailsActivity", "relatedProductContainer is null");
             return;
         }
 
-        db.collection("products")
-                .whereEqualTo("category_id", categoryId)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<Product> relatedProducts = new ArrayList<>();
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        Product product = document.toObject(Product.class);
-                        if (!product.getProduct_id().equals(currentProduct.getProduct_id())) {
-                            relatedProducts.add(product);
-                        }
-                    }
+        similarService.getSimilarProducts(productId, 3, new SimilarService.SimilarCallback() {
+            @Override
+            public void onSuccess(List<Recommendation> recommendations) {
+                // Fetch additional product details from Firestore
+                List<String> productIds = new ArrayList<>();
+                for (Recommendation rec : recommendations) {
+                    productIds.add(rec.getProductId());
+                }
 
-                    relatedProductContainer.removeAllViews();
-                    LayoutInflater inflater = LayoutInflater.from(this);
-                    DecimalFormat formatter = new DecimalFormat("#,###đ");
+                db.collection("products")
+                        .whereIn("product_id", productIds)
+                        .get()
+                        .addOnSuccessListener(queryDocumentSnapshots -> {
+                            relatedProductContainer.removeAllViews();
+                            LayoutInflater inflater = LayoutInflater.from(ProductDetailsActivity.this);
+                            DecimalFormat formatter = new DecimalFormat("#,###đ");
 
-                    for (Product product : relatedProducts) {
-                        View itemView = inflater.inflate(R.layout.item_product, relatedProductContainer, false);
-                        ImageView imgChildCateProduct = itemView.findViewById(R.id.img_child_cate_product);
-                        TextView txtChildCateProductName = itemView.findViewById(R.id.txt_child_cate_product_name);
-                        RatingBar ratingBar = itemView.findViewById(R.id.rating_bar);
-                        TextView txtRating = itemView.findViewById(R.id.txt_rating);
-                        TextView txtChildCateProductPrice = itemView.findViewById(R.id.txt_child_cate_product_price);
-                        TextView txtChildCateProductDiscount = itemView.findViewById(R.id.txt_child_cate_product_discount);
-                        TextView txtChildCateOriginalPrice = itemView.findViewById(R.id.txt_child_cate_original_price);
-                        TextView txtChildCateSold = itemView.findViewById(R.id.txt_child_cate_sold);
+                            for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                                Product product = document.toObject(Product.class);
+                                // Find matching recommendation for image_url
+                                String imageUrl = product.getProduct_image();
+                                for (Recommendation rec : recommendations) {
+                                    if (rec.getProductId().equals(product.getProduct_id())) {
+                                        imageUrl = rec.getImageUrl(); // Use API image_url
+                                        break;
+                                    }
+                                }
 
-                        LinearLayout productContainer = itemView.findViewById(R.id.item_product_container);
-                        if (productContainer != null) {
-                            productContainer.setBackground(ContextCompat.getDrawable(this, R.drawable.gray_rounded_background));
-                        }
+                                View itemView = inflater.inflate(R.layout.item_product, relatedProductContainer, false);
+                                ImageView imgChildCateProduct = itemView.findViewById(R.id.img_child_cate_product);
+                                TextView txtChildCateProductName = itemView.findViewById(R.id.txt_child_cate_product_name);
+                                RatingBar ratingBar = itemView.findViewById(R.id.rating_bar);
+                                TextView txtRating = itemView.findViewById(R.id.txt_rating);
+                                TextView txtChildCateProductPrice = itemView.findViewById(R.id.txt_child_cate_product_price);
+                                TextView txtChildCateProductDiscount = itemView.findViewById(R.id.txt_child_cate_product_discount);
+                                TextView txtChildCateOriginalPrice = itemView.findViewById(R.id.txt_child_cate_original_price);
+                                TextView txtChildCateSold = itemView.findViewById(R.id.txt_child_cate_sold);
 
-                        if (imgChildCateProduct != null) {
-                            Glide.with(this).load(product.getProduct_image()).into(imgChildCateProduct);
-                        }
-                        if (txtChildCateProductName != null) {
-                            txtChildCateProductName.setText(product.getProduct_name());
-                        }
-                        if (ratingBar != null) {
-                            ratingBar.setRating((float) product.getAverage_rating());
-                        }
-                        if (txtRating != null) {
-                            txtRating.setText(String.format("%.1f", product.getAverage_rating()));
-                        }
-                        double discountedPrice = product.getPrice() * (1 - product.getDiscount() / 100.0);
-                        if (txtChildCateProductPrice != null) {
-                            txtChildCateProductPrice.setText(formatter.format(discountedPrice));
-                        }
-                        if (txtChildCateProductDiscount != null) {
-                            txtChildCateProductDiscount.setText(product.getDiscount() > 0 ? "-" + product.getDiscount() + "%" : "");
-                            txtChildCateProductDiscount.setVisibility(product.getDiscount() > 0 ? View.VISIBLE : View.GONE);
-                        }
-                        if (txtChildCateOriginalPrice != null) {
-                            txtChildCateOriginalPrice.setText(formatter.format(product.getPrice()));
-                            if (product.getDiscount() > 0) {
-                                txtChildCateOriginalPrice.setPaintFlags(txtChildCateOriginalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                            } else {
-                                txtChildCateOriginalPrice.setPaintFlags(txtChildCateOriginalPrice.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                                LinearLayout productContainer = itemView.findViewById(R.id.item_product_container);
+                                if (productContainer != null) {
+                                    productContainer.setBackground(ContextCompat.getDrawable(ProductDetailsActivity.this, R.drawable.gray_rounded_background));
+                                }
+
+                                if (imgChildCateProduct != null) {
+                                    Glide.with(ProductDetailsActivity.this).load(imageUrl).into(imgChildCateProduct);
+                                }
+                                if (txtChildCateProductName != null) {
+                                    txtChildCateProductName.setText(product.getProduct_name());
+                                }
+                                if (ratingBar != null) {
+                                    ratingBar.setRating((float) product.getAverage_rating());
+                                }
+                                if (txtRating != null) {
+                                    txtRating.setText(String.format("%.1f", product.getAverage_rating()));
+                                }
+                                double discountedPrice = product.getPrice() * (1 - product.getDiscount() / 100.0);
+                                if (txtChildCateProductPrice != null) {
+                                    txtChildCateProductPrice.setText(formatter.format(discountedPrice));
+                                }
+                                if (txtChildCateProductDiscount != null) {
+                                    txtChildCateProductDiscount.setText(product.getDiscount() > 0 ? "-" + product.getDiscount() + "%" : "");
+                                    txtChildCateProductDiscount.setVisibility(product.getDiscount() > 0 ? View.VISIBLE : View.GONE);
+                                }
+                                if (txtChildCateOriginalPrice != null) {
+                                    txtChildCateOriginalPrice.setText(formatter.format(product.getPrice()));
+                                    if (product.getDiscount() > 0) {
+                                        txtChildCateOriginalPrice.setPaintFlags(txtChildCateOriginalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                                    } else {
+                                        txtChildCateOriginalPrice.setPaintFlags(txtChildCateOriginalPrice.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+                                    }
+                                }
+                                if (txtChildCateSold != null) {
+                                    txtChildCateSold.setText(product.getSold_quantity() + " sold");
+                                }
+
+                                itemView.setOnClickListener(v -> {
+                                    Intent intent = new Intent(ProductDetailsActivity.this, ProductDetailsActivity.class);
+                                    intent.putExtra("product_id", product.getProduct_id());
+                                    startActivity(intent);
+                                });
+
+                                relatedProductContainer.addView(itemView);
                             }
-                        }
-                        if (txtChildCateSold != null) {
-                            txtChildCateSold.setText(product.getSold_quantity() + " sold");
-                        }
-
-                        itemView.setOnClickListener(v -> {
-                            Intent intent = new Intent(ProductDetailsActivity.this, ProductDetailsActivity.class);
-                            intent.putExtra("product_id", product.getProduct_id());
-                            startActivity(intent);
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("ProductDetailsActivity", "Error fetching related product details: " + e.getMessage());
+                            runOnUiThread(() -> Toast.makeText(ProductDetailsActivity.this, "Failed to load related products: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                            relatedProductContainer.removeAllViews();
                         });
+            }
 
-                        relatedProductContainer.addView(itemView);
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("ProductDetailsActivity", "Error fetching related products: " + e.getMessage());
-                    relatedProductContainer.removeAllViews();
-                });
+            @Override
+            public void onFailure(String error) {
+                Log.e("ProductDetailsActivity", "Error fetching recommendations: " + error);
+                runOnUiThread(() -> Toast.makeText(ProductDetailsActivity.this, error, Toast.LENGTH_LONG).show());
+                relatedProductContainer.removeAllViews();
+            }
+        });
     }
 
     private void loadYouMayAlsoLike() {

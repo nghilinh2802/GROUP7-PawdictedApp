@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.text.HtmlCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -42,6 +43,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     Button btn_cancel, btn_contact, btn_evaluate, btn_returnrefund;
     private String orderId;
     private String orderItemId;
+    private long totalCostOfGoods = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -264,7 +266,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                 isStepActive[2] = true;
                 isStepActive[3] = true;
                 break;
-            case "Cancelled":  // Trạng thái "Cancelled"
+            case "Cancelled":
                 // Ẩn các bước khác và chỉ hiển thị trạng thái đã hủy
                 findViewById(R.id.status_bar).setVisibility(View.VISIBLE); // Hiển thị status bar đặc biệt cho "Cancelled"
                 findViewById(R.id.icon_pending).setVisibility(View.GONE);   // Ẩn các icon trạng thái
@@ -318,7 +320,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
                             // Các thông tin khác của đơn hàng
-                            String orderCode = document.getString("order_code");
+                            String orderCode = orderId;
                             String orderTime = formatTimestamp(document.getTimestamp("order_time"));
                             String paymentMethod = document.getString("payment_method");
                             int orderValue = document.getLong("order_value").intValue();
@@ -424,7 +426,10 @@ public class OrderDetailActivity extends AppCompatActivity {
 
                             // Thiết lập sự kiện click cho nút "Contact Shop"
                             btn_contact.setOnClickListener(v -> {
-                                // Mở màn hình liên hệ với cửa hàng hoặc chat, gọi điện
+                                Intent intent = new Intent(OrderDetailActivity.this, ChatActivity.class);
+                                String initialMessage = "Tôi cần hỗ trợ với đơn hàng: " + orderId;
+                                intent.putExtra("initial_message", initialMessage);
+                                startActivity(intent);
                             });
 
                             // Thiết lập sự kiện click cho nút "Evaluate" nếu trạng thái là Completed
@@ -554,32 +559,42 @@ public class OrderDetailActivity extends AppCompatActivity {
                         DocumentSnapshot orderDoc = task.getResult();
                         if (orderDoc.exists()) {
                             String customerId = orderDoc.getString("customer_id");
+                            String addressId = orderDoc.getString("address_id");
 
                             Log.d("DEBUG", "customerId: " + customerId);
+                            Log.d("DEBUG", "addressId: " + addressId);
 
                             if (customerId != null && !customerId.isEmpty()) {
-                                // Fetch customer data
-                                db.collection("customers").document(customerId)
-                                        .get()
-                                        .addOnCompleteListener(customerTask -> {
-                                            if (customerTask.isSuccessful()) {
-                                                DocumentSnapshot customerDoc = customerTask.getResult();
-                                                if (customerDoc.exists()) {
-                                                    String customerName = customerDoc.getString("customer_name");
-                                                    String phone = customerDoc.getString("phone_number");
-                                                    String address = customerDoc.getString("address");
+                                if (addressId != null && !addressId.isEmpty()) {
+                                    // Truy cập theo address_id từ bảng addresses
+                                    db.collection("addresses")
+                                            .document(customerId)
+                                            .collection("items")
+                                            .document(addressId)
+                                            .get()
+                                            .addOnSuccessListener(addressDoc -> {
+                                                if (addressDoc.exists()) {
+                                                    String name = addressDoc.getString("name");
+                                                    String phone = addressDoc.getString("phone");
+                                                    String address = addressDoc.getString("address");
 
-                                                    // Hiển thị thông tin khách hàng
-                                                    ((TextView) findViewById(R.id.tv_customer_name)).setText(customerName);
+                                                    // Hiển thị thông tin giao hàng
+                                                    ((TextView) findViewById(R.id.tv_customer_name)).setText(name);
                                                     ((TextView) findViewById(R.id.tv_phone)).setText(phone);
                                                     ((TextView) findViewById(R.id.tv_address)).setText(address);
                                                 } else {
-                                                    Log.w("DEBUG", "Customer data not found.");
+                                                    Log.w("DEBUG", "Address not found, fallback to customer data");
+                                                    loadCustomerFallback(customerId);
                                                 }
-                                            } else {
-                                                Log.e("DEBUG", "Error fetching customer data: " + customerTask.getException());
-                                            }
-                                        });
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                Log.e("DEBUG", "Error fetching address info: ", e);
+                                                loadCustomerFallback(customerId); // fallback nếu lỗi
+                                            });
+                                } else {
+                                    // Không có address_id → dùng thông tin từ customers
+                                    loadCustomerFallback(customerId);
+                                }
                             } else {
                                 Log.w("DEBUG", "No customer_id found in order: " + orderId);
                             }
@@ -589,6 +604,28 @@ public class OrderDetailActivity extends AppCompatActivity {
                     } else {
                         Log.e("DEBUG", "Error fetching order data: " + task.getException());
                     }
+                });
+    }
+
+    // Hàm hỗ trợ fallback truy xuất bảng customers
+    private void loadCustomerFallback(String customerId) {
+        db.collection("customers").document(customerId)
+                .get()
+                .addOnSuccessListener(customerDoc -> {
+                    if (customerDoc.exists()) {
+                        String customerName = customerDoc.getString("customer_name");
+                        String phone = customerDoc.getString("phone_number");
+                        String address = customerDoc.getString("address");
+
+                        ((TextView) findViewById(R.id.tv_customer_name)).setText(customerName);
+                        ((TextView) findViewById(R.id.tv_phone)).setText(phone);
+                        ((TextView) findViewById(R.id.tv_address)).setText(address);
+                    } else {
+                        Log.w("DEBUG", "Customer data not found.");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("DEBUG", "Error fetching customer data: ", e);
                 });
     }
 
@@ -627,11 +664,11 @@ public class OrderDetailActivity extends AppCompatActivity {
                                     String productId = orderItemDoc.getString(productKey + ".product_id");
                                     int quantity = orderItemDoc.getLong(productKey + ".quantity").intValue();
                                     long productCost = orderItemDoc.getLong(productKey + ".total_cost_of_goods");
+                                    int actualUnitPrice = (int) (productCost / quantity);
 
-                                    totalCostOfGoods += productCost;
+                                    String selectedOption = orderItemDoc.getString(productKey + ".selected_option");
+                                    fetchProductDetails(productId, quantity, actualUnitPrice, productCost, productListLayout, selectedOption);
 
-                                    // Fetch product details
-                                    fetchProductDetails(productId, quantity, productListLayout);
                                 }
                             }
 
@@ -645,43 +682,53 @@ public class OrderDetailActivity extends AppCompatActivity {
                 });
     }
 
-    private void fetchProductDetails(String productId, int quantity, LinearLayout productListLayout) {
-        db.collection("products").document(productId)  // Get product details from "products" collection
+    private void fetchProductDetails(String productId, int quantity, int actualUnitPrice, long productCost, LinearLayout productListLayout, String selectedOption) {
+        db.collection("products").document(productId)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot productDoc = task.getResult();
                         if (productDoc.exists()) {
                             String productName = productDoc.getString("product_name");
-                            int productPrice = productDoc.getLong("price").intValue();
+                            int productPrice = productDoc.getLong("price").intValue(); // giá niêm yết
                             String productImage = productDoc.getString("product_image");
-                            String productColor = productDoc.getString("product_color");  // Assuming there is a color field
+                            String productColor = productDoc.getString("product_color");
 
-                            Log.d("DEBUG", "Fetched product: " + productName + ", Price: " + productPrice + ", Image: " + productImage);
-
-                            // Inflate the checkout_item layout
                             View productView = LayoutInflater.from(OrderDetailActivity.this).inflate(R.layout.checkout_item, productListLayout, false);
 
-                            // Get references to the views
                             ImageView imgProduct = productView.findViewById(R.id.imgProduct);
                             TextView txtProductName = productView.findViewById(R.id.txtProductName);
                             TextView txtProductColor = productView.findViewById(R.id.txtProductColor);
                             TextView txtProductPrice = productView.findViewById(R.id.txtProductPrice);
                             TextView txtProductQuantity = productView.findViewById(R.id.txtProductQuantity);
 
-                            // Set data to views
                             txtProductName.setText(productName);
-                            txtProductColor.setText(productColor != null ? productColor : "No Color/Variant");
-                            txtProductPrice.setText(formatCurrency(productPrice) + " ₫");
+                            if (selectedOption != null && !selectedOption.isEmpty()) {
+                                txtProductColor.setText(selectedOption);
+                            } else {
+                                txtProductColor.setText(productColor != null ? productColor : "No Color/Variant");
+                            }
                             txtProductQuantity.setText("x" + quantity);
 
-                            // Load product image with Glide
+                            // Hiển thị giá thực và giá niêm yết nếu khác nhau
+                            if (actualUnitPrice == productPrice) {
+                                txtProductPrice.setText(formatCurrency(actualUnitPrice) + " ₫");
+                            } else {
+                                String html = formatCurrency(actualUnitPrice) + " ₫"
+                                        + "<br><i><font color='#888888'><s>" + formatCurrency(productPrice) + " ₫</s></font></i>";
+                                txtProductPrice.setText(HtmlCompat.fromHtml(html, HtmlCompat.FROM_HTML_MODE_LEGACY));
+                            }
+
                             Glide.with(OrderDetailActivity.this)
                                     .load(productImage)
                                     .into(imgProduct);
 
-                            // Add the inflated product view to the product list layout
                             productListLayout.addView(productView);
+
+                            // Cộng dồn vào tổng chi phí
+                            totalCostOfGoods += productCost;
+                            TextView totalCostTextView = findViewById(R.id.tv_total_cost);
+                            totalCostTextView.setText(formatCurrency((int) totalCostOfGoods) + " ₫");
                         }
                     } else {
                         Log.e("DEBUG", "Error fetching product details: " + task.getException());

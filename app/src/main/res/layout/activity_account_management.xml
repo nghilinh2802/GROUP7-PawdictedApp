@@ -232,7 +232,7 @@
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:scaleType="centerInside"
-                        android:src="@mipmap/ic_order" />
+                        android:src="@mipmap/ic_to_evaluate" />
 
                     <TextView
                         android:id="@+id/txtComplete"
@@ -365,7 +365,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:maxLines="1"
-                        android:text="@string/title_blogs"
+                        android:text="@string/blogs"
                         android:textColor="#212121"
                         android:textSize="12sp" />
 

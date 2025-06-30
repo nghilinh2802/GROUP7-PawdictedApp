@@ -25,7 +25,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Welcome to Paw'dicted!"
+            android:text="@string/welcome_to_paw_dicted"
             android:textColor="#9c162c"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -40,24 +40,26 @@
             android:layout_marginBottom="10dp"/>
 
         <!-- Description -->
+
+        <!-- Login Button -->
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:text="Your account is all set up! \n Log in to begin shopping for your \n pets’ favorite toys, food, and more."
-            android:textColor="#333333"
-            android:textSize="16sp"
+            android:layout_marginBottom="16dp"
             android:gravity="center"
+            android:text="@string/your_account_set_up"
+            android:textColor="#333333"
 
-            android:layout_marginBottom="16dp" />
+            android:textSize="16sp" />
 
-        <!-- Login Button -->
         <Button
             android:id="@+id/btnLoginWithNewAccount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/red_rounded_background"
-            android:text="LOGIN WITH NEW ACCOUNT"
+            android:text="@string/login_with_new_account"
             android:textColor="#FFFFFF"
             android:textSize="16sp"
             android:padding="10dp"

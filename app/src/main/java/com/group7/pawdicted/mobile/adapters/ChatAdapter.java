@@ -79,7 +79,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         void bind(MessageItem message) {
             txtMessage.setText(message.getContent());
-            txtTime.setText(timeFormat.format(new Date(message.getTime())));
+            txtTime.setText(timeFormat.format(message.getTime().toDate()));
         }
     }
 
@@ -94,7 +94,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         void bind(MessageItem message) {
             txtMessage.setText(message.getContent());
-            txtTime.setText(timeFormat.format(new Date(message.getTime())));
+            txtTime.setText(timeFormat.format(message.getTime().toDate()));
         }
     }
 }
