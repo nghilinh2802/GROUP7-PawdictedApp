@@ -56,7 +56,7 @@ public class CartActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recycler_cart);
         totalText = findViewById(R.id.text_total_price);
-        checkoutBtn = findViewById(R.id.checkout_button);
+        checkoutBtn = findViewById(R.id.btnCheckout);
         selectAllCheckbox = findViewById(R.id.select_all_checkbox);
 
         ImageView imgBack = findViewById(R.id.imgBack);
@@ -107,7 +107,6 @@ public class CartActivity extends AppCompatActivity {
 
         // Sự kiện khi nhấn nút Check Out
         checkoutBtn.setOnClickListener(v -> {
-            // Filter the selected items only
             List<CartItem> selectedItems = new ArrayList<>();
             for (CartItem item : cartItemList) {
                 if (item.isSelected) {
@@ -115,45 +114,42 @@ public class CartActivity extends AppCompatActivity {
                 }
             }
 
-            if (!selectedItems.isEmpty()) {
-                Intent intent = new Intent(CartActivity.this, CheckoutActivity.class);
-                Gson gson = new Gson();
-                String cartJson = gson.toJson(selectedItems); // Pass only selected items
-                intent.putExtra("cartItems", cartJson);
-                startActivity(intent);
-            } else {
+            if (selectedItems.isEmpty()) {
                 Toast.makeText(this, "Vui lòng chọn ít nhất một sản phẩm để thanh toán.", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user == null) {
+                Toast.makeText(CartActivity.this, "Bạn cần đăng nhập để thanh toán!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String customerId = user.getUid();
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            db.collection("addresses")
+                    .document(customerId)
+                    .collection("items")
+                    .get()
+                    .addOnSuccessListener(querySnapshot -> {
+                        if (querySnapshot.isEmpty()) {
+                            // Chưa có địa chỉ → Mở NewAddressActivity trước
+                            Intent intent = new Intent(CartActivity.this, NewAddressActivity.class);
+                            intent.putExtra("fromCart", true); // Để biết quay lại
+                            startActivityForResult(intent, REQUEST_ADD_ADDRESS);
+                        } else {
+                            // Có địa chỉ rồi → Sang Checkout
+                            Intent intent = new Intent(CartActivity.this, CheckoutActivity.class);
+                            String cartJson = new Gson().toJson(selectedItems); // Pass only selected items
+                            intent.putExtra("cartItems", cartJson);
+                            startActivity(intent);
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(CartActivity.this, "Không thể kiểm tra địa chỉ!", Toast.LENGTH_SHORT).show();
+                    });
         });
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            Toast.makeText(CartActivity.this, "Bạn cần đăng nhập để thanh toán!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String customerId = user.getUid();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        db.collection("addresses")
-                .document(customerId)
-                .collection("items")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (queryDocumentSnapshots.isEmpty()) {
-                        // CHƯA có địa chỉ nào → chuyển sang NewAddressActivity
-                        Intent intent = new Intent(CartActivity.this, NewAddressActivity.class);
-                        intent.putExtra("fromCart", true); // đánh dấu quay lại checkout
-                        startActivityForResult(intent, REQUEST_ADD_ADDRESS);
-                    } else {
-                        // Đã có địa chỉ → chuyển sang CheckoutActivity
-                        Intent intent = new Intent(CartActivity.this, CheckoutActivity.class);
-                        startActivity(intent);
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(CartActivity.this, "Không thể kiểm tra địa chỉ!", Toast.LENGTH_SHORT).show();
-                });
 
         updateTotal();
         syncSelectAllCheckbox();
@@ -164,9 +160,8 @@ public class CartActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_ADD_ADDRESS && resultCode == RESULT_OK) {
-            // Sau khi thêm địa chỉ → tự động vào Checkout
-            Intent intent = new Intent(CartActivity.this, CheckoutActivity.class);
-            startActivity(intent);
+            // Sau khi thêm địa chỉ, chuyển tiếp sang Checkout
+            startActivity(new Intent(CartActivity.this, CheckoutActivity.class));
         }
     }
 

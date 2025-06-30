@@ -347,7 +347,7 @@ public class NewAddressActivity extends AppCompatActivity {
 
                     // Nếu đến từ CartActivity → setResult để quay lại
                     Intent fromCart = getIntent();
-                    if (fromCart.getBooleanExtra("fromCart", false)) {
+                    if (getIntent().getBooleanExtra("fromCart", false)) {
                         setResult(RESULT_OK);
                     }
 
