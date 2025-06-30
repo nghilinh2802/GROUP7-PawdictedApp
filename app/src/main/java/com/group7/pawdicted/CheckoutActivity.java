@@ -117,8 +117,8 @@ public class CheckoutActivity extends AppCompatActivity {
         recyclerViewOrderItems.setLayoutManager(new LinearLayoutManager(this));
 
         List<ShippingOption> shippingOptions = new ArrayList<>();
-        shippingOptions.add(new ShippingOption("STANDARD DELIVERY", "Delivery fee 20K...", 20000));
-        shippingOptions.add(new ShippingOption("EXPRESS DELIVERY", "Delivery fee 45K...", 45000));
+        shippingOptions.add(new ShippingOption("STANDARD DELIVERY", "Delivery fee 20K. Estimated delivery time is 2-5 days, excluding Sundays and holidays.", 20000));
+        shippingOptions.add(new ShippingOption("EXPRESS DELIVERY", "Delivery fee 45K. Order after 5pm will be delivered the next day. ", 45000));
         selectedShippingOption = shippingOptions.get(0);
 
         ShippingOptionAdapter shippingOptionAdapter = new ShippingOptionAdapter(this, shippingOptions, option -> {
@@ -191,6 +191,11 @@ public class CheckoutActivity extends AppCompatActivity {
                             " | Total cost: " + cost);
                     index++;
                 }
+            }
+
+            Voucher voucherFromCart = (Voucher) getIntent().getSerializableExtra("selectedVoucher");
+            if (voucherFromCart != null) {
+                applyVoucher(voucherFromCart);
             }
 
             int totalValue = totalMerchandise + shippingFee;

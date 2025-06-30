@@ -161,7 +161,7 @@ Nếu bạn có bất kỳ câu hỏi hoặc yêu cầu nào về chính sách b
     <string name="title_flash_deals">Ưu đãi sốc</string>
     <string name="title_apply">Áp dụng</string>
     <string name="title_cart_cap">GIỎ HÀNG</string>
-    <string name="title_enter_code">Chọn hoặc nhập mã ></string>
+    <string name="title_enter_code">"Chọn hoặc nhập mã "</string>
     <string name="title_vouchers">Mã giảm giá</string>
     <string name="title_checkout">THANH TOÁN</string>
     <string name="title_notification_cap">THÔNG BÁO</string>
