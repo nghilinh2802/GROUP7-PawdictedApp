@@ -2,6 +2,7 @@ package com.group7.pawdicted;
 
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 
@@ -28,6 +29,11 @@ public class FAQActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
+
         setContentView(R.layout.activity_faqactivity);
 
         ImageView imgBack = findViewById(R.id.imgBack);

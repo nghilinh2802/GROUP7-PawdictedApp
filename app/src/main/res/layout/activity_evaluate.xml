@@ -5,7 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F9F9F9">
+    android:background="#F9F9F9"
+    android:fitsSystemWindows="true">
 
     <!-- Appbar -->
     <androidx.constraintlayout.widget.ConstraintLayout
