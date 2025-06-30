@@ -1,7 +1,6 @@
 package com.group7.pawdicted.mobile.adapters;
 
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,18 +21,31 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
 
     private List<Voucher> vouchers;
     private int type;
-    private int selectedPosition = -1; // Theo dõi vị trí được chọn, -1 nếu chưa chọn
+    private int selectedPosition = -1;
+    private OnVoucherSelectedListener listener;
 
-    public VoucherAdapter(List<Voucher> vouchers, int type) {
+    public interface OnVoucherSelectedListener {
+        void onVoucherSelected(Voucher voucher);
+    }
+
+    public VoucherAdapter(List<Voucher> vouchers, int type, OnVoucherSelectedListener listener) {
         this.vouchers = vouchers;
         this.type = type;
-        // Kiểm tra nếu có voucher nào được chọn mặc định
+        this.listener = listener;
         for (int i = 0; i < vouchers.size(); i++) {
             if (vouchers.get(i).isSelected()) {
                 selectedPosition = i;
+                if (listener != null) {
+                    listener.onVoucherSelected(vouchers.get(i));
+                }
+                Log.d("VoucherAdapter", "Initial selected position: " + selectedPosition + ", code: " + vouchers.get(i).getCode());
                 break;
             }
         }
+    }
+
+    public int getSelectedPosition() {
+        return selectedPosition;
     }
 
     @Override
@@ -45,7 +57,7 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
     @Override
     public void onBindViewHolder(VoucherViewHolder holder, int position) {
         Voucher voucher = vouchers.get(position);
-        holder.title.setText(voucher.getTitle());
+        holder.code.setText(voucher.getCode());
         holder.minSpend.setText(voucher.getMinSpend());
         holder.validity.setText(voucher.getValidity());
         holder.radioButton.setChecked(position == selectedPosition);
@@ -56,17 +68,20 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
             holder.icon.setImageResource(R.drawable.ic_shipping);
         }
 
-        holder.terms.setText("Terms and Conditions");
-        holder.terms.setTextColor(Color.BLUE);
-        holder.terms.setPaintFlags(holder.terms.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-
-        // Xử lý sự kiện khi RadioButton được click
         holder.radioButton.setOnClickListener(v -> {
             int previousSelected = selectedPosition;
             selectedPosition = holder.getAdapterPosition();
+            Log.d("VoucherAdapter", "RadioButton clicked, new selected position: " + selectedPosition + ", code: " + voucher.getCode());
             if (previousSelected != selectedPosition) {
-                notifyItemChanged(previousSelected); // Cập nhật item trước đó
-                notifyItemChanged(selectedPosition); // Cập nhật item hiện tại
+                if (previousSelected != -1 && previousSelected < vouchers.size()) {
+                    vouchers.get(previousSelected).setSelected(false);
+                    notifyItemChanged(previousSelected);
+                }
+                voucher.setSelected(true);
+                notifyItemChanged(selectedPosition);
+                if (listener != null) {
+                    listener.onVoucherSelected(voucher);
+                }
             }
         });
     }
@@ -78,17 +93,16 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.VoucherV
 
     static class VoucherViewHolder extends RecyclerView.ViewHolder {
         ImageView icon;
-        TextView title, minSpend, validity, terms;
+        TextView code, minSpend, validity;
         RadioButton radioButton;
 
         public VoucherViewHolder(View itemView) {
             super(itemView);
             icon = itemView.findViewById(R.id.voucher_icon);
-            title = itemView.findViewById(R.id.voucher_title);
+            code = itemView.findViewById(R.id.voucher_code);
             minSpend = itemView.findViewById(R.id.voucher_min_spend);
             validity = itemView.findViewById(R.id.voucher_validity);
-            terms = itemView.findViewById(R.id.terms_and_conditions);
-            radioButton = itemView.findViewById(R.id.voucher_radio_button); // Cập nhật ID
+            radioButton = itemView.findViewById(R.id.voucher_radio_button);
         }
     }
 }

@@ -78,26 +78,25 @@ public class AddressSelectionActivity extends AppCompatActivity {
                         AddressItem item = doc.toObject(AddressItem.class);
                         item.setId(doc.getId());
                         addressList.add(item);
+                        Log.d("AddressSelection", "Loaded address: " + item.toString() + ", isDefault: " + item.isDefault());
                     }
 
                     addressAdapter.notifyDataSetChanged();
 
-                    // Ưu tiên chọn địa chỉ có ID khớp với selectedAddressId
                     if (selectedAddressId != null) {
                         for (int i = 0; i < addressList.size(); i++) {
                             if (addressList.get(i).getId().equals(selectedAddressId)) {
                                 addressAdapter.setSelectedPosition(i);
-                                return; // Thoát sau khi tìm thấy và chọn
+                                return;
                             }
                         }
                     }
 
-                    // Nếu không tìm thấy selectedAddressId, chọn địa chỉ mặc định
                     int defaultPos = getDefaultAddressPosition();
                     if (defaultPos != -1) {
                         addressAdapter.setSelectedPosition(defaultPos);
                     } else if (!addressList.isEmpty()) {
-                        addressAdapter.setSelectedPosition(0); // Chọn địa chỉ đầu tiên nếu không có mặc định
+                        addressAdapter.setSelectedPosition(0);
                     } else {
                         Toast.makeText(this, "No addresses found", Toast.LENGTH_SHORT).show();
                     }

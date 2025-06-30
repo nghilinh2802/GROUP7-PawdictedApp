@@ -334,14 +334,26 @@ public class NewAddressActivity extends AppCompatActivity {
                 .collection("items")
                 .document(addressId)
                 .set(data, SetOptions.merge())
+//                .addOnSuccessListener(unused -> {
+//                    Log.d(TAG, "Address saved successfully: " + addressId);
+//                    Toast.makeText(this, "Đã lưu địa chỉ mới", Toast.LENGTH_SHORT).show();
+//                    Intent resultIntent = new Intent();
+//                    resultIntent.putExtra("addressId", addressId);
+//                    setResult(RESULT_OK, resultIntent);
+//                    finish();
+//                })
                 .addOnSuccessListener(unused -> {
-                    Log.d(TAG, "Address saved successfully: " + addressId);
                     Toast.makeText(this, "Đã lưu địa chỉ mới", Toast.LENGTH_SHORT).show();
-                    Intent resultIntent = new Intent();
-                    resultIntent.putExtra("addressId", addressId);
-                    setResult(RESULT_OK, resultIntent);
+
+                    // Nếu đến từ CartActivity → setResult để quay lại
+                    Intent fromCart = getIntent();
+                    if (getIntent().getBooleanExtra("fromCart", false)) {
+                        setResult(RESULT_OK);
+                    }
+
                     finish();
                 })
+
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error saving address to Firestore", e);
                     Toast.makeText(this, "Lỗi khi lưu địa chỉ!", Toast.LENGTH_SHORT).show();

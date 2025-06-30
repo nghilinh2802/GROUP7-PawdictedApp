@@ -45,7 +45,7 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
         holder.name.setText(addressItem.getName());
         holder.phone.setText(addressItem.getPhone());
         holder.address.setText(addressItem.getAddress());
-        holder.defaultAddress.setVisibility(addressItem.isDefault() ? View.VISIBLE : View.GONE);
+        holder.defaultAddress.setVisibility(addressItem.isDefault() ? View.VISIBLE : View.GONE); // Thêm logic hiển thị defaultAddress
         holder.radioButton.setChecked(position == selectedPosition);
 
         // Handle radio button click
