@@ -55,6 +55,7 @@ public class EditProfileActivity extends AppCompatActivity {
             imgBack.setOnClickListener(v -> finish());
         }
 
+
         // Khởi tạo Cloudinary
         try {
             Map<String, String> config = new HashMap<>();
