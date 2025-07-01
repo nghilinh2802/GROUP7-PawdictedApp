@@ -883,6 +883,16 @@ public class ProductDetailsActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ChatActivity.class);
         startActivity(intent);
     }
+
+    public void open_search(View view) {
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivity(intent);
+    }
+
+    public void open_cart(View view) {
+        Intent intent = new Intent(this, CartActivity.class);
+        startActivity(intent);
+    }
     @Override
     public boolean onSupportNavigateUp() {
         finish();

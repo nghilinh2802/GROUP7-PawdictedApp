@@ -612,4 +612,9 @@ public class HomepageActivity extends AppCompatActivity {
         Intent intent=new Intent(HomepageActivity.this,VoucherManagementActivity.class);
         startActivity(intent);
     }
+
+    public void open_order(View view) {
+        Intent intent=new Intent(HomepageActivity.this, PurchaseOrderActivity.class);
+        startActivity(intent);
+    }
 }
